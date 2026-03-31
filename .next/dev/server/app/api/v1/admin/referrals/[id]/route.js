@@ -1,0 +1,11 @@
+var R=require("../../../../../../chunks/[turbopack]_runtime.js")("server/app/api/v1/admin/referrals/[id]/route.js")
+R.c("server/chunks/lib_referral-code-utils_ts_4922a075._.js")
+R.c("server/chunks/96c05_next_61b2ea2a._.js")
+R.c("server/chunks/94ec4_next-auth_602f05bc._.js")
+R.c("server/chunks/0a374_openid-client_812b4fc9._.js")
+R.c("server/chunks/c1491_jose_dist_node_cjs_ad7cf29d._.js")
+R.c("server/chunks/node_modules__pnpm_d0552a71._.js")
+R.c("server/chunks/[root-of-the-server]__2fd04b08._.js")
+R.c("server/chunks/_next-internal_server_app_api_v1_admin_referrals_[id]_route_actions_52e2c911.js")
+R.m("[project]/node_modules/.pnpm/next@16.0.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/app/api/v1/admin/referrals/[id]/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)")
+module.exports=R.m("[project]/node_modules/.pnpm/next@16.0.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/app/api/v1/admin/referrals/[id]/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)").exports

@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "your-booking-app",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-08-05",
+
+  // ── D1 Database Binding ──────────────────────────────────────────────────
+  // Replace the placeholder values with your actual database name and ID.
+  // Get these by running: npx wrangler d1 info YOUR_DB_NAME
+  "d1_databases": [
+    {
+      "binding": "DB",                          // matches `env.DB` in your Worker code
+      "database_name": "YOUR_D1_DATABASE_NAME", // e.g. "booking-app-prod"
+      "database_id": "YOUR_D1_DATABASE_ID"      // UUID from `wrangler d1 create`
+    }
+  ]
+}

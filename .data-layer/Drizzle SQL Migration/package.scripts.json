@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+
+    "db:generate":    "drizzle-kit generate",
+    "db:migrate:local":  "wrangler d1 migrations apply YOUR_DB_NAME --local",
+    "db:migrate:remote": "wrangler d1 migrations apply YOUR_DB_NAME --remote",
+    "db:push:remote": "drizzle-kit push",
+    "db:studio:local": "source scripts/find-local-db.sh && drizzle-kit studio",
+    "db:studio:remote": "drizzle-kit studio",
+    "db:pragma": "wrangler d1 execute YOUR_DB_NAME --remote --command \"PRAGMA optimize;\""
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.0",
+    "wrangler": "^3.114.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.0",
+    "dotenv": "^16.0.0",
+    "tsx": "^4.0.0"
+  }
+}

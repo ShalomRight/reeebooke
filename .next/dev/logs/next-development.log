@@ -1,0 +1,65 @@
+[00:00:01.950] Server  WARN     ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:00:02.045] Server  LOG      ✓ Ready in 1830ms
+[00:14:57.625] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:14:57.625] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:14:57.625] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774953498173} /_vercel/insights/view
+[00:14:57.984] Server  WARN    Warning: STRIPE_SECRET_KEY is not configured. Stripe payments will not work.
+[00:15:01.017] Browser ERROR   uncaughtError: Error: A Cloudinary Cloud name is required, please make sure NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is set and configured in your environment.
+[00:15:06.685] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:15:06.685] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:15:06.685] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774953507234} /_vercel/insights/view
+[00:15:15.877] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/signin color: rgb(120, 120, 120) color: inherit {"dp":"/signin","o":"http://localhost:3000/signin","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774953516424} /_vercel/insights/view
+[00:15:26.000] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:15:26.000] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/dashboard","route":"/dashboard"}
+[00:15:26.000] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/dashboard color: rgb(120, 120, 120) color: inherit {"dp":"/dashboard","o":"http://localhost:3000/dashboard","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774953526548} /_vercel/insights/view
+[00:15:26.955] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/admin/super color: rgb(120, 120, 120) color: inherit {"dp":"/admin/super","o":"http://localhost:3000/admin/super","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774953527450} /_vercel/insights/view
+[00:15:30.039] Server  WARN     ⚠ ./node_modules/.pnpm/@react-email+render@1.1.2_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/@react-email/render/dist/node
+Package prettier can't be external
+The request prettier/plugins/html matches serverExternalPackages (or the default list).
+The request could not be resolved by Node.js from the project directory.
+Packages that should be external need to be installed in the project directory, so they can be resolved from the output files.
+Try to install it into the project directory by running npm install prettier from the project directory.
+
+
+[00:15:30.039] Server  WARN     ⚠ ./node_modules/.pnpm/@react-email+render@1.1.2_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/@react-email/render/dist/node
+Package prettier can't be external
+The request prettier/standalone matches serverExternalPackages (or the default list).
+The request could not be resolved by Node.js from the project directory.
+Packages that should be external need to be installed in the project directory, so they can be resolved from the output files.
+Try to install it into the project directory by running npm install prettier from the project directory.
+
+
+[00:15:30.925] Server  WARN     ⚠ ./node_modules/.pnpm/@react-email+render@1.1.2_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/@react-email/render/dist/node
+Package prettier can't be external
+The request prettier/plugins/html matches serverExternalPackages (or the default list).
+The request could not be resolved by Node.js from the project directory.
+Packages that should be external need to be installed in the project directory, so they can be resolved from the output files.
+Try to install it into the project directory by running npm install prettier from the project directory.
+
+
+[00:15:30.926] Server  WARN     ⚠ ./node_modules/.pnpm/@react-email+render@1.1.2_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/@react-email/render/dist/node
+Package prettier can't be external
+The request prettier/standalone matches serverExternalPackages (or the default list).
+The request could not be resolved by Node.js from the project directory.
+Packages that should be external need to be installed in the project directory, so they can be resolved from the output files.
+Try to install it into the project directory by running npm install prettier from the project directory.
+
+
+[01:35:06.557] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[01:35:06.557] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[01:35:06.557] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774958307014} /_vercel/insights/view
+[01:35:12.045] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[01:35:12.045] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/signin","route":"/signin"}
+[01:35:12.046] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/signin color: rgb(120, 120, 120) color: inherit {"dp":"/signin","o":"http://localhost:3000/signin","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774958312508} /_vercel/insights/view
+[01:35:19.313] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[01:35:19.313] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/signup","route":"/signup"}
+[01:35:19.313] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/signup color: rgb(120, 120, 120) color: inherit {"dp":"/signup","o":"http://localhost:3000/signup","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774958319776} /_vercel/insights/view
+[01:35:26.556] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[01:35:26.556] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/admin","route":"/admin"}
+[01:35:26.556] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/admin color: rgb(120, 120, 120) color: inherit {"dp":"/admin","o":"http://localhost:3000/admin","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774958327012} /_vercel/insights/view
+[01:35:35.087] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[01:35:35.087] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/signin","route":"/signin"}
+[01:35:35.087] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/signin color: rgb(120, 120, 120) color: inherit {"dp":"/signin","o":"http://localhost:3000/signin","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774958335548} /_vercel/insights/view
+[01:35:39.139] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[01:35:39.139] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/admin","route":"/admin"}
+[01:35:39.139] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/admin color: rgb(120, 120, 120) color: inherit {"dp":"/admin","o":"http://localhost:3000/admin","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1774958339600} /_vercel/insights/view
