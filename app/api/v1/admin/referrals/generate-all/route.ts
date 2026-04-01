@@ -1,5 +1,8 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq, or, isNull } from "drizzle-orm"
 import { ensureReferralCode } from "@/lib/referral-code-utils"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
@@ -18,11 +21,12 @@ export async function POST() {
 		}
 
 		// Find all users without referral codes
-		const usersWithoutCodes = await prisma.user.findMany({
-			where: {
-				OR: [{ referralCode: null }, { referralCode: "" }],
-			},
-			select: {
+		const usersWithoutCodes = await db.query.users.findMany({
+			where: or(
+				isNull(users.referralCode),
+				eq(users.referralCode, "")
+			),
+			columns: {
 				id: true,
 				email: true,
 				name: true,

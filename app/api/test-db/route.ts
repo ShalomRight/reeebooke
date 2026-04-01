@@ -1,14 +1,14 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, services } from "@/src/db/schema"
+import { count } from "drizzle-orm"
 import { NextResponse } from "next/server"
 
 export async function GET() {
 	try {
 		// Test database connection
-		await prisma.$connect()
-		
-		// Test query
-		const serviceCount = await prisma.service.count()
-		const userCount = await prisma.user.count()
+// Test query
+		const serviceCount = (await db.query.services.findMany()).length
+		const userCount = (await db.query.users.findMany()).length
 		
 		return NextResponse.json({
 			connected: true,

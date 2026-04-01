@@ -2,12 +2,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog"
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+} from "@/components/ui/sheet"
 import { DollarSign, RefreshCw, TrendingUp, Users } from "lucide-react"
 
 interface UsageStats {
@@ -54,86 +54,82 @@ export function DiscountUsageDialog({
 	recentUsages,
 }: DiscountUsageDialogProps) {
 	return (
-		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
-				<DialogHeader>
-					<DialogTitle>Discount Code Usage Details</DialogTitle>
-					<DialogDescription>Detailed analytics and usage statistics for this discount code</DialogDescription>
-				</DialogHeader>
+		<Sheet open={isOpen} onOpenChange={onClose}>
+			<SheetContent side="right" className="w-full sm:max-w-xl bg-slate-50 border-l border-slate-200 p-0 flex flex-col">
+				<SheetHeader className="bg-white px-6 py-4 border-b border-slate-200 sticky top-0 z-10">
+					<SheetTitle>Discount Code Usage Details</SheetTitle>
+					<SheetDescription>Detailed analytics and usage statistics for this discount code</SheetDescription>
+				</SheetHeader>
 
 				{loading ? (
-					<div className="flex items-center justify-center py-12">
+					<div className="flex-1 flex items-center justify-center py-12">
 						<RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
 					</div>
 				) : statistics ? (
-					<div className="space-y-6">
+					<div className="flex-1 overflow-y-auto p-6 space-y-6">
 						{/* Statistics Cards */}
-						<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-							<Card>
+						<div className="grid grid-cols-2 gap-4">
+							<Card className="border-slate-200 shadow-sm">
 								<CardContent className="pt-6">
 									<div className="flex items-center gap-2 mb-2">
-										<TrendingUp className="w-4 h-4 text-muted-foreground" />
-										<span className="text-sm text-muted-foreground">Total Uses</span>
+										<TrendingUp className="w-4 h-4 text-slate-500" />
+										<span className="text-sm text-slate-500 font-medium">Total Uses</span>
 									</div>
-									<div className="text-2xl font-bold">{statistics.totalUsages}</div>
+									<div className="text-2xl font-bold text-slate-900">{statistics.totalUsages}</div>
 								</CardContent>
 							</Card>
-							<Card>
+							<Card className="border-slate-200 shadow-sm">
 								<CardContent className="pt-6">
 									<div className="flex items-center gap-2 mb-2">
-										<Users className="w-4 h-4 text-muted-foreground" />
-										<span className="text-sm text-muted-foreground">Unique Users</span>
+										<Users className="w-4 h-4 text-slate-500" />
+										<span className="text-sm text-slate-500 font-medium">Unique Users</span>
 									</div>
-									<div className="text-2xl font-bold">{statistics.uniqueUsers}</div>
+									<div className="text-2xl font-bold text-slate-900">{statistics.uniqueUsers}</div>
 								</CardContent>
 							</Card>
-							<Card>
+							<Card className="border-slate-200 shadow-sm">
 								<CardContent className="pt-6">
 									<div className="flex items-center gap-2 mb-2">
-										<DollarSign className="w-4 h-4 text-muted-foreground" />
-										<span className="text-sm text-muted-foreground">Total Discount</span>
+										<DollarSign className="w-4 h-4 text-slate-500" />
+										<span className="text-sm text-slate-500 font-medium">Total Discount</span>
 									</div>
-									<div className="text-2xl font-bold">${statistics.totalDiscountAmount.toLocaleString()}</div>
+									<div className="text-2xl font-bold text-slate-900">${statistics.totalDiscountAmount.toLocaleString()}</div>
 								</CardContent>
 							</Card>
-							<Card>
+							<Card className="border-slate-200 shadow-sm">
 								<CardContent className="pt-6">
 									<div className="flex items-center gap-2 mb-2">
-										<DollarSign className="w-4 h-4 text-muted-foreground" />
-										<span className="text-sm text-muted-foreground">Revenue</span>
+										<DollarSign className="w-4 h-4 text-slate-500" />
+										<span className="text-sm text-slate-500 font-medium">Revenue</span>
 									</div>
-									<div className="text-2xl font-bold">${statistics.totalFinalRevenue.toLocaleString()}</div>
+									<div className="text-2xl font-bold text-slate-900">${statistics.totalFinalRevenue.toLocaleString()}</div>
 								</CardContent>
 							</Card>
 						</div>
 
 						{/* Usage by User */}
 						{usageByUser && usageByUser.length > 0 && (
-							<Card>
-								<CardHeader>
-									<CardTitle>Usage by User</CardTitle>
-									<CardDescription>See which users used this code and how many times</CardDescription>
+							<Card className="border-slate-200 shadow-sm">
+								<CardHeader className="pb-3 border-b border-slate-100">
+									<CardTitle className="text-base font-semibold">Usage by User</CardTitle>
 								</CardHeader>
-								<CardContent>
+								<CardContent className="pt-4">
 									<div className="space-y-3">
 										{usageByUser.map((user, idx) => (
-											<div key={idx} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+											<div key={idx} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-lg shadow-sm">
 												<div className="flex-1">
-													<div className="font-semibold">{user.userName || "Guest"}</div>
-													<div className="text-sm text-muted-foreground">
+													<div className="text-sm font-semibold text-slate-900">{user.userName || "Guest"}</div>
+													<div className="text-xs text-slate-500 mt-0.5">
 														{user.email && <span>{user.email}</span>}
 														{user.phone && <span className="ml-2">{user.phone}</span>}
 													</div>
 												</div>
 												<div className="text-right">
-													<div className="font-semibold">
+													<div className="text-sm font-medium text-slate-900">
 														Used {user.count} time{user.count !== 1 ? "s" : ""}
 													</div>
-													<div className="text-sm text-muted-foreground">
+													<div className="text-xs text-slate-500 mt-0.5">
 														Saved ${user.totalDiscount.toLocaleString()} • Spent ${user.totalSpent.toLocaleString()}
-													</div>
-													<div className="text-xs text-muted-foreground mt-1">
-														Last: {new Date(user.lastUsed).toLocaleDateString()}
 													</div>
 												</div>
 											</div>
@@ -145,28 +141,21 @@ export function DiscountUsageDialog({
 
 						{/* Recent Usage History */}
 						{recentUsages && recentUsages.length > 0 && (
-							<Card>
-								<CardHeader>
-									<CardTitle>Recent Usage History</CardTitle>
-									<CardDescription>Latest uses of this discount code</CardDescription>
+							<Card className="border-slate-200 shadow-sm">
+								<CardHeader className="pb-3 border-b border-slate-100">
+									<CardTitle className="text-base font-semibold">Recent Usage History</CardTitle>
 								</CardHeader>
-								<CardContent>
-									<div className="space-y-2">
+								<CardContent className="pt-4">
+									<div className="space-y-3">
 										{recentUsages.map((usage, idx) => (
-											<div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
-												<div className="flex-1">
-													<div className="font-semibold">{usage.userName || "Guest"}</div>
-													<div className="text-sm text-muted-foreground">
-														{usage.email && <span>{usage.email}</span>}
-														{usage.phone && <span className="ml-2">{usage.phone}</span>}
-													</div>
-													<div className="text-xs text-muted-foreground mt-1">
-														{new Date(usage.usedAt).toLocaleString()}
-													</div>
+											<div key={idx} className="flex flex-col p-3 bg-white border border-slate-100 rounded-lg shadow-sm">
+												<div className="flex items-center justify-between font-medium text-sm text-slate-900">
+													<span>{usage.userName || "Guest"}</span>
+													<span className="text-blue-600">-${usage.discountAmount.toLocaleString()}</span>
 												</div>
-												<div className="text-right">
-													<div className="font-semibold text-green-600">-${usage.discountAmount.toLocaleString()}</div>
-													<div className="text-sm text-muted-foreground">Total: ${usage.finalTotal.toLocaleString()}</div>
+												<div className="flex items-center justify-between text-xs text-slate-500 mt-1">
+													<span>{new Date(usage.usedAt).toLocaleString()}</span>
+													<span>Total: ${usage.finalTotal.toLocaleString()}</span>
 												</div>
 											</div>
 										))}
@@ -176,8 +165,8 @@ export function DiscountUsageDialog({
 						)}
 					</div>
 				) : null}
-			</DialogContent>
-		</Dialog>
+			</SheetContent>
+		</Sheet>
 	)
 }
 

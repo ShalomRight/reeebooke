@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, carts, services } from "@/src/db/schema"
+import { eq, and, ne, inArray } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -11,58 +13,44 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
-			where: { email: session.user.email },
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, session.user.email),
 		})
 
 		if (!user) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 })
 		}
 
-		const cartItems = await prisma.cart.findMany({
-			where: { userId: user.id },
-			include: { service: true },
-			orderBy: { createdAt: "desc" },
+		const cartItems = await db.query.carts.findMany({
+			where: eq(carts.userId, user.id),
+			with: { service: true },
+			orderBy: (carts, { desc }) => [desc(carts.createdAt)],
 		})
 
-		// Normalize date format for comparison
-		const normalizeDate = (date: Date | string): string => {
-			const dateObj = typeof date === "string" ? new Date(date) : date
-			return dateObj.toISOString().split("T")[0] // Get YYYY-MM-DD format
-		}
-
 		// Deduplicate cart items by serviceId, date, and time
-		// Keep the most recent item if duplicates exist
 		const uniqueCartMap = new Map<string, typeof cartItems[0]>()
 		const itemsToDelete: string[] = []
 
 		cartItems.forEach((item) => {
-			const key = `${item.serviceId}-${normalizeDate(item.date)}-${item.time}`
+			const key = `${item.serviceId}-${item.date}-${item.time}`
 			if (!uniqueCartMap.has(key)) {
 				uniqueCartMap.set(key, item)
 			} else {
 				const existing = uniqueCartMap.get(key)!
-				// Keep the one with the latest createdAt
 				if (item.createdAt > existing.createdAt) {
-					// Mark the old one for deletion
 					itemsToDelete.push(existing.id)
 					uniqueCartMap.set(key, item)
 				} else {
-					// Mark the current one for deletion (existing is newer)
 					itemsToDelete.push(item.id)
 				}
 			}
 		})
 
-		// Clean up duplicates from database
+		// Clean up duplicates
 		if (itemsToDelete.length > 0) {
-			await prisma.cart.deleteMany({
-				where: {
-					id: {
-						in: itemsToDelete,
-					},
-				},
-			})
+			for (const id of itemsToDelete) {
+				db.delete(carts).where(eq(carts.id, id)).run()
+			}
 		}
 
 		return NextResponse.json(Array.from(uniqueCartMap.values()))
@@ -86,54 +74,42 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
-			where: { email: session.user.email },
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, session.user.email),
 		})
 
 		if (!user) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 })
 		}
 
-		// Normalize date format for comparison
-		const normalizeDate = (date: Date | string): string => {
-			const dateObj = typeof date === "string" ? new Date(date) : date
-			return dateObj.toISOString().split("T")[0] // Get YYYY-MM-DD format
-		}
+		const normalizedDate = new Date(date).toISOString().split('T')[0]
 
-		const normalizedDate = normalizeDate(date)
-
-		// Normalize the date to start/end of day for comparison
-		const itemDate = new Date(date)
-		const startOfDay = new Date(itemDate)
-		startOfDay.setHours(0, 0, 0, 0)
-		const endOfDay = new Date(itemDate)
-		endOfDay.setHours(23, 59, 59, 999)
-
-		// Check if item already exists in cart using date range
-		const duplicateExists = await prisma.cart.findFirst({
-			where: {
-				userId: user.id,
-				serviceId: serviceId,
-				date: {
-					gte: startOfDay,
-					lte: endOfDay,
-				},
-				time: time,
-			},
+		// Check if item already exists in cart
+		const duplicateExists = await db.query.carts.findFirst({
+			where: and(
+				eq(carts.userId, user.id),
+				eq(carts.serviceId, serviceId),
+				eq(carts.date, normalizedDate),
+				eq(carts.time, time),
+			),
 		})
 
 		if (duplicateExists) {
 			return NextResponse.json({ error: "Item already in cart" }, { status: 409 })
 		}
 
-		const cartItem = await prisma.cart.create({
-			data: {
-				userId: user.id,
-				serviceId,
-				date: new Date(date),
-				time,
-			},
-			include: { service: true },
+		const cartId = crypto.randomUUID()
+		db.insert(carts).values({
+			id: cartId,
+			userId: user.id,
+			serviceId,
+			date: normalizedDate,
+			time,
+		}).run()
+
+		const cartItem = await db.query.carts.findFirst({
+			where: eq(carts.id, cartId),
+			with: { service: true },
 		})
 
 		return NextResponse.json(cartItem, { status: 201 })
@@ -159,53 +135,36 @@ export async function PUT(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
-			where: { email: session.user.email },
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, session.user.email),
 		})
 
 		if (!user) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 })
 		}
 
-		// Check if the cart item belongs to the user
-		const existingCartItem = await prisma.cart.findFirst({
-			where: {
-				id: cartItemId,
-				userId: user.id,
-			},
+		const existingCartItem = await db.query.carts.findFirst({
+			where: and(
+				eq(carts.id, cartItemId),
+				eq(carts.userId, user.id),
+			),
 		})
 
 		if (!existingCartItem) {
 			return NextResponse.json({ error: "Cart item not found" }, { status: 404 })
 		}
 
-		// Normalize date format for comparison
-		const normalizeDate = (date: Date | string): string => {
-			const dateObj = typeof date === "string" ? new Date(date) : date
-			return dateObj.toISOString().split("T")[0] // Get YYYY-MM-DD format
-		}
-
-		const normalizedDate = date ? normalizeDate(date) : normalizeDate(existingCartItem.date)
-
 		// Check for duplicates (excluding the current item)
 		if (serviceId && date && time) {
-			const itemDate = new Date(date)
-			const startOfDay = new Date(itemDate)
-			startOfDay.setHours(0, 0, 0, 0)
-			const endOfDay = new Date(itemDate)
-			endOfDay.setHours(23, 59, 59, 999)
-
-			const duplicateExists = await prisma.cart.findFirst({
-				where: {
-					userId: user.id,
-					id: { not: cartItemId },
-					serviceId: serviceId || existingCartItem.serviceId,
-					date: {
-						gte: startOfDay,
-						lte: endOfDay,
-					},
-					time: time || existingCartItem.time,
-				},
+			const normalizedDate = new Date(date).toISOString().split('T')[0]
+			const duplicateExists = await db.query.carts.findFirst({
+				where: and(
+					eq(carts.userId, user.id),
+					ne(carts.id, cartItemId),
+					eq(carts.serviceId, serviceId || existingCartItem.serviceId),
+					eq(carts.date, normalizedDate),
+					eq(carts.time, time || existingCartItem.time),
+				),
 			})
 
 			if (duplicateExists) {
@@ -213,14 +172,19 @@ export async function PUT(req: NextRequest) {
 			}
 		}
 
-		const updatedCartItem = await prisma.cart.update({
-			where: { id: cartItemId },
-			data: {
-				...(serviceId && { serviceId }),
-				...(date && { date: new Date(date) }),
-				...(time && { time }),
-			},
-			include: { service: true },
+		const updateData: Record<string, any> = { updatedAt: new Date().toISOString() }
+		if (serviceId) updateData.serviceId = serviceId
+		if (date) updateData.date = new Date(date).toISOString().split('T')[0]
+		if (time) updateData.time = time
+
+		db.update(carts)
+			.set(updateData)
+			.where(eq(carts.id, cartItemId))
+			.run()
+
+		const updatedCartItem = await db.query.carts.findFirst({
+			where: eq(carts.id, cartItemId),
+			with: { service: true },
 		})
 
 		return NextResponse.json(updatedCartItem)
@@ -240,9 +204,7 @@ export async function DELETE(req: NextRequest) {
 			return NextResponse.json({ error: "Cart item ID required" }, { status: 400 })
 		}
 
-		await prisma.cart.delete({
-			where: { id: cartItemId },
-		})
+		db.delete(carts).where(eq(carts.id, cartItemId)).run()
 
 		return NextResponse.json({ success: true })
 	} catch (error) {

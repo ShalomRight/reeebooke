@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
-import { Prisma } from "@prisma/client"
 
 export class AppError extends Error {
 	constructor(
@@ -33,14 +32,21 @@ function logError(error: unknown, context?: { path?: string; method?: string }):
 		...(context && { ...context }),
 	}
 
-	if (error instanceof Prisma.PrismaClientKnownRequestError) {
-		errorLog.code = error.code
-		errorLog.details = error.meta
-	} else if (error instanceof AppError) {
+	if (error instanceof AppError) {
 		errorLog.code = error.code
 		errorLog.details = error.details
 	} else if (error instanceof ZodError) {
 		errorLog.details = error.errors
+	} else if (error instanceof Error) {
+		// Handle SQLite/Drizzle errors
+		const msg = error.message.toLowerCase()
+		if (msg.includes("unique constraint") || msg.includes("unique_constraint")) {
+			errorLog.code = "SQLITE_CONSTRAINT_UNIQUE"
+		} else if (msg.includes("foreign key") || msg.includes("foreign_key")) {
+			errorLog.code = "SQLITE_CONSTRAINT_FOREIGNKEY"
+		} else if (msg.includes("not null constraint")) {
+			errorLog.code = "SQLITE_CONSTRAINT_NOTNULL"
+		}
 	}
 
 	// In production, you might want to send this to a logging service
@@ -65,76 +71,42 @@ export function handleError(error: unknown, context?: { path?: string; method?: 
 		)
 	}
 
-	// Prisma errors
-	if (error instanceof Prisma.PrismaClientKnownRequestError) {
-		switch (error.code) {
-			case "P2002":
-				return NextResponse.json(
-					{
-						error: "A record with this value already exists",
-						code: error.code,
-					},
-					{ status: 409 }
-				)
-			case "P2025":
-				return NextResponse.json(
-					{
-						error: "Record not found",
-						code: error.code,
-					},
-					{ status: 404 }
-				)
-			case "P2003":
-				return NextResponse.json(
-					{
-						error: "Invalid reference",
-						code: error.code,
-					},
-					{ status: 400 }
-				)
-			case "P2014":
-				return NextResponse.json(
-					{
-						error: "Invalid ID provided",
-						code: error.code,
-					},
-					{ status: 400 }
-				)
-			case "P2000":
-				return NextResponse.json(
-					{
-						error: "Input value is too long",
-						code: error.code,
-					},
-					{ status: 400 }
-				)
-			case "P2001":
-				return NextResponse.json(
-					{
-						error: "Record does not exist",
-						code: error.code,
-					},
-					{ status: 404 }
-				)
-			default:
-				return NextResponse.json(
-					{
-						error: "Database error occurred",
-						code: error.code,
-					},
-					{ status: 500 }
-				)
+	// SQLite/Drizzle errors
+	if (error instanceof Error) {
+		const msg = error.message.toLowerCase()
+		
+		// Unique constraint violation
+		if (msg.includes("unique constraint") || msg.includes("unique_constraint")) {
+			return NextResponse.json(
+				{
+					error: "A record with this value already exists",
+					code: "SQLITE_CONSTRAINT_UNIQUE",
+				},
+				{ status: 409 }
+			)
 		}
-	}
 
-	// Prisma validation errors
-	if (error instanceof Prisma.PrismaClientValidationError) {
-		return NextResponse.json(
-			{
-				error: "Invalid data provided",
-			},
-			{ status: 400 }
-		)
+		// Foreign key constraint
+		if (msg.includes("foreign key") || msg.includes("foreign_key")) {
+			return NextResponse.json(
+				{
+					error: "Invalid reference",
+					code: "SQLITE_CONSTRAINT_FOREIGNKEY",
+				},
+				{ status: 400 }
+			)
+		}
+
+		// Not found (used by Drizzle when no rows match)
+		if (msg.includes("no result") || msg.includes("not found")) {
+			return NextResponse.json(
+				{
+					error: "Record not found",
+					code: "NOT_FOUND",
+				},
+				{ status: 404 }
+			)
+		}
 	}
 
 	// Custom AppError
@@ -193,4 +165,3 @@ export async function withErrorHandling<T>(
 		return handleError(error, context)
 	}
 }
-

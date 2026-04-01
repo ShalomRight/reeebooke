@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, referralCodes, referralRewards } from "@/src/db/schema"
+import { eq, sql } from "drizzle-orm"
 
 /**
  * Award referral points when a referred user completes their first payment
@@ -7,9 +9,9 @@ import { prisma } from "@/lib/prisma"
 export async function awardReferralPointsOnPayment(userId: string, bookingId?: string) {
 	try {
 		// Get the user who made the payment
-		const user = await prisma.user.findUnique({
-			where: { id: userId },
-			select: {
+		const user = await db.query.users.findFirst({
+			where: eq(users.id, userId),
+			columns: {
 				id: true,
 				referredById: true,
 				name: true,
@@ -21,10 +23,8 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 		}
 
 		// Check if referral points have already been awarded for this user
-		const existingReward = await prisma.referralReward.findFirst({
-			where: {
-				referredId: user.id,
-			},
+		const existingReward = await db.query.referralRewards.findFirst({
+			where: eq(referralRewards.referredId, user.id),
 		})
 
 		if (existingReward) {
@@ -32,16 +32,16 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 		}
 
 		// Get referral code configuration and referrer info
-		const referralCode = await prisma.referralCode.findFirst({
-			where: { userId: user.referredById },
+		const referralCode = await db.query.referralCodes.findFirst({
+			where: eq(referralCodes.userId, user.referredById),
 		})
 
 		const points = referralCode?.pointsPerReferral || 100
 
 		// Get referrer info for email
-		const referrer = await prisma.user.findUnique({
-			where: { id: user.referredById },
-			select: {
+		const referrer = await db.query.users.findFirst({
+			where: eq(users.id, user.referredById),
+			columns: {
 				name: true,
 				email: true,
 				referralPoints: true,
@@ -49,31 +49,35 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 		})
 
 		// Award points to the referrer
-		const updatedReferrer = await prisma.user.update({
-			where: { id: user.referredById },
-			data: { referralPoints: { increment: points } },
-			select: {
-				referralPoints: true,
-			},
+		db.update(users)
+			.set({ referralPoints: sql`${users.referralPoints} + ${points}` })
+			.where(eq(users.id, user.referredById))
+			.run()
+
+		// Get updated referrer points
+		const updatedReferrer = await db.query.users.findFirst({
+			where: eq(users.id, user.referredById),
+			columns: { referralPoints: true },
 		})
 
 		// Update referral code usage count
 		if (referralCode) {
-			await prisma.referralCode.update({
-				where: { id: referralCode.id },
-				data: { usageCount: { increment: 1 } },
-			})
+			db.update(referralCodes)
+				.set({ usageCount: sql`${referralCodes.usageCount} + 1` })
+				.where(eq(referralCodes.id, referralCode.id))
+				.run()
 		}
 
 		// Create referral reward record
-		await prisma.referralReward.create({
-			data: {
+		db.insert(referralRewards)
+			.values({
+				id: crypto.randomUUID(),
 				referrerId: user.referredById,
 				referredId: user.id,
 				points,
 				bookingId: bookingId || null,
-			},
-		})
+			})
+			.run()
 
 		console.log(`Referral points awarded: ${points} points to user ${user.referredById} for referral ${user.id}`)
 
@@ -82,7 +86,7 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 			referrerEmail: referrer?.email || null,
 			referrerName: referrer?.name || null,
 			pointsEarned: points,
-			totalPoints: updatedReferrer.referralPoints,
+			totalPoints: updatedReferrer?.referralPoints || 0,
 		}
 	} catch (error) {
 		console.error("Failed to award referral points:", error)
@@ -90,4 +94,3 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 		return null
 	}
 }
-

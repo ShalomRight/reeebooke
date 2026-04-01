@@ -90,6 +90,7 @@ export function ReferralManagement() {
 	const [editPoints, setEditPoints] = useState("")
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 	const [isGenerating, setIsGenerating] = useState(false)
+	const [isGeneratingOne, setIsGeneratingOne] = useState(false)
 
 	// Load referral codes
 	const loadCodes = async () => {
@@ -177,6 +178,31 @@ export function ReferralManagement() {
 		}
 	}
 
+	// Generate a referral code for a single user without one
+	const generateOneCode = async () => {
+		setIsGeneratingOne(true)
+		try {
+			const res = await fetch("/api/v1/admin/referrals/generate", {
+				method: "POST",
+			})
+			const data = await res.json()
+			if (res.ok) {
+				toast.success(data.message || "Referral code generated successfully")
+				loadCodes() // Refresh the list
+			} else {
+				if (res.status === 404) {
+					toast.info(data.message || "All users already have referral codes.")
+				} else {
+					toast.error(data.error || "Failed to generate referral code")
+				}
+			}
+		} catch (err) {
+			toast.error("Failed to generate referral code")
+		} finally {
+			setIsGeneratingOne(false)
+		}
+	}
+
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
@@ -187,7 +213,11 @@ export function ReferralManagement() {
 					<p className="text-muted-foreground mt-1">Manage referral codes and track affiliate performance</p>
 				</div>
 				<div className="flex gap-2">
-					<Button variant="outline" size="sm" onClick={generateAllCodes} disabled={isGenerating || loading}>
+					<Button variant="outline" size="sm" onClick={generateOneCode} disabled={isGeneratingOne || isGenerating || loading}>
+						<Sparkles className={`w-4 h-4 mr-2 ${isGeneratingOne ? "animate-spin" : ""}`} />
+						Generate One
+					</Button>
+					<Button variant="outline" size="sm" onClick={generateAllCodes} disabled={isGenerating || isGeneratingOne || loading}>
 						<Sparkles className={`w-4 h-4 mr-2 ${isGenerating ? "animate-spin" : ""}`} />
 						Generate All Codes
 					</Button>

@@ -49,13 +49,13 @@ export function BookingCard({
 	const getStatusColor = (status: string) => {
 		switch (status) {
 			case "PENDING":
-				return "border-l-amber-500"
+				return "border-l-amber-400"
 			case "CONFIRMED":
-				return "border-l-green-500"
+				return "border-l-emerald-400"
 			case "COMPLETED":
-				return "border-l-blue-500"
+				return "border-l-blue-400"
 			case "CANCELLED":
-				return "border-l-red-500"
+				return "border-l-rose-400"
 			default:
 				return ""
 		}
@@ -95,7 +95,7 @@ export function BookingCard({
 	const userEmail = booking.user?.email || booking.email || null
 
 	return (
-		<Card className={`border-l-4 ${getStatusColor(booking.status)}`}>
+		<Card className={`bg-white border-y border-r border-slate-200 shadow-sm rounded-xl overflow-hidden hover:shadow-md transition-shadow border-l-4 ${getStatusColor(booking.status)}`}>
 			<CardHeader>
 				<div className="flex items-start justify-between">
 					<div className="space-y-1 flex-1">
@@ -136,8 +136,8 @@ export function BookingCard({
 					</div>
 					<div className="flex flex-col items-end gap-2">
 						<div className="flex items-center gap-2">
-							<DollarSign className="w-5 h-5" />
-							<span className="text-lg font-semibold">${booking.service.price.toLocaleString()}</span>
+							<DollarSign className="w-5 h-5 text-slate-400" />
+							<span className="text-lg font-bold text-slate-900">${booking.service.price.toLocaleString()}</span>
 						</div>
 						{getStatusBadge(booking.status)}
 					</div>
@@ -161,12 +161,12 @@ export function BookingCard({
 					</div>
 					<div className="flex gap-2">
 						{showConfirmButton && booking.status === "PENDING" && (
-							<Button size="sm" onClick={() => onStatusChange(booking.id, "CONFIRMED")} className="gap-2">
+							<Button size="sm" onClick={() => onStatusChange(booking.id, "CONFIRMED")} className="gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full">
 								<CheckCircle2 className="w-4 h-4" />
 								Confirm
 							</Button>
 						)}
-						<Button variant="outline" size="sm" onClick={() => onDownloadReceipt(booking.id)}>
+						<Button variant="outline" size="sm" className="rounded-full border-slate-200 hover:bg-slate-50 text-slate-600" onClick={() => onDownloadReceipt(booking.id)}>
 							<Download className="w-4 h-4 mr-2" />
 							Receipt
 						</Button>

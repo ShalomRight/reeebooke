@@ -54,6 +54,10 @@ export async function generateReceiptPDF(data: ReceiptData): Promise<Buffer> {
 				// Try to find Chrome/Chromium in common locations
 				const executablePaths = [
 					process.env.PUPPETEER_EXECUTABLE_PATH,
+					"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+					"/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+					"/Applications/Chromium.app/Contents/MacOS/Chromium",
+					"/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
 					"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
 					"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
 					"/usr/bin/google-chrome",
@@ -71,6 +75,10 @@ export async function generateReceiptPDF(data: ReceiptData): Promise<Buffer> {
 					} catch {
 						// Continue to next path
 					}
+				}
+
+				if (!executablePath) {
+					throw new Error("Local Chrome executable not found")
 				}
 
 				browser = await puppeteer.default.launch({

@@ -1,13 +1,20 @@
-import { prisma } from "@/lib/prisma"
-import { PrismaAdapter } from "@auth/prisma-adapter"
+import { db } from "@/src/db"
+import { users, accounts, sessions, verificationTokens } from "@/src/db/schema"
+import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import bcrypt from "bcryptjs"
+import { eq } from "drizzle-orm"
 import { getServerSession, type NextAuthOptions } from "next-auth"
 import type { JWT } from "next-auth/jwt"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 
 export const authOptions: NextAuthOptions = {
-	adapter: PrismaAdapter(prisma),
+	adapter: DrizzleAdapter(db, {
+		usersTable: users,
+		accountsTable: accounts,
+		sessionsTable: sessions,
+		verificationTokensTable: verificationTokens,
+	}),
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID ?? "",
@@ -25,8 +32,8 @@ export const authOptions: NextAuthOptions = {
 					throw new Error("Invalid credentials")
 				}
 
-				const user = await prisma.user.findUnique({
-					where: { email: credentials.email },
+				const user = await db.query.users.findFirst({
+					where: eq(users.email, credentials.email),
 				})
 
 				if (!user || !user.password) {
@@ -55,30 +62,34 @@ export const authOptions: NextAuthOptions = {
 			if (account?.provider === "google") {
 				try {
 					// Check if user exists
-					const existingUser = await prisma.user.findUnique({
-						where: { email: user.email! },
+					const existingUser = await db.query.users.findFirst({
+						where: eq(users.email, user.email!),
 					})
 
 					if (existingUser) {
 						// Update user with Google account info if needed
-						await prisma.user.update({
-							where: { id: existingUser.id },
-							data: {
+						db.update(users)
+							.set({
 								name: user.name || existingUser.name,
 								image: user.image || existingUser.image,
-							},
-						})
+								updatedAt: new Date().toISOString(),
+							})
+							.where(eq(users.id, existingUser.id))
+							.run()
 					} else {
 						// Create new user from Google OAuth
-						const newUser = await prisma.user.create({
-							data: {
+						const newUser = db
+							.insert(users)
+							.values({
+								id: crypto.randomUUID(),
 								email: user.email!,
 								name: user.name || "",
 								image: user.image || null,
-								password: null, // OAuth users don't need password
+								password: null,
 								role: "CLIENT",
-							},
-						})
+							})
+							.returning()
+							.get()
 
 						// Generate referral code for new user
 						try {
@@ -98,8 +109,8 @@ export const authOptions: NextAuthOptions = {
 		async jwt({ token, user, account }) {
 			if (user) {
 				// Fetch user from database to get latest role and other fields
-				const dbUser = await prisma.user.findUnique({
-					where: { email: user.email! },
+				const dbUser = await db.query.users.findFirst({
+					where: eq(users.email, user.email!),
 				})
 
 				if (dbUser) {

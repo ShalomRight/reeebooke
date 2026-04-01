@@ -11,13 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useServices, type Service } from "@/lib/swr"
 import { DollarSign, Plus, Trash2, Edit2 } from "lucide-react"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -185,85 +185,101 @@ export function ServicesManagement() {
               <SelectItem value="price-desc">Price (High to Low)</SelectItem>
             </SelectContent>
           </Select>
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button className="gap-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white">
                 <Plus className="w-4 h-4" />
                 Add Service
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Service</DialogTitle>
-                <DialogDescription>Create a new spa service for customers to book</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleAddService} className="space-y-4">
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full sm:max-w-md bg-slate-50 border-l border-slate-200 p-0 flex flex-col">
+              <SheetHeader className="bg-white px-6 py-4 border-b border-slate-200 sticky top-0 z-10">
+                <SheetTitle>Add New Service</SheetTitle>
+                <SheetDescription>Create a new spa service for customers to book</SheetDescription>
+              </SheetHeader>
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="bg-white rounded-xl border border-slate-200 p-5 mb-4">
+                  <form id="add-service-form" onSubmit={handleAddService} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="serviceName" className="text-xs font-semibold text-slate-500 uppercase">Service Name</Label>
+                      <Input
+                        id="serviceName"
+                        placeholder="e.g., Classic Manicure"
+                        value={newServiceName}
+                        onChange={(e) => setNewServiceName(e.target.value)}
+                        className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="servicePrice" className="text-xs font-semibold text-slate-500 uppercase">Price ($)</Label>
+                      <Input
+                        id="servicePrice"
+                        type="number"
+                        placeholder="e.g., 50"
+                        value={newServicePrice}
+                        onChange={(e) => setNewServicePrice(e.target.value)}
+                        className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
+                        required
+                        min="0"
+                      />
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div className="bg-white px-6 py-4 border-t border-slate-200 sticky bottom-0 z-10">
+                <Button type="submit" form="add-service-form" className="w-full rounded-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
+                  {isSubmitting ? "Adding..." : "Add Service"}
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      <Sheet open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-md bg-slate-50 border-l border-slate-200 p-0 flex flex-col">
+          <SheetHeader className="bg-white px-6 py-4 border-b border-slate-200 sticky top-0 z-10">
+            <SheetTitle>Edit Service</SheetTitle>
+            <SheetDescription>Update the service details</SheetDescription>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="bg-white rounded-xl border border-slate-200 p-5 mb-4">
+              <form id="edit-service-form" onSubmit={handleEditService} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="serviceName">Service Name</Label>
+                  <Label htmlFor="editServiceName" className="text-xs font-semibold text-slate-500 uppercase">Service Name</Label>
                   <Input
-                    id="serviceName"
+                    id="editServiceName"
                     placeholder="e.g., Classic Manicure"
-                    value={newServiceName}
-                    onChange={(e) => setNewServiceName(e.target.value)}
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="servicePrice">Price ($)</Label>
+                  <Label htmlFor="editServicePrice" className="text-xs font-semibold text-slate-500 uppercase">Price ($)</Label>
                   <Input
-                    id="servicePrice"
+                    id="editServicePrice"
                     type="number"
                     placeholder="e.g., 50"
-                    value={newServicePrice}
-                    onChange={(e) => setNewServicePrice(e.target.value)}
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
                     required
                     min="0"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Adding..." : "Add Service"}
-                </Button>
               </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Service</DialogTitle>
-            <DialogDescription>Update the service details</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleEditService} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="editServiceName">Service Name</Label>
-              <Input
-                id="editServiceName"
-                placeholder="e.g., Classic Manicure"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                required
-              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="editServicePrice">Price ($)</Label>
-              <Input
-                id="editServicePrice"
-                type="number"
-                placeholder="e.g., 50"
-                value={editPrice}
-                onChange={(e) => setEditPrice(e.target.value)}
-                required
-                min="0"
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+          </div>
+          <div className="bg-white px-6 py-4 border-t border-slate-200 sticky bottom-0 z-10">
+            <Button type="submit" form="edit-service-form" className="w-full rounded-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
               {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
-          </form>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {services?.map((service) => (

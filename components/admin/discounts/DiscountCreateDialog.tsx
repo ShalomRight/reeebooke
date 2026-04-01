@@ -2,14 +2,13 @@
 
 import { Button } from "@/components/ui/button"
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog"
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -46,103 +45,115 @@ export function DiscountCreateDialog({ onSubmit }: DiscountCreateDialogProps) {
 	}
 
 	return (
-		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogTrigger asChild>
-				<Button>
+		<Sheet open={isOpen} onOpenChange={setIsOpen}>
+			<SheetTrigger asChild>
+				<Button className="rounded-full bg-blue-600 hover:bg-blue-700 text-white">
 					<Plus className="w-4 h-4 mr-2" />
 					Create Code
 				</Button>
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-[600px]">
-				<DialogHeader>
-					<DialogTitle>Create Discount Code</DialogTitle>
-					<DialogDescription>Add a new discount code that customers can use at checkout</DialogDescription>
-				</DialogHeader>
-				<form onSubmit={handleSubmit} className="space-y-4">
-					<div className="grid grid-cols-2 gap-4">
-						<div>
-							<Label htmlFor="code">Code *</Label>
-							<Input
-								id="code"
-								placeholder="WELCOME10"
-								value={form.code}
-								onChange={(e) => setForm({ ...form, code: e.target.value })}
-								required
-							/>
-						</div>
-						<div>
-							<Label htmlFor="type">Type *</Label>
-							<Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
-								<SelectTrigger id="type">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="PERCENT">Percentage (%)</SelectItem>
-									<SelectItem value="FIXED">Fixed Amount ($)</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-					</div>
+			</SheetTrigger>
+			<SheetContent side="right" className="w-full sm:max-w-md bg-slate-50 border-l border-slate-200 p-0 flex flex-col">
+				<SheetHeader className="bg-white px-6 py-4 border-b border-slate-200 sticky top-0 z-10">
+					<SheetTitle>Create Discount Code</SheetTitle>
+					<SheetDescription>Add a new discount code that customers can use at checkout</SheetDescription>
+				</SheetHeader>
+				
+				<div className="flex-1 overflow-y-auto p-6">
+					<div className="bg-white rounded-xl border border-slate-200 p-5">
+						<form id="create-discount-form" onSubmit={handleSubmit} className="space-y-4">
+							<div className="grid grid-cols-2 gap-4">
+								<div className="space-y-2">
+									<Label htmlFor="code" className="text-xs font-semibold text-slate-500 uppercase">Code *</Label>
+									<Input
+										id="code"
+										placeholder="WELCOME10"
+										value={form.code}
+										onChange={(e) => setForm({ ...form, code: e.target.value })}
+										className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
+										required
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label htmlFor="type" className="text-xs font-semibold text-slate-500 uppercase">Type *</Label>
+									<Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
+										<SelectTrigger id="type" className="h-10 border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="PERCENT">Percentage (%)</SelectItem>
+											<SelectItem value="FIXED">Fixed Amount ($)</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
+							</div>
 
-					<div>
-						<Label htmlFor="value">Value *</Label>
-						<Input
-							id="value"
-							type="number"
-							placeholder={form.type === "PERCENT" ? "10" : "50"}
-							value={form.value}
-							onChange={(e) => setForm({ ...form, value: e.target.value })}
-							required
-						/>
-						<p className="text-xs text-muted-foreground mt-1">
-							{form.type === "PERCENT" ? "Percentage discount (e.g., 10 = 10%)" : "Fixed amount in dollars"}
-						</p>
-					</div>
+							<div className="space-y-2">
+								<Label htmlFor="value" className="text-xs font-semibold text-slate-500 uppercase">Value *</Label>
+								<Input
+									id="value"
+									type="number"
+									placeholder={form.type === "PERCENT" ? "10" : "50"}
+									value={form.value}
+									onChange={(e) => setForm({ ...form, value: e.target.value })}
+									className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
+									required
+								/>
+								<p className="text-xs text-muted-foreground mt-1">
+									{form.type === "PERCENT" ? "Percentage discount (e.g., 10 = 10%)" : "Fixed amount in dollars"}
+								</p>
+							</div>
 
-					<div className="grid grid-cols-2 gap-4">
-						<div>
-							<Label htmlFor="minAmount">Minimum Order (Optional)</Label>
-							<Input
-								id="minAmount"
-								type="number"
-								placeholder="500"
-								value={form.minAmount}
-								onChange={(e) => setForm({ ...form, minAmount: e.target.value })}
-							/>
-						</div>
-						<div>
-							<Label htmlFor="maxUses">Max Uses (Optional)</Label>
-							<Input
-								id="maxUses"
-								type="number"
-								placeholder="100"
-								value={form.maxUses}
-								onChange={(e) => setForm({ ...form, maxUses: e.target.value })}
-							/>
-						</div>
-					</div>
+							<div className="grid grid-cols-2 gap-4">
+								<div className="space-y-2">
+									<Label htmlFor="minAmount" className="text-xs font-semibold text-slate-500 uppercase">Min Order</Label>
+									<Input
+										id="minAmount"
+										type="number"
+										placeholder="Optional"
+										value={form.minAmount}
+										onChange={(e) => setForm({ ...form, minAmount: e.target.value })}
+										className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
+									/>
+								</div>
+								<div className="space-y-2">
+									<Label htmlFor="maxUses" className="text-xs font-semibold text-slate-500 uppercase">Max Uses</Label>
+									<Input
+										id="maxUses"
+										type="number"
+										placeholder="Optional"
+										value={form.maxUses}
+										onChange={(e) => setForm({ ...form, maxUses: e.target.value })}
+										className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
+									/>
+								</div>
+							</div>
 
-					<div>
-						<Label htmlFor="expiresInDays">Expires in Days (Optional)</Label>
-						<Input
-							id="expiresInDays"
-							type="number"
-							placeholder="30"
-							value={form.expiresInDays}
-							onChange={(e) => setForm({ ...form, expiresInDays: e.target.value })}
-						/>
-						<p className="text-xs text-muted-foreground mt-1">Leave empty for no expiration</p>
+							<div className="space-y-2">
+								<Label htmlFor="expiresInDays" className="text-xs font-semibold text-slate-500 uppercase">Expires in Days</Label>
+								<Input
+									id="expiresInDays"
+									type="number"
+									placeholder="Optional (e.g., 30)"
+									value={form.expiresInDays}
+									onChange={(e) => setForm({ ...form, expiresInDays: e.target.value })}
+									className="h-10 bg-white border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
+								/>
+								<p className="text-xs text-muted-foreground mt-1">Leave empty for no expiration</p>
+							</div>
+						</form>
 					</div>
+				</div>
 
-					<DialogFooter>
-						<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-							Cancel
-						</Button>
-						<Button type="submit">Create Code</Button>
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</Dialog>
+				<div className="bg-white px-6 py-4 border-t border-slate-200 sticky bottom-0 z-10 flex gap-3">
+					<Button type="button" variant="outline" className="flex-1 rounded-full border-slate-200 hover:bg-slate-50" onClick={() => setIsOpen(false)}>
+						Cancel
+					</Button>
+					<Button type="submit" form="create-discount-form" className="flex-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white">
+						Create Code
+					</Button>
+				</div>
+			</SheetContent>
+		</Sheet>
 	)
 }
 

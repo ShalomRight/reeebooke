@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { bookings } from "@/src/db/schema"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 
@@ -17,22 +18,17 @@ export async function GET() {
 		const tomorrow = new Date(today)
 		tomorrow.setDate(tomorrow.getDate() + 1)
 
-		// Get all bookings for statistics
-		const allBookings = await prisma.booking.findMany({
-			select: {
-				id: true,
-				status: true,
-				date: true,
-				createdAt: true,
+		// Get all bookings with service price for statistics
+		const allBookings = await db.query.bookings.findMany({
+			with: {
 				service: {
-					select: {
+					columns: {
 						price: true,
 					},
 				},
 			},
 		})
 
-		// Calculate statistics
 		const totalBookings = allBookings.length
 		const todayBookings = allBookings.filter((b) => {
 			const bookingDate = new Date(b.date)
@@ -44,17 +40,14 @@ export async function GET() {
 		const completedBookings = allBookings.filter((b) => b.status === "COMPLETED").length
 		const cancelledBookings = allBookings.filter((b) => b.status === "CANCELLED").length
 
-		// New bookings (created in last 24 hours)
 		const yesterday = new Date()
 		yesterday.setDate(yesterday.getDate() - 1)
 		const newBookings = allBookings.filter((b) => new Date(b.createdAt) >= yesterday).length
 
-		// Total revenue
 		const totalRevenue = allBookings
 			.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED")
 			.reduce((sum, b) => sum + b.service.price, 0)
 
-		// Today's revenue
 		const todayRevenue = allBookings
 			.filter((b) => {
 				const bookingDate = new Date(b.date)

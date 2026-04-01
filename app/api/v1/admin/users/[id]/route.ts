@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { authOptions } from "@/lib/auth"
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -16,9 +18,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    await prisma.user.delete({
-      where: { id },
-    })
+    await db.delete(users).where(eq(users.id, id))
 
     return NextResponse.json({ success: true })
   } catch (error) {

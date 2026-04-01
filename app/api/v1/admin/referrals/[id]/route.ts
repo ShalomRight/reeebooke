@@ -1,5 +1,8 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { referralCodes, referralRewards } from "@/src/db/schema"
+import { eq, desc } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 
@@ -14,11 +17,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 		}
 
 		// Get referral code details with all referrals
-		const referralCode = await prisma.referralCode.findUnique({
-			where: { id },
-			include: {
+		const referralCode = await db.query.referralCodes.findFirst({
+			where: eq(referralCodes.id, id),
+			with: {
 				user: {
-					select: {
+					columns: {
 						id: true,
 						name: true,
 						email: true,
@@ -33,35 +36,25 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 			return NextResponse.json({ error: "Referral code not found" }, { status: 404 })
 		}
 
-		// Get all referral rewards for this user
-		const rewards = await prisma.referralReward.findMany({
-			where: {
-				referrerId: referralCode.userId,
-			},
-			include: {
-				User: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						phone: true,
-						createdAt: true,
-					},
-				},
-			},
-			orderBy: {
-				createdAt: "desc",
-			},
+		const rewards = await db.query.referralRewards.findMany({
+			where: eq(referralRewards.referrerId, referralCode.userId),
+			orderBy: [desc(referralRewards.createdAt)],
 		})
 
-		// Group by referred user
+		const referredIds = [...new Set(rewards.map(r => r.referredId))]
+		const referredUsers = referredIds.length > 0 ? await db.query.users.findMany({
+			where: (users, { inArray }) => inArray(users.id, referredIds),
+			columns: { id: true, name: true, email: true, phone: true, createdAt: true }
+		}) : []
+		
+		const userMap = new Map(referredUsers.map(u => [u.id, u]))
 		const referralsByUser = rewards.reduce(
 			(acc, reward) => {
 				const key = reward.referredId
 				if (!acc[key]) {
 					acc[key] = {
 						referredId: reward.referredId,
-						referredUser: reward.User,
+						referredUser: userMap.get(reward.referredId),
 						totalPoints: 0,
 						referralCount: 0,
 						firstReferral: reward.createdAt,
@@ -85,8 +78,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 					referredUser: any
 					totalPoints: number
 					referralCount: number
-					firstReferral: Date
-					lastReferral: Date
+					firstReferral: string
+					lastReferral: string
 				}
 			>
 		)
@@ -133,12 +126,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 			return NextResponse.json({ error: "Invalid points per referral" }, { status: 400 })
 		}
 
-		const updated = await prisma.referralCode.update({
-			where: { id },
-			data: {
-				pointsPerReferral: parseInt(pointsPerReferral),
-			},
-		})
+		const [updated] = await db.update(referralCodes)
+			.set({ pointsPerReferral: parseInt(pointsPerReferral) })
+			.where(eq(referralCodes.id, id))
+			.returning()
 
 		return NextResponse.json(updated)
 	} catch (error) {

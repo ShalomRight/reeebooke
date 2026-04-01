@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, bookings, carts, referralCodes, referralRewards, discountCodes, discountUsages, photos, promotionSubscribers } from "@/src/db/schema"
+import { eq, sql } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getBookingConfirmationEmail, getBookingCompletedEmail } from "@/lib/email-templates/bookings"
 import { getDiscountAppliedEmail } from "@/lib/email-templates/discounts"
@@ -45,22 +47,21 @@ async function handleBulkBooking(req: NextRequest) {
 		// Override with referral code from body if explicitly provided
 		if (referralCode) {
 			try {
-				const referrer = await prisma.user.findUnique({
-					where: { referralCode: referralCode.toUpperCase() },
-					select: { id: true },
+				const referrer = await db.query.users.findFirst({
+					where: eq(users.referralCode, referralCode.toUpperCase()),
+					columns: { id: true },
 				})
 				if (referrer) {
 					// If user is logged in and wasn't referred before, link them to referrer
 					if (finalUserId && finalUserId !== referrer.id) {
-						const user = await prisma.user.findUnique({
-							where: { id: finalUserId },
-							select: { referredById: true },
+						const user = await db.query.users.findFirst({
+							where: eq(users.id, finalUserId),
+							columns: { referredById: true },
 						})
 						if (user && !user.referredById) {
-							await prisma.user.update({
-								where: { id: finalUserId },
-								data: { referredById: referrer.id },
-							})
+							await db.update(users).set({
+								referredById: referrer.id,
+							}).where(eq(users.id, finalUserId))
 						}
 					}
 					referrerId = referrer.id
@@ -74,8 +75,8 @@ async function handleBulkBooking(req: NextRequest) {
 		if (bookingFor === "other" && email && !userId) {
 			try {
 				// Check if user already exists
-				const existingUser = await prisma.user.findUnique({
-					where: { email },
+				const existingUser = await db.query.users.findFirst({
+					where: eq(users.email, email),
 				})
 
 				if (!existingUser) {
@@ -83,16 +84,14 @@ async function handleBulkBooking(req: NextRequest) {
 					const tempPassword = Math.random().toString(36).slice(-12)
 					const hashedPassword = await bcrypt.hash(tempPassword, 10)
 
-					const newUser = await prisma.user.create({
-						data: {
-							name: userName,
-							email,
-							phone,
-							password: hashedPassword,
-							role: "CLIENT",
-							referredById: referrerId || null,
-						},
-					})
+					const [newUser] = await db.insert(users).values({
+						name: userName,
+						email,
+						phone,
+						password: hashedPassword,
+						role: "CLIENT",
+						referredById: referrerId || null,
+					}).returning()
 
 					finalUserId = newUser.id
 
@@ -105,39 +104,34 @@ async function handleBulkBooking(req: NextRequest) {
 						// Don't fail user creation if referral code generation fails
 					}
 
-					await prisma.promotionSubscriber
-						.create({
-							data: {
-								email,
-								name: userName,
-								phone,
-								userId: newUser.id,
-								subscribed: true,
-							},
+					try {
+						await db.insert(promotionSubscribers).values({
+							email,
+							name: userName,
+							phone,
+							userId: newUser.id,
+							subscribed: true,
 						})
-						.catch(() => {
-							// Ignore if already exists
-						})
+					} catch (err) {
+						// Ignore if already exists
+					}
 
 					if (referrerId) {
 						try {
-							const referralCode = await prisma.referralCode.findFirst({
-								where: { userId: referrerId },
+							const referralCodeRecord = await db.query.referralCodes.findFirst({
+								where: eq(referralCodes.userId, referrerId),
 							})
 
-							const points = referralCode?.pointsPerReferral || 100
+							const points = referralCodeRecord?.pointsPerReferral || 100
 
-							await prisma.user.update({
-								where: { id: referrerId },
-								data: { referralPoints: { increment: points } },
-							})
+							await db.update(users).set({
+								referralPoints: sql`${users.referralPoints} + ${points}`,
+							}).where(eq(users.id, referrerId))
 
-							await prisma.referralReward.create({
-								data: {
-									referrerId,
-									referredId: newUser.id,
-									points,
-								},
+							await db.insert(referralRewards).values({
+								referrerId,
+								referredId: newUser.id,
+								points,
 							})
 						} catch (err) {
 							console.error("Failed to award referral points:", err)
@@ -167,50 +161,57 @@ async function handleBulkBooking(req: NextRequest) {
 		}
 
 		// Create bookings for each item in cart
-		const bookings = await Promise.all(
-			cartItems.map((item) =>
-				prisma.booking.create({
-					data: {
-						serviceId: item.serviceId,
-						date: new Date(item.date),
-						time: item.time,
-						paymentMethod,
-						userName,
-						phone,
-						email: finalEmail,
-						userId: finalUserId,
-						photos: {
-							create: item.photos?.map((photo: string) => ({ url: photo })) || [],
-						},
-					},
-					include: {
-						service: true,
-						photos: true,
-					},
-				}),
-			),
-		)
+		const insertedBookings = []
+		for (const item of cartItems) {
+			const [insertedBooking] = await db.insert(bookings).values({
+				serviceId: item.serviceId,
+				date: item.date, // ISO string as passed from client
+				time: item.time,
+				paymentMethod,
+				userName,
+				phone,
+				email: finalEmail,
+				userId: finalUserId || null,
+			}).returning()
+
+			if (item.photos && item.photos.length > 0) {
+				await Promise.all(
+					item.photos.map((photoUrl: string) => 
+						db.insert(photos).values({
+							bookingId: insertedBooking.id,
+							url: photoUrl
+						})
+					)
+				)
+			}
+
+			const fullBooking = await db.query.bookings.findFirst({
+				where: eq(bookings.id, insertedBooking.id),
+				with: { service: true, photos: true }
+			})
+			if (fullBooking) {
+				insertedBookings.push(fullBooking)
+			}
+		}
 
 		// Record discount usage if a discount code was applied
 		if (discountCode && discountAmount && totalPrice && finalPrice) {
 			try {
-				const discountCodeRecord = await prisma.discountCode.findUnique({
-					where: { code: discountCode.toUpperCase() },
+				const discountCodeRecord = await db.query.discountCodes.findFirst({
+					where: eq(discountCodes.code, discountCode.toUpperCase()),
 				})
 
 				if (discountCodeRecord) {
-					await prisma.discountUsage.create({
-						data: {
-							discountCodeId: discountCodeRecord.id,
-							userId: finalUserId || null,
-							email: finalEmail || null,
-							userName: userName || null,
-							phone: phone || null,
-							discountAmount: discountAmount,
-							cartTotal: totalPrice,
-							finalTotal: finalPrice,
-							bookingId: bookings[0]?.id || null,
-						},
+					await db.insert(discountUsages).values({
+						discountCodeId: discountCodeRecord.id,
+						userId: finalUserId || null,
+						email: finalEmail || null,
+						userName: userName || null,
+						phone: phone || null,
+						discountAmount: discountAmount,
+						cartTotal: totalPrice,
+						finalTotal: finalPrice,
+						bookingId: insertedBookings[0]?.id || null,
 					})
 
 					// Send discount applied email
@@ -226,7 +227,7 @@ async function handleBulkBooking(req: NextRequest) {
 										type: discountCodeRecord.type as "PERCENT" | "FIXED",
 										value: discountCodeRecord.value,
 										minAmount: discountCodeRecord.minAmount || undefined,
-										expiresAt: discountCodeRecord.expiresAt?.toISOString(),
+										expiresAt: discountCodeRecord.expiresAt?.toString(),
 									},
 									discountAmount,
 									finalPrice,
@@ -245,18 +246,16 @@ async function handleBulkBooking(req: NextRequest) {
 
 		// Clear cart for authenticated users
 		if (session?.user?.email) {
-			const user = await prisma.user.findUnique({
-				where: { email: session.user.email },
+			const user = await db.query.users.findFirst({
+				where: eq(users.email, session.user.email),
 			})
 			if (user) {
-				await prisma.cart.deleteMany({
-					where: { userId: user.id },
-				})
+				await db.delete(carts).where(eq(carts.userId, user.id))
 			}
 		}
 
 		// Send WhatsApp confirmations for each booking
-		for (const booking of bookings) {
+		for (const booking of insertedBookings) {
 			try {
 				await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/v1/send-whatsapp`, {
 					method: "POST",
@@ -267,7 +266,7 @@ async function handleBulkBooking(req: NextRequest) {
 						userName,
 						phone,
 						serviceName: booking.service.name,
-						date: booking.date.toISOString().split("T")[0],
+						date: booking.date, // Already standard ISO format text
 						time: booking.time,
 						totalPrice: booking.service.price,
 					}),
@@ -280,7 +279,7 @@ async function handleBulkBooking(req: NextRequest) {
 		// Award referral points if user was referred (only on first payment)
 		if (finalUserId) {
 			try {
-				const referralResult = await awardReferralPointsOnPayment(finalUserId, bookings[0]?.id)
+				const referralResult = await awardReferralPointsOnPayment(finalUserId, insertedBookings[0]?.id)
 				
 				// Send referral reward email to referrer
 				if (referralResult?.referrerEmail && referralResult.referrerName && referralResult.pointsEarned && referralResult.totalPoints) {
@@ -307,7 +306,7 @@ async function handleBulkBooking(req: NextRequest) {
 
 		// Send booking confirmation emails
 		if (finalEmail) {
-			for (const booking of bookings) {
+			for (const booking of insertedBookings) {
 				try {
 					await sendEmail({
 						to: finalEmail,
@@ -315,7 +314,7 @@ async function handleBulkBooking(req: NextRequest) {
 						html: getBookingConfirmationEmail({
 							bookingId: booking.id,
 							serviceName: booking.service.name,
-							date: booking.date.toISOString(),
+							date: booking.date,
 							time: booking.time,
 							price: booking.service.price,
 							status: booking.status,
@@ -330,7 +329,7 @@ async function handleBulkBooking(req: NextRequest) {
 			}
 		}
 
-	return NextResponse.json(bookings, { status: 201 })
+	return NextResponse.json(insertedBookings, { status: 201 })
 }
 
 export const POST = createPostHandler(handleBulkBooking, {

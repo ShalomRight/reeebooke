@@ -11,6 +11,7 @@ import { PopularServices } from "./PopularServices"
 import { RatingsManagement } from "./RatingsManagement"
 import { RecentActivity } from "./RecentActivity"
 import { ReferralManagement } from "./ReferralManagement"
+import { ScheduleManagement } from "./ScheduleManagement"
 import { BookingCalendar } from "@/components/bookings/BookingCalendar"
 import { RevenueChart } from "./RevenueChart"
 import { ServicesManagement } from "./ServicesManagement"
@@ -42,6 +43,11 @@ const SIDEBAR_TABS = [
 	{
 		key: "calendar",
 		label: "Calendar",
+		icon: Calendar,
+	},
+	{
+		key: "schedules",
+		label: "Schedules",
 		icon: Calendar,
 	},
 	{
@@ -134,6 +140,7 @@ export function SuperAdminDashboard() {
 					{activeTab === "staff" && <StaffManagement />}
 					{activeTab === "bookings" && <BookingsManagement />}
 					{activeTab === "calendar" && <BookingCalendar />}
+					{activeTab === "schedules" && <ScheduleManagement />}
 					{activeTab === "services" && <ServicesManagement />}
 					{activeTab === "discounts" && <DiscountManagement />}
 					{activeTab === "ratings" && <RatingsManagement />}

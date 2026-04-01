@@ -1,5 +1,7 @@
 import { getAuthSession } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { normalizeRole } from './rbac'
 
 type UserRole = "SUPER_ADMIN" | "ADMIN" | "STAFF" | "CLIENT"
@@ -20,8 +22,8 @@ export default async function currentUserServer(): Promise<CurrentUserServer | n
 	const session = await getAuthSession()
 	if (!session?.user?.email) return null
 
-	const user = await prisma.user.findUnique({
-		where: { email: session.user.email },
+	const user = await db.query.users.findFirst({
+		where: eq(users.email, session.user.email),
 	})
 
 	if (!user) return null

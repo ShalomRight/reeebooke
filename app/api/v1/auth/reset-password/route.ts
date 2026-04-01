@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getPasswordResetSuccessEmail } from "@/lib/email-templates/auth"
 import { NextRequest, NextResponse } from "next/server"
@@ -17,7 +19,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Find user with valid reset token
-		const user = await prisma.user.findUnique({
+		const user = await db.query.users.findFirst({
 			where: { email },
 		})
 
@@ -31,7 +33,7 @@ export async function POST(req: NextRequest) {
 
 		// Hash new password and clear reset token
 		const hashedPassword = await bcrypt.hash(newPassword, 10)
-		const updatedUser = await prisma.user.update({
+		const updatedUser = db.update(users).set({
 			where: { id: user.id },
 			data: {
 				password: hashedPassword,

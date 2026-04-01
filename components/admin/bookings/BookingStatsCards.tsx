@@ -22,7 +22,7 @@ export function BookingStatsCards({
 }: BookingStatsCardsProps) {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-			<Card>
+			<Card className="border-slate-200 shadow-sm rounded-xl bg-white">
 				<CardContent className="pt-6">
 					<div className="flex items-center justify-between">
 						<div>
@@ -30,14 +30,14 @@ export function BookingStatsCards({
 							<p className="text-3xl font-bold">{newBookingsCount}</p>
 							<p className="text-xs text-muted-foreground mt-1">Last 24 hours</p>
 						</div>
-						<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-							<Sparkles className="w-6 h-6 text-primary" />
+						<div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+							<Sparkles className="w-6 h-6 text-blue-600" />
 						</div>
 					</div>
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card className="border-slate-200 shadow-sm rounded-xl bg-white">
 				<CardContent className="pt-6">
 					<div className="flex items-center justify-between">
 						<div>
@@ -52,7 +52,7 @@ export function BookingStatsCards({
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card className="border-slate-200 shadow-sm rounded-xl bg-white">
 				<CardContent className="pt-6">
 					<div className="flex items-center justify-between">
 						<div>
@@ -67,7 +67,7 @@ export function BookingStatsCards({
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card className="border-slate-200 shadow-sm rounded-xl bg-white">
 				<CardContent className="pt-6">
 					<div className="flex items-center justify-between">
 						<div>
@@ -82,7 +82,7 @@ export function BookingStatsCards({
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card className="border-slate-200 shadow-sm rounded-xl bg-white">
 				<CardContent className="pt-6">
 					<div className="flex items-center justify-between">
 						<div>
@@ -97,7 +97,7 @@ export function BookingStatsCards({
 				</CardContent>
 			</Card>
 
-			<Card>
+			<Card className="border-slate-200 shadow-sm rounded-xl bg-white">
 				<CardContent className="pt-6">
 					<div className="flex items-center justify-between">
 						<div>

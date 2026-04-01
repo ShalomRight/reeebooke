@@ -1,12 +1,13 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, bookings, services, ratings } from "@/src/db/schema"
+import { eq, and, or } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
 import { getRatingsQuerySchema, createRatingSchema, validateRequest, validationErrorResponse } from "@/lib/validations"
 import { createGetHandler, createPostHandler } from "@/lib/api-wrapper"
 import { apiRateLimit, ratingRateLimit } from "@/lib/rate-limit"
 
-// GET: Get ratings for a service (only approved ratings are shown to public)
 async function handleGetRatings(req: NextRequest) {
 		const { searchParams } = new URL(req.url)
 		const queryParams = Object.fromEntries(searchParams.entries())
@@ -25,17 +26,17 @@ async function handleGetRatings(req: NextRequest) {
 		const session = await getServerSession(authOptions)
 		const userRole = (session?.user as any)?.role
 
-		// Admins can see all ratings, others only see approved ones
-		const where: any = { serviceId }
+		// Build where conditions
+		const conditions = [eq(ratings.serviceId, serviceId)]
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {
-			where.status = "APPROVED"
+			conditions.push(eq(ratings.status, "APPROVED"))
 		}
 
-		const ratings = await prisma.rating.findMany({
-			where,
-			include: {
+		const allRatings = await db.query.ratings.findMany({
+			where: and(...conditions),
+			with: {
 				user: {
-					select: {
+					columns: {
 						id: true,
 						name: true,
 						email: true,
@@ -43,19 +44,18 @@ async function handleGetRatings(req: NextRequest) {
 					},
 				},
 				service: {
-					select: {
+					columns: {
 						id: true,
 						name: true,
 					},
 				},
 			},
-			orderBy: { createdAt: "desc" },
+			orderBy: (ratings, { desc }) => [desc(ratings.createdAt)],
 		})
 
-	return NextResponse.json(ratings)
+	return NextResponse.json(allRatings)
 }
 
-// POST: Create a new rating
 async function handleCreateRating(req: NextRequest) {
 	const session = await getServerSession(authOptions)
 
@@ -63,8 +63,8 @@ async function handleCreateRating(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
-			where: { email: session.user.email },
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, session.user.email),
 		})
 
 		if (!user) {
@@ -81,8 +81,8 @@ async function handleCreateRating(req: NextRequest) {
 		const { serviceId, rating, comment } = validation.data
 
 		// Check if service exists
-		const service = await prisma.service.findUnique({
-			where: { id: serviceId },
+		const service = await db.query.services.findFirst({
+			where: eq(services.id, serviceId),
 		})
 
 		if (!service) {
@@ -90,16 +90,15 @@ async function handleCreateRating(req: NextRequest) {
 		}
 
 		// Check if user has a completed booking for this service
-		// Check by userId (if logged in when booking) or by email (if booked as guest)
-		const completedBooking = await prisma.booking.findFirst({
-			where: {
-				OR: [
-					{ userId: user.id },
-					{ email: user.email },
-				],
-				serviceId,
-				status: "COMPLETED",
-			},
+		const completedBooking = await db.query.bookings.findFirst({
+			where: and(
+				or(
+					eq(bookings.userId, user.id),
+					eq(bookings.email, user.email),
+				),
+				eq(bookings.serviceId, serviceId),
+				eq(bookings.status, "COMPLETED"),
+			),
 		})
 
 		if (!completedBooking) {
@@ -110,39 +109,30 @@ async function handleCreateRating(req: NextRequest) {
 		}
 
 		// Check if user already rated this service
-		const existingRating = await prisma.rating.findUnique({
-			where: {
-				userId_serviceId: {
-					userId: user.id,
-					serviceId,
-				},
-			},
+		const existingRating = await db.query.ratings.findFirst({
+			where: and(
+				eq(ratings.userId, user.id),
+				eq(ratings.serviceId, serviceId),
+			),
 		})
 
 		if (existingRating) {
 			// Update existing rating
-			const updatedRating = await prisma.rating.update({
-				where: { id: existingRating.id },
-				data: {
+			db.update(ratings)
+				.set({
 					rating,
 					comment: comment || null,
-					status: "PENDING", // Reset to pending when updated
-				},
-				include: {
-					user: {
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							image: true,
-						},
-					},
-					service: {
-						select: {
-							id: true,
-							name: true,
-						},
-					},
+					status: "PENDING",
+					updatedAt: new Date().toISOString(),
+				})
+				.where(eq(ratings.id, existingRating.id))
+				.run()
+
+			const updatedRating = await db.query.ratings.findFirst({
+				where: eq(ratings.id, existingRating.id),
+				with: {
+					user: { columns: { id: true, name: true, email: true, image: true } },
+					service: { columns: { id: true, name: true } },
 				},
 			})
 
@@ -150,29 +140,21 @@ async function handleCreateRating(req: NextRequest) {
 		}
 
 		// Create new rating
-		const newRating = await prisma.rating.create({
-			data: {
-				userId: user.id,
-				serviceId,
-				rating,
-				comment: comment || null,
-				status: "PENDING",
-			},
-			include: {
-				user: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						image: true,
-					},
-				},
-				service: {
-					select: {
-						id: true,
-						name: true,
-					},
-				},
+		const ratingId = crypto.randomUUID()
+		db.insert(ratings).values({
+			id: ratingId,
+			userId: user.id,
+			serviceId,
+			rating,
+			comment: comment || null,
+			status: "PENDING",
+		}).run()
+
+		const newRating = await db.query.ratings.findFirst({
+			where: eq(ratings.id, ratingId),
+			with: {
+				user: { columns: { id: true, name: true, email: true, image: true } },
+				service: { columns: { id: true, name: true } },
 			},
 		})
 
@@ -186,4 +168,3 @@ export const GET = createGetHandler(handleGetRatings, {
 export const POST = createPostHandler(handleCreateRating, {
 	rateLimit: ratingRateLimit,
 })
-

@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { bookings, services, photos, users } from "@/src/db/schema"
+import { eq, and, gte, lt, desc, asc } from "drizzle-orm"
 import { type NextRequest, NextResponse } from "next/server"
 import { getBookingsQuerySchema, createBookingSchema, validateRequest, validationErrorResponse } from "@/lib/validations"
 import { createGetHandler, createPostHandler } from "@/lib/api-wrapper"
@@ -17,77 +19,77 @@ async function handleGetBookings(req: NextRequest) {
 		const skip = (page - 1) * limit
 
 		if (startDate && endDate) {
-			const bookings = await prisma.booking.findMany({
-				where: {
-					date: {
-						gte: new Date(startDate),
-						lte: new Date(endDate),
-					},
-				},
-				select: {
+			const allBookings = await db.query.bookings.findMany({
+				where: and(
+					gte(bookings.date, new Date(startDate).toISOString()),
+					lt(bookings.date, new Date(endDate).toISOString())
+				),
+				columns: {
 					date: true,
 					time: true,
 				},
 			})
-			return NextResponse.json(bookings, { status: 200 })
+			return NextResponse.json(allBookings, { status: 200 })
 		}
 
-		const where: any = {}
+		// Build conditions array
+		const conditions = []
 
 		if (date) {
-			where.date = {
-				gte: new Date(date),
-				lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
-			}
+			const dateStr = new Date(date).toISOString().split('T')[0]
+			const nextDate = new Date(date)
+			nextDate.setDate(nextDate.getDate() + 1)
+			const nextDateStr = nextDate.toISOString().split('T')[0]
+			conditions.push(gte(bookings.date, dateStr))
+			conditions.push(lt(bookings.date, nextDateStr))
 		}
 
 		if (serviceId) {
-			where.serviceId = serviceId
+			conditions.push(eq(bookings.serviceId, serviceId))
 		}
 
 		if (userId) {
-			where.userId = userId
+			conditions.push(eq(bookings.userId, userId))
 		}
 
 		if (status !== "ALL") {
-			where.status = status
+			conditions.push(eq(bookings.status, status))
 		}
 
-		let orderBy: any = { date: "desc" }
+		const whereClause = conditions.length > 0 ? and(...conditions) : undefined
+
+		let orderByClause: any = [desc(bookings.date)]
 		if (sort === "date-asc") {
-			orderBy = { date: "asc" }
-		} else if (sort === "price-desc") {
-			orderBy = { service: { price: "desc" } }
-		} else if (sort === "price-asc") {
-			orderBy = { service: { price: "asc" } }
+			orderByClause = [asc(bookings.date)]
 		}
 
-		const [bookings, total] = await Promise.all([
-			prisma.booking.findMany({
-				where,
-				include: {
-					service: true,
-					photos: true,
-					user: {
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							phone: true,
-							role: true,
-						},
+		const allBookings = await db.query.bookings.findMany({
+			where: whereClause,
+			with: {
+				service: true,
+				photos: true,
+				user: {
+					columns: {
+						id: true,
+						name: true,
+						email: true,
+						phone: true,
+						role: true,
 					},
 				},
-				orderBy,
-				skip,
-				take: limit,
-			}),
-			prisma.booking.count({ where }),
-		])
+			},
+			orderBy: orderByClause,
+			limit: limit,
+			offset: skip,
+		})
+
+		const total = (await db.query.bookings.findMany({
+			where: whereClause,
+		})).length
 
 		return NextResponse.json(
 			{
-				bookings,
+				bookings: allBookings,
 				pagination: {
 					total,
 					page,
@@ -110,30 +112,42 @@ async function handleCreateBooking(req: NextRequest) {
 		const { serviceIds, date, time, paymentMethod, mobileProvider, photoUrls, userName, phone } = validation.data
 
 		// Create bookings for each selected service
-		const bookings = await Promise.all(
-			serviceIds.map((serviceId: string) =>
-				prisma.booking.create({
-					data: {
-						serviceId,
-						date: new Date(date),
-						time,
-						paymentMethod,
-						mobileProvider,
-						userName,
-						phone,
-						photos: {
-							create: photoUrls?.map((url: string) => ({ url })) || [],
-						},
-					},
-					include: {
-						service: true,
-						photos: true,
-					},
-				}),
-			),
-		)
+		const createdBookings = await Promise.all(serviceIds.map(async (serviceId: string) => {
+			const bookingId = crypto.randomUUID()
+			
+			db.insert(bookings).values({
+				id: bookingId,
+				serviceId,
+				date: new Date(date).toISOString(),
+				time,
+				paymentMethod,
+				mobileProvider,
+				userName,
+				phone,
+			}).run()
 
-	return NextResponse.json(bookings, { status: 201 })
+			// Create photos for this booking
+			for (const url of (photoUrls || [])) {
+				db.insert(photos).values({
+					id: crypto.randomUUID(),
+					bookingId,
+					url,
+				}).run()
+			}
+
+			// Fetch the complete booking with relations
+			const fullBooking = await db.query.bookings.findFirst({
+				where: eq(bookings.id, bookingId),
+				with: {
+					service: true,
+					photos: true,
+				},
+			})
+
+			return fullBooking
+		}))
+
+	return NextResponse.json(createdBookings, { status: 201 })
 }
 
 export const GET = createGetHandler(handleGetBookings, {

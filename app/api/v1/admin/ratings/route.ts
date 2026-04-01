@@ -1,5 +1,8 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { ratings } from "@/src/db/schema"
+import { eq, count, desc, and } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -20,20 +23,21 @@ export async function GET(req: NextRequest) {
 		const limit = Number.parseInt(searchParams.get("limit") || "20")
 		const skip = (page - 1) * limit
 
-		const where: any = {}
+		const conditions = []
 		if (status) {
-			where.status = status
+			conditions.push(eq(ratings.status, status))
 		}
 		if (serviceId) {
-			where.serviceId = serviceId
+			conditions.push(eq(ratings.serviceId, serviceId))
 		}
+		const whereClause = conditions.length > 0 ? and(...conditions) : undefined
 
-		const [ratings, total] = await Promise.all([
-			prisma.rating.findMany({
-				where,
-				include: {
+		const [ratingsList, totalRows] = await Promise.all([
+			db.query.ratings.findMany({
+				where: whereClause,
+				with: {
 					user: {
-						select: {
+						columns: {
 							id: true,
 							name: true,
 							email: true,
@@ -41,22 +45,24 @@ export async function GET(req: NextRequest) {
 						},
 					},
 					service: {
-						select: {
+						columns: {
 							id: true,
 							name: true,
 							price: true,
 						},
 					},
 				},
-				orderBy: { createdAt: "desc" },
-				skip,
-				take: limit,
+				orderBy: [desc(ratings.createdAt)],
+				offset: skip,
+				limit: limit,
 			}),
-			prisma.rating.count({ where }),
+			db.query.ratings.findMany({ where: whereClause }),
 		])
+		
+		const total = totalRows.length
 
 		return NextResponse.json({
-			ratings,
+			ratings: ratingsList,
 			pagination: {
 				total,
 				page,

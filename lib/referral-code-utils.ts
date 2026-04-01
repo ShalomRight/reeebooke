@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, referralCodes } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 
 /**
  * Generate a unique referral code for a user
@@ -23,8 +25,8 @@ export async function generateReferralCode(userId: string, email: string): Promi
 
 	// Ensure uniqueness
 	while (true) {
-		const existing = await prisma.user.findUnique({
-			where: { referralCode: code },
+		const existing = await db.query.users.findFirst({
+			where: eq(users.referralCode, code),
 		})
 
 		if (!existing) {
@@ -59,9 +61,9 @@ export async function generateReferralCode(userId: string, email: string): Promi
  * This should be called whenever a user is created or accessed
  */
 export async function ensureReferralCode(userId: string, email: string): Promise<string> {
-	const user = await prisma.user.findUnique({
-		where: { id: userId },
-		select: {
+	const user = await db.query.users.findFirst({
+		where: eq(users.id, userId),
+		columns: {
 			id: true,
 			referralCode: true,
 		},
@@ -78,23 +80,24 @@ export async function ensureReferralCode(userId: string, email: string): Promise
 		referralCode = await generateReferralCode(userId, email)
 
 		// Update user with referral code
-		await prisma.user.update({
-			where: { id: userId },
-			data: { referralCode },
-		})
+		await db.update(users)
+			.set({ referralCode })
+			.where(eq(users.id, userId))
 	}
 
 	// Ensure ReferralCode record exists for tracking
-	await prisma.referralCode.upsert({
-		where: { code: referralCode },
-		update: {},
-		create: {
-			code: referralCode,
-			userId: user.id,
-			pointsPerReferral: 100, // Default 100 points per referral
-		},
+	const existingCode = await db.query.referralCodes.findFirst({
+		where: eq(referralCodes.code, referralCode),
 	})
+
+	if (!existingCode) {
+		await db.insert(referralCodes)
+			.values({
+				code: referralCode,
+				userId: user.id,
+				pointsPerReferral: 100,
+			})
+	}
 
 	return referralCode
 }
-

@@ -1,5 +1,8 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq, count, desc, asc, or, ilike, and } from "drizzle-orm"
 import { canAccessResource } from "@/lib/rbac"
 import { sendEmail } from "@/lib/email-service"
 import { getAdminCreatedEmail, getRoleChangedEmail } from "@/lib/email-templates/roles"
@@ -10,12 +13,9 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function GET(req: NextRequest) {
 	try {
 		const session = await getServerSession(authOptions)
-		// console.log(session);
-
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
-
 		const userRole = (session.user as any).role
 		if (!canAccessResource(userRole, "ADMIN")) {
 			return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -29,36 +29,33 @@ export async function GET(req: NextRequest) {
 		const search = searchParams.get("search") || ""
 		const skip = (page - 1) * limit
 
-		const where: any = {}
-
-		// Only add role filter if it's not "ALL"
+		const conditions = []
 		if (roleFilter && roleFilter !== "ALL") {
-			where.role = roleFilter
+			conditions.push(eq(users.role, roleFilter))
 		}
-
-		// Add search filter for name or email
 		if (search) {
-			where.OR = [
-				{ name: { contains: search, mode: "insensitive" } },
-				{ email: { contains: search, mode: "insensitive" } },
-			]
+			conditions.push(
+				or(
+					ilike(users.name, `%${search}%`),
+					ilike(users.email, `%${search}%`)
+				)
+			)
 		}
+		const whereClause = conditions.length > 0 ? and(...conditions) : undefined
 
-		let orderBy: any = { createdAt: "desc" }
+		let orderByClause: any = [desc(users.createdAt)]
 		if (sort === "name-asc") {
-			orderBy = { name: "asc" }
+			orderByClause = [asc(users.name)]
 		} else if (sort === "name-desc") {
-			orderBy = { name: "desc" }
+			orderByClause = [desc(users.name)]
 		} else if (sort === "date-asc") {
-			orderBy = { createdAt: "asc" }
-		} else if (sort === "date-desc") {
-			orderBy = { createdAt: "desc" }
+			orderByClause = [asc(users.createdAt)]
 		}
 
-		const [users, total] = await Promise.all([
-			prisma.user.findMany({
-				where,
-				select: {
+		const [userList, totalRows] = await Promise.all([
+			db.query.users.findMany({
+				where: whereClause,
+				columns: {
 					id: true,
 					name: true,
 					email: true,
@@ -66,15 +63,17 @@ export async function GET(req: NextRequest) {
 					phone: true,
 					createdAt: true,
 				},
-				orderBy,
-				skip,
-				take: limit,
+				orderBy: orderByClause,
+				offset: skip,
+				limit: limit,
 			}),
-			prisma.user.count({ where }),
+			db.query.users.findMany({ where: whereClause }),
 		])
+        
+        const total = totalRows.length
 
 		return NextResponse.json({
-			users,
+			users: userList,
 			pagination: {
 				total,
 				page,
@@ -103,8 +102,8 @@ export async function POST(req: NextRequest) {
 		const { name, email, phone, password, role } = await req.json()
 
 		// Check if user already exists
-		const existingUser = await prisma.user.findUnique({
-			where: { email },
+		const existingUser = await db.query.users.findFirst({
+			where: eq(users.email, email),
 		})
 
 		if (existingUser) {
@@ -114,23 +113,13 @@ export async function POST(req: NextRequest) {
 		const hashedPassword = await bcrypt.hash(password, 10)
 
 		const newUserRole = role || "STAFF"
-		const newStaff = await prisma.user.create({
-			data: {
-				name,
-				email,
-				phone,
-				password: hashedPassword,
-				role: newUserRole,
-			},
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				role: true,
-				phone: true,
-				createdAt: true,
-			},
-		})
+		const [newStaff] = await db.insert(users).values({
+			name,
+			email,
+			phone,
+			password: hashedPassword,
+			role: newUserRole,
+		}).returning()
 
 		// Generate referral code for all users (admin, super admin, client, staff)
 		try {
@@ -179,25 +168,19 @@ export async function PUT(req: NextRequest) {
 		}
 
 		// Get current user to check old role
-		const currentUser = await prisma.user.findUnique({
-			where: { id: userId },
-			select: { role: true, name: true, email: true },
+		const currentUser = await db.query.users.findFirst({
+			where: eq(users.id, userId),
+			columns: { role: true, name: true, email: true },
 		})
 
 		if (!currentUser) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 })
 		}
 
-		const updatedUser = await prisma.user.update({
-			where: { id: userId },
-			data: { role: newRole },
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				role: true,
-			},
-		})
+		const [updatedUser] = await db.update(users)
+			.set({ role: newRole })
+			.where(eq(users.id, userId))
+			.returning()
 
 		// Send role changed email
 		if (currentUser.email && currentUser.role !== newRole) {

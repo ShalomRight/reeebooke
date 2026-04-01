@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, referralCodes, referralRewards } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { ensureReferralCode } from "@/lib/referral-code-utils"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
@@ -11,7 +13,7 @@ export async function GET() {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
+		const user = await db.query.users.findFirst({
 			where: { email: session.user.email },
 			select: {
 				id: true,
@@ -31,7 +33,7 @@ export async function GET() {
 		// Get referral statistics
 		let referralCodeRecord
 		try {
-			referralCodeRecord = await prisma.referralCode.findUnique({
+			referralCodeRecord = await db.query.referralCodes.findFirst({
 				where: { code: referralCode },
 			})
 		} catch (err) {
@@ -40,7 +42,7 @@ export async function GET() {
 
 		let referralRewards: Awaited<ReturnType<typeof prisma.referralReward.findMany>> = []
 		try {
-			referralRewards = await prisma.referralReward.findMany({
+			referralRewards = await db.query.referralRewards.findMany({
 				where: {
 					referrerId: user.id,
 				},
@@ -70,7 +72,7 @@ export async function GET() {
 		try {
 			const session = await getServerSession(authOptions)
 			if (session?.user?.email) {
-				const user = await prisma.user.findUnique({
+				const user = await db.query.users.findFirst({
 					where: { email: session.user.email },
 					select: { id: true, email: true },
 				})

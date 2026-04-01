@@ -1,7 +1,9 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { type NextRequest, NextResponse } from "next/server"
 import { generateSmartAvailability } from "@/lib/openai"
-import { prisma } from "@/lib/prisma"
-
+import { db } from "@/src/db"
+import { bookings } from "@/src/db/schema"
+import { eq, gte, lte, lt } from "drizzle-orm"
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
@@ -11,7 +13,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Date parameter required" }, { status: 400 })
     }
 
-    const bookings = await prisma.booking.findMany({
+    const bookings = await db.query.bookings.findMany({
       where: {
         date: {
           gte: new Date(date),

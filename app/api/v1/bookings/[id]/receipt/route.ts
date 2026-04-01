@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { bookings } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { generateReceiptHTML } from "@/lib/receipt-generator"
 import { generateReceiptPDF } from "@/lib/receipt-pdf-generator"
 import { getServerSession } from "next-auth"
@@ -17,9 +19,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 		const { searchParams } = new URL(request.url)
 		const format = searchParams.get("format") || "pdf" // Default to PDF
 
-		const booking = await prisma.booking.findUnique({
-			where: { id },
-			include: {
+		const booking = await db.query.bookings.findFirst({
+			where: eq(bookings.id, id),
+			with: {
 				service: true,
 				user: true,
 			},
@@ -42,7 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 		const receiptData = {
 			bookingId: booking.id,
-			date: booking.date.toISOString(),
+			date: booking.date,
 			time: booking.time,
 			customerName: booking.userName,
 			phone: booking.phone,

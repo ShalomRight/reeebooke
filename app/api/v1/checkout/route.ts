@@ -1,6 +1,8 @@
 import { authOptions } from "@/lib/auth"
 import { stripe } from "@/lib/stripe"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, bookings, referralCodes, referralRewards, photos } from "@/src/db/schema"
+import { eq, sql } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getGuestSignupEmail } from "@/lib/email-templates/auth"
 import { getServerSession } from "next-auth"
@@ -53,9 +55,9 @@ async function handleCheckout(req: NextRequest) {
 		// Override with referral code from body if explicitly provided
 		if (referralCode) {
 			try {
-				const referrer = await prisma.user.findUnique({
-					where: { referralCode: referralCode.toUpperCase() },
-					select: { id: true },
+				const referrer = await db.query.users.findFirst({
+					where: eq(users.referralCode, referralCode.toUpperCase()),
+					columns: { id: true },
 				})
 				if (referrer) {
 					referrerId = referrer.id
@@ -68,8 +70,8 @@ async function handleCheckout(req: NextRequest) {
 		// Create user account for "booking for other" if email is provided and user doesn't exist
 		if (bookingFor === "other" && email && email !== session.user.email) {
 			try {
-				const existingUser = await prisma.user.findUnique({
-					where: { email },
+				const existingUser = await db.query.users.findFirst({
+					where: eq(users.email, email),
 				})
 
 				if (!existingUser) {
@@ -77,16 +79,14 @@ async function handleCheckout(req: NextRequest) {
 					const tempPassword = Math.random().toString(36).slice(-12)
 					const hashedPassword = await bcrypt.hash(tempPassword, 10)
 
-					const newUser = await prisma.user.create({
-						data: {
-							name: userName,
-							email,
-							phone,
-							password: hashedPassword,
-							role: "CLIENT",
-							referredById: referrerId || null,
-						},
-					})
+					const [newUser] = await db.insert(users).values({
+						name: userName,
+						email,
+						phone,
+						password: hashedPassword,
+						role: "CLIENT",
+						referredById: referrerId || null,
+					}).returning()
 
 					finalUserId = newUser.id
 
@@ -101,23 +101,20 @@ async function handleCheckout(req: NextRequest) {
 					// Award referral points to logged-in user if they referred this person
 					if (referrerId && referrerId === loggedInUserId) {
 						try {
-							const referralCodeRecord = await prisma.referralCode.findFirst({
-								where: { userId: referrerId },
+							const referralCodeRecord = await db.query.referralCodes.findFirst({
+								where: eq(referralCodes.userId, referrerId),
 							})
 
 							const points = referralCodeRecord?.pointsPerReferral || 100
 
-							await prisma.user.update({
-								where: { id: referrerId },
-								data: { referralPoints: { increment: points } },
-							})
+							await db.update(users).set({
+								referralPoints: sql`${users.referralPoints} + ${points}`,
+							}).where(eq(users.id, referrerId))
 
-							await prisma.referralReward.create({
-								data: {
-									referrerId,
-									referredId: newUser.id,
-									points,
-								},
+							await db.insert(referralRewards).values({
+								referrerId,
+								referredId: newUser.id,
+								points,
 							})
 						} catch (err) {
 							console.error("Failed to award referral points:", err)
@@ -147,28 +144,33 @@ async function handleCheckout(req: NextRequest) {
 		}
 
 		// Create bookings first (they'll be confirmed when payment succeeds)
-		const bookings = await Promise.all(
-			cartItems.map((item: any) =>
-				prisma.booking.create({
-					data: {
-						serviceId: item.serviceId,
-						date: new Date(item.date),
-						time: item.time,
-						paymentMethod: "stripe",
-						userName,
-						phone,
-						email: finalEmail || null,
-						userId: finalUserId || null,
-						status: "PENDING", // Will be updated to CONFIRMED when payment succeeds
-						photos: {
-							create: item.photos?.map((photo: any) => ({ url: photo })) || [],
-						},
-					},
-				}),
-			),
-		)
+		const createdBookings = []
+		for (const item of cartItems) {
+			const [booking] = await db.insert(bookings).values({
+				serviceId: item.serviceId,
+				date: item.date, // Drizzle sqlite text mode handles string nicely if mapped, wait date is `text("date")`
+				time: item.time,
+				paymentMethod: "stripe",
+				userName,
+				phone,
+				email: finalEmail || null,
+				userId: finalUserId || null,
+				status: "PENDING", // Will be updated to CONFIRMED when payment succeeds
+			}).returning()
+			createdBookings.push(booking)
 
-		const bookingIds = bookings.map((b) => b.id).join(",")
+			// Insert photos if any
+			if (item.photos && item.photos.length > 0) {
+				await db.insert(photos).values(
+					item.photos.map((url: string) => ({
+						bookingId: booking.id,
+						url,
+					}))
+				)
+			}
+		}
+
+		const bookingIds = createdBookings.map((b) => b.id).join(",")
 
 		const lineItems = cartItems.map((item: any) => ({
 			price_data: {

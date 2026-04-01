@@ -1,5 +1,8 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, bookings, services, referralCodes, discountCodes } from "@/src/db/schema"
+import { eq, and, or, desc, inArray } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -36,9 +39,9 @@ export async function GET(req: NextRequest) {
 				bookingWhere.userId = (session?.user as any)?.id
 			}
 
-			bookings = await prisma.booking.findMany({
+			bookings = await db.query.bookings.findMany({
 				where: bookingWhere,
-				include: {
+				with: {
 					service: {
 						select: {
 							id: true,
@@ -60,7 +63,7 @@ export async function GET(req: NextRequest) {
 		}
 
 		// Search services (accessible to all)
-		const services = await prisma.service.findMany({
+		const services = await db.query.services.findMany({
 			where: {
 				name: { contains: query, mode: "insensitive" },
 			},
@@ -101,7 +104,7 @@ export async function GET(req: NextRequest) {
 				}
 			}
 
-			users = await prisma.user.findMany({
+			users = await db.query.users.findMany({
 				where: userWhere,
 				select: {
 					id: true,
@@ -119,7 +122,7 @@ export async function GET(req: NextRequest) {
 		// Search discount codes (only for admins and super admins)
 		let discountCodes: any[] = []
 		if (userRole && (userRole.includes("ADMIN") || userRole === "SUPER_ADMIN")) {
-			discountCodes = await prisma.discountCode.findMany({
+			discountCodes = await db.query.discountCodes.findMany({
 				where: {
 					code: { contains: query.toUpperCase(), mode: "insensitive" },
 				},
@@ -138,7 +141,7 @@ export async function GET(req: NextRequest) {
 		// Search referral codes (only for super admin)
 		let referralCodes: any[] = []
 		if (userRole === "SUPER_ADMIN") {
-			referralCodes = await prisma.referralCode.findMany({
+			referralCodes = await db.query.referralCodes.findMany({
 				where: {
 					OR: [
 						{ code: { contains: query.toUpperCase(), mode: "insensitive" } },
@@ -146,7 +149,7 @@ export async function GET(req: NextRequest) {
 						{ user: { email: { contains: query, mode: "insensitive" } } },
 					],
 				},
-				include: {
+				with: {
 					user: {
 						select: {
 							id: true,

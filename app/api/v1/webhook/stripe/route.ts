@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, bookings, carts, discountCodes, discountUsages } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getBookingConfirmationEmail, getBookingCompletedEmail } from "@/lib/email-templates/bookings"
 import { getDiscountAppliedEmail } from "@/lib/email-templates/discounts"
@@ -25,29 +27,31 @@ export async function POST(req: NextRequest) {
         const bookingIds = metadata.bookingIds.split(",").filter(Boolean)
         
         // Update all bookings to CONFIRMED status and get booking details
-        const updatedBookings = await Promise.all(
-          bookingIds.map((bookingId: string) =>
-            prisma.booking.update({
-              where: { id: bookingId },
-              data: { status: "CONFIRMED" },
-              include: {
+        const updatedBookings = []
+        for (const bookingId of bookingIds) {
+            await db.update(bookings)
+              .set({ status: "CONFIRMED" })
+              .where(eq(bookings.id, bookingId))
+            
+            const b = await db.query.bookings.findFirst({
+              where: eq(bookings.id, bookingId),
+              with: {
                 service: true,
                 photos: true,
-              },
+              }
             })
-          )
-        )
+            if (b) updatedBookings.push(b)
+        }
 
         // Record discount usage if discount code was applied
         if (metadata.discountCode && metadata.discountAmount && metadata.finalPrice) {
           try {
-            const discountCodeRecord = await prisma.discountCode.findUnique({
-              where: { code: metadata.discountCode.toUpperCase() },
+            const discountCodeRecord = await db.query.discountCodes.findFirst({
+              where: eq(discountCodes.code, metadata.discountCode.toUpperCase()),
             })
 
             if (discountCodeRecord) {
-              await prisma.discountUsage.create({
-                data: {
+              await db.insert(discountUsages).values({
                   discountCodeId: discountCodeRecord.id,
                   userId: metadata.userId || null,
                   email: session.customer_email || null,
@@ -57,7 +61,6 @@ export async function POST(req: NextRequest) {
                   cartTotal: parseInt(metadata.finalPrice) + parseInt(metadata.discountAmount),
                   finalTotal: parseInt(metadata.finalPrice),
                   bookingId: bookingIds[0] || null,
-                },
               })
 
               // Send discount applied email
@@ -73,7 +76,7 @@ export async function POST(req: NextRequest) {
                         type: discountCodeRecord.type as "PERCENT" | "FIXED",
                         value: discountCodeRecord.value,
                         minAmount: discountCodeRecord.minAmount || undefined,
-                        expiresAt: discountCodeRecord.expiresAt?.toISOString(),
+                        expiresAt: discountCodeRecord.expiresAt || undefined,
                       },
                       parseInt(metadata.discountAmount),
                       parseInt(metadata.finalPrice),
@@ -92,23 +95,22 @@ export async function POST(req: NextRequest) {
         // Handle referral code if provided (for users who weren't referred during signup)
         if (metadata.referralCode && metadata.userId) {
           try {
-            const referrer = await prisma.user.findUnique({
-              where: { referralCode: metadata.referralCode.toUpperCase() },
-              select: { id: true },
+            const referrer = await db.query.users.findFirst({
+              where: eq(users.referralCode, metadata.referralCode.toUpperCase()),
+              columns: { id: true },
             })
             
             if (referrer) {
-              const user = await prisma.user.findUnique({
-                where: { id: metadata.userId },
-                select: { id: true, referredById: true },
+              const user = await db.query.users.findFirst({
+                where: eq(users.id, metadata.userId),
+                columns: { id: true, referredById: true },
               })
               
               // Link user to referrer if not already linked
               if (user && !user.referredById) {
-                await prisma.user.update({
-                  where: { id: metadata.userId },
-                  data: { referredById: referrer.id },
-                })
+                await db.update(users)
+                  .set({ referredById: referrer.id })
+                  .where(eq(users.id, metadata.userId))
               }
             }
           } catch (err) {
@@ -153,7 +155,7 @@ export async function POST(req: NextRequest) {
                 html: getBookingConfirmationEmail({
                   bookingId: booking.id,
                   serviceName: booking.service.name,
-                  date: booking.date.toISOString(),
+                  date: booking.date,
                   time: booking.time,
                   price: booking.service.price,
                   status: booking.status,
@@ -171,9 +173,7 @@ export async function POST(req: NextRequest) {
         // Clear cart for the user
         if (metadata.userId) {
           try {
-            await prisma.cart.deleteMany({
-              where: { userId: metadata.userId },
-            })
+            await db.delete(carts).where(eq(carts.userId, metadata.userId))
           } catch (err) {
             console.error("Failed to clear cart in webhook:", err)
           }

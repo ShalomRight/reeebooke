@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { services, ratings } from "@/src/db/schema"
+import { eq, desc, asc } from "drizzle-orm"
 import { stripe } from "@/lib/stripe"
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
@@ -18,33 +20,31 @@ export async function GET(req: NextRequest) {
 		const { page, limit, sortBy, sortOrder } = validation.data
 		const skip = (page - 1) * limit
 
-		let orderBy: any = { [sortBy]: sortOrder }
+		// Build order by
+		let orderByClause: any
+		if (sortBy === "name") {
+			orderByClause = sortOrder === "asc" ? [asc(services.name)] : [desc(services.name)]
+		} else if (sortBy === "price") {
+			orderByClause = sortOrder === "asc" ? [asc(services.price)] : [desc(services.price)]
+		} else {
+			orderByClause = sortOrder === "asc" ? [asc(services.createdAt)] : [desc(services.createdAt)]
+		}
 
-		// Test database connection
-		await prisma.$connect()
+		const allServices = await db.query.services.findMany({
+			with: {
+				ratings: true,
+			},
+			orderBy: orderByClause,
+			limit: limit,
+			offset: skip,
+		})
 
-		const [services, total] = await Promise.all([
-			prisma.service.findMany({
-				orderBy,
-				skip,
-				take: limit,
-				include: {
-					ratings: {
-						where: {
-							status: "APPROVED",
-						},
-						select: {
-							rating: true,
-						},
-					},
-				},
-			}),
-			prisma.service.count(),
-		])
+		const allForCount = await db.query.services.findMany()
+		const total = allForCount.length
 
 		// Calculate average rating and count for each service
-		const servicesWithRatings = services.map((service) => {
-			const approvedRatings = service.ratings
+		const servicesWithRatings = allServices.map((service) => {
+			const approvedRatings = service.ratings.filter(r => r.status === "APPROVED")
 			const ratingsCount = approvedRatings.length
 			const averageRating =
 				ratingsCount > 0
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
 				stripePriceId: service.stripePriceId,
 				createdAt: service.createdAt,
 				updatedAt: service.updatedAt,
-				rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
+				rating: Math.round(averageRating * 10) / 10,
 				ratingsCount,
 			}
 		})
@@ -70,20 +70,14 @@ export async function GET(req: NextRequest) {
 					total,
 					page,
 					limit,
-					pages: Math.ceil(total / limit),
+					pages: total > 0 ? Math.ceil(total / limit) : 0,
 				},
 			},
 			{ status: 200 },
 		)
 	} catch (error: any) {
 		console.error("Services API error:", error)
-		console.error("Error details:", {
-			message: error?.message,
-			code: error?.code,
-			meta: error?.meta,
-		})
 		
-		// Return more detailed error in development
 		const errorMessage = process.env.NODE_ENV === "development" 
 			? `Failed to fetch services: ${error?.message || "Unknown error"}`
 			: "Failed to fetch services"
@@ -106,7 +100,6 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		// Check if user has permission to create (only ADMIN and SUPER_ADMIN)
 		const userRole = (session.user as any).role
 
 		if (!["ADMIN", "SUPER_ADMIN"].includes(userRole)) {
@@ -139,15 +132,18 @@ export async function POST(req: NextRequest) {
 			stripePriceId = priceObj.id
 		} catch (stripeError) {
 			console.error("Stripe error:", stripeError)
-			// Continue without Stripe price ID if creation fails
 		}
 
-		const service = await prisma.service.create({
-			data: {
-				name,
-				price,
-				stripePriceId,
-			},
+		const serviceId = crypto.randomUUID()
+		db.insert(services).values({
+			id: serviceId,
+			name,
+			price,
+			stripePriceId: stripePriceId || null,
+		}).run()
+
+		const service = await db.query.services.findFirst({
+			where: eq(services.id, serviceId),
 		})
 
 		return NextResponse.json(service, { status: 201 })

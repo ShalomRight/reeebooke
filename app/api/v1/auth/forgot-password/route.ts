@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getPasswordResetEmail } from "@/lib/email-templates/auth"
 import { NextRequest, NextResponse } from "next/server"
@@ -13,7 +15,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Check if user exists
-		const user = await prisma.user.findUnique({
+		const user = await db.query.users.findFirst({
 			where: { email },
 		})
 
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
 		const resetTokenExpiry = new Date(Date.now() + 3600000) // 1 hour from now
 
 		// Store reset token in database
-		await prisma.user.update({
+		db.update(users).set({
 			where: { id: user.id },
 			data: {
 				resetToken,

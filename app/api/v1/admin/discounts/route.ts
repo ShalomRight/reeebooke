@@ -1,7 +1,9 @@
 // GET: List codes
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { discountCodes } from "@/src/db/schema"
+import { desc } from "drizzle-orm"
 import { NextResponse } from "next/server"
 import { createDiscountSchema, validateRequest, validationErrorResponse } from "@/lib/validations"
 
@@ -13,8 +15,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
 
-  const codes = await prisma.discountCode.findMany({
-    orderBy: { createdAt: "desc" },
+  const codes = await db.query.discountCodes.findMany({
+    orderBy: [desc(discountCodes.createdAt)],
   })
 
   return NextResponse.json(codes)
@@ -39,20 +41,18 @@ export async function POST(req: Request) {
   const { code, type, value, minAmount, maxUses, expiresAt, active } = validation.data
 
   try {
-    const discount = await prisma.discountCode.create({
-      data: {
+    const [discount] = await db.insert(discountCodes).values({
         code: code.toUpperCase(),
         type,
         value,
         minAmount: minAmount || null,
         maxUses: maxUses || null,
-        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
         active: active ?? true,
-      },
-    })
+    }).returning()
     return NextResponse.json(discount)
   } catch (err: any) {
-    if (err.code === "P2002") {
+    if (err.message && err.message.includes("UNIQUE")) {
       return NextResponse.json({ error: "Code already exists" }, { status: 400 })
     }
     return NextResponse.json({ error: "Failed to create" }, { status: 500 })

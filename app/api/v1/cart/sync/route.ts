@@ -1,5 +1,8 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, carts } from "@/src/db/schema"
+import { eq, desc, gte, lte, lt, inArray } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Get user
-		const user = await prisma.user.findUnique({
+		const user = await db.query.users.findFirst({
 			where: { email: session.user.email },
 		})
 
@@ -40,7 +43,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Get existing cart items
-		const existingCartItems = await prisma.cart.findMany({
+		const existingCartItems = await db.query.carts.findMany({
 			where: { userId: user.id },
 		})
 
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest) {
 				const endOfDay = new Date(itemDate)
 				endOfDay.setHours(23, 59, 59, 999)
 
-				const exists = await prisma.cart.findFirst({
+				const exists = await db.query.carts.findFirst({
 					where: {
 						userId: user.id,
 						serviceId: item.serviceId,
@@ -81,7 +84,7 @@ export async function POST(req: NextRequest) {
 				})
 
 				if (!exists) {
-					await prisma.cart.create({
+					db.insert(carts).values({
 						data: {
 							userId: user.id,
 							serviceId: item.serviceId,
@@ -97,9 +100,9 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Fetch updated cart
-		const updatedCart = await prisma.cart.findMany({
+		const updatedCart = await db.query.carts.findMany({
 			where: { userId: user.id },
-			include: { service: true },
+			with: { service: true },
 			orderBy: { createdAt: "desc" },
 		})
 
@@ -123,12 +126,12 @@ export async function POST(req: NextRequest) {
 		})
 
 		if (itemsToDelete.length > 0) {
-			await prisma.cart.deleteMany({ where: { id: { in: itemsToDelete } } })
+			db.delete(carts).where({ where: { id: { in: itemsToDelete } } })
 		}
 
-		const finalCart = await prisma.cart.findMany({
+		const finalCart = await db.query.carts.findMany({
 			where: { userId: user.id },
-			include: { service: true },
+			with: { service: true },
 			orderBy: { createdAt: "desc" },
 		})
 

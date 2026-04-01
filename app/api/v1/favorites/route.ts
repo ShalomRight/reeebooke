@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, favorites } from "@/src/db/schema"
+import { eq, and } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -11,21 +13,21 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
-			where: { email: session.user.email },
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, session.user.email),
 		})
 
 		if (!user) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 })
 		}
 
-		const favorites = await prisma.favorite.findMany({
-			where: { userId: user.id },
-			include: { service: true },
-			orderBy: { createdAt: "desc" },
+		const favs = await db.query.favorites.findMany({
+			where: eq(favorites.userId, user.id),
+			with: { service: true },
+			orderBy: (favorites, { desc }) => [desc(favorites.createdAt)],
 		})
 
-		return NextResponse.json(favorites)
+		return NextResponse.json(favs)
 	} catch (error) {
 		console.error("Get favorites error:", error)
 		return NextResponse.json({ error: "Failed to fetch favorites" }, { status: 500 })
@@ -40,8 +42,8 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
-			where: { email: session.user.email },
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, session.user.email),
 		})
 
 		if (!user) {
@@ -54,19 +56,33 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Service ID required" }, { status: 400 })
 		}
 
-		const favorite = await prisma.favorite.upsert({
-			where: {
-				userId_serviceId: {
-					userId: user.id,
-					serviceId,
-				},
-			},
-			update: {},
-			create: {
-				userId: user.id,
-				serviceId,
-			},
-			include: { service: true },
+		// Check if already favorited (upsert equivalent)
+		const existing = await db.query.favorites.findFirst({
+			where: and(
+				eq(favorites.userId, user.id),
+				eq(favorites.serviceId, serviceId),
+			),
+		})
+
+		if (existing) {
+			// Already exists, return it with service
+			const fav = await db.query.favorites.findFirst({
+				where: eq(favorites.id, existing.id),
+				with: { service: true },
+			})
+			return NextResponse.json(fav, { status: 200 })
+		}
+
+		const favId = crypto.randomUUID()
+		db.insert(favorites).values({
+			id: favId,
+			userId: user.id,
+			serviceId,
+		}).run()
+
+		const favorite = await db.query.favorites.findFirst({
+			where: eq(favorites.id, favId),
+			with: { service: true },
 		})
 
 		return NextResponse.json(favorite, { status: 201 })
@@ -84,8 +100,8 @@ export async function DELETE(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
-			where: { email: session.user.email },
+		const user = await db.query.users.findFirst({
+			where: eq(users.email, session.user.email),
 		})
 
 		if (!user) {
@@ -99,14 +115,12 @@ export async function DELETE(req: NextRequest) {
 			return NextResponse.json({ error: "Service ID required" }, { status: 400 })
 		}
 
-		await prisma.favorite.delete({
-			where: {
-				userId_serviceId: {
-					userId: user.id,
-					serviceId,
-				},
-			},
-		})
+		db.delete(favorites)
+			.where(and(
+				eq(favorites.userId, user.id),
+				eq(favorites.serviceId, serviceId),
+			))
+			.run()
 
 		return NextResponse.json({ success: true })
 	} catch (error) {

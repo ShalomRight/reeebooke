@@ -75,15 +75,15 @@ export function UserManagement() {
 	}
 
 	return (
-		<Card>
-			<CardHeader>
-				<CardTitle className="flex items-center gap-2">
-					<Shield className="w-5 h-5" />
+		<Card className="border-none shadow-none bg-transparent">
+			<CardHeader className="px-0 pt-0">
+				<CardTitle className="flex items-center gap-2 text-2xl font-semibold text-slate-900" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+					<Shield className="w-5 h-5 text-blue-600" />
 					User Management
 				</CardTitle>
-				<CardDescription>Manage user roles and permissions (Super Admin only)</CardDescription>
+				<CardDescription className="text-slate-500">Manage user roles and permissions (Super Admin only)</CardDescription>
 			</CardHeader>
-			<CardContent className="space-y-4">
+			<CardContent className="space-y-6 px-0">
 				{currentUserRole !== "SUPER_ADMIN" && (
 					<Alert variant="destructive">
 						<AlertCircle className="h-4 w-4" />
@@ -94,7 +94,7 @@ export function UserManagement() {
 				<div className="flex gap-2 flex-wrap">
 					<div className="flex-1 min-w-[200px]">
 						<div className="relative">
-							<Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+							<Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
 							<Input
 								placeholder="Search by name or email..."
 								value={searchQuery}
@@ -102,7 +102,7 @@ export function UserManagement() {
 									setSearchQuery(e.target.value)
 									setPage(1)
 								}}
-								className="pl-8"
+								className="pl-9 h-10 border-slate-200 rounded-lg focus:ring-blue-500/20 focus:border-blue-500"
 							/>
 						</div>
 					</div>
@@ -153,20 +153,27 @@ export function UserManagement() {
 						{users.map((user) => (
 							<div
 								key={user.id}
-								className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition col-span-1"
+								className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 transition-colors gap-4"
 							>
-								<div className="flex-1">
-									<p className="font-semibold">{user.name}</p>
-									<p className="text-sm text-muted-foreground">{user.email}</p>
-									{user.phone && <p className="text-sm text-muted-foreground">{user.phone}</p>}
+								<div className="flex-1 min-w-0">
+									<p className="font-semibold text-slate-900 truncate">{user.name}</p>
+									<div className="flex items-center gap-3 mt-1">
+										<p className="text-sm text-slate-500 truncate">{user.email}</p>
+										{user.phone && (
+											<>
+												<span className="w-1 h-1 rounded-full bg-slate-300"></span>
+												<p className="text-sm text-slate-500 truncate">{user.phone}</p>
+											</>
+										)}
+									</div>
 								</div>
-								<div className="flex items-center gap-2">
+								<div className="flex items-center gap-3 shrink-0">
 									<Select
 										value={user.role}
 										onValueChange={(value) => handleRoleChange(user.id, value)}
 										disabled={updatingId === user.id || currentUserRole !== "SUPER_ADMIN" || user.id === currentUserId}
 									>
-										<SelectTrigger className="w-40">
+										<SelectTrigger className="w-36 h-9 border-slate-200 rounded-lg focus:ring-blue-500/20">
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent>

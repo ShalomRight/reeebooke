@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { discountCodes } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 
@@ -23,13 +25,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 		if (value !== undefined) updateData.value = value
 		if (minAmount !== undefined) updateData.minAmount = minAmount || null
 		if (maxUses !== undefined) updateData.maxUses = maxUses || null
-		if (expiresAt !== undefined) updateData.expiresAt = expiresAt ? new Date(expiresAt) : null
+		if (expiresAt !== undefined) updateData.expiresAt = expiresAt ? new Date(expiresAt).toISOString() : null
 		if (active !== undefined) updateData.active = active
 
-		const updated = await prisma.discountCode.update({
-			where: { id },
-			data: updateData,
-		})
+		const [updated] = await db.update(discountCodes)
+			.set(updateData)
+			.where(eq(discountCodes.id, id))
+			.returning()
 
 		return NextResponse.json(updated)
 	} catch (error) {
@@ -48,9 +50,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 			return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 		}
 
-		await prisma.discountCode.delete({
-			where: { id },
-		})
+		await db.delete(discountCodes).where(eq(discountCodes.id, id))
 
 		return NextResponse.json({ success: true })
 	} catch (error) {

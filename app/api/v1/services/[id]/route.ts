@@ -1,13 +1,15 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { services } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
-    const service = await prisma.service.findUnique({
-      where: { id },
+    const service = await db.query.services.findFirst({
+      where: eq(services.id, id),
     })
 
     if (!service) {
@@ -32,19 +34,19 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const body = await req.json()
     const { name, price } = body
 
-    // Check if user has permission to update (only ADMIN and SUPER_ADMIN)
     const userRole = (session.user as any).role
 
     if (!["ADMIN", "SUPER_ADMIN"].includes(userRole)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    const service = await prisma.service.update({
-      where: { id },
-      data: {
-        name,
-        price,
-      },
+    db.update(services)
+      .set({ name, price, updatedAt: new Date().toISOString() })
+      .where(eq(services.id, id))
+      .run()
+
+    const service = await db.query.services.findFirst({
+      where: eq(services.id, id),
     })
 
     return NextResponse.json(service, { status: 200 })
@@ -64,25 +66,21 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     const { id } = await params
 
-    // Check if service exists
-    const service = await prisma.service.findUnique({
-      where: { id },
+    const service = await db.query.services.findFirst({
+      where: eq(services.id, id),
     })
 
     if (!service) {
       return NextResponse.json({ error: "Service not found" }, { status: 404 })
     }
 
-    // Check if user has permission to delete (only ADMIN and SUPER_ADMIN)
     const userRole = (session.user as any).role
 
     if (!["ADMIN", "SUPER_ADMIN"].includes(userRole)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    await prisma.service.delete({
-      where: { id },
-    })
+    db.delete(services).where(eq(services.id, id)).run()
 
     return NextResponse.json({ message: "Service deleted" }, { status: 200 })
   } catch (error) {

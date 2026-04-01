@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { ratings } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -20,20 +22,23 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 			return NextResponse.json({ error: "Invalid status. Must be APPROVED or REJECTED" }, { status: 400 })
 		}
 
-		const rating = await prisma.rating.findUnique({
-			where: { id },
+		const rating = await db.query.ratings.findFirst({
+			where: eq(ratings.id, id),
 		})
 
 		if (!rating) {
 			return NextResponse.json({ error: "Rating not found" }, { status: 404 })
 		}
 
-		const updatedRating = await prisma.rating.update({
-			where: { id },
-			data: { status },
-			include: {
+		await db.update(ratings)
+			.set({ status })
+			.where(eq(ratings.id, id))
+
+		const updatedRating = await db.query.ratings.findFirst({
+			where: eq(ratings.id, id),
+			with: {
 				user: {
-					select: {
+					columns: {
 						id: true,
 						name: true,
 						email: true,
@@ -41,7 +46,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 					},
 				},
 				service: {
-					select: {
+					columns: {
 						id: true,
 						name: true,
 						price: true,
@@ -69,9 +74,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
 		const { id } = await params
 
-		await prisma.rating.delete({
-			where: { id },
-		})
+		await db.delete(ratings).where(eq(ratings.id, id))
 
 		return NextResponse.json({ success: true })
 	} catch (error) {

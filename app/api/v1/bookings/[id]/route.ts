@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { bookings, photos, services } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getBookingStatusUpdateEmail, getBookingCompletedEmail } from "@/lib/email-templates/bookings"
 import { getServerSession } from "next-auth"
@@ -8,9 +10,9 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params
-		const booking = await prisma.booking.findUnique({
-			where: { id },
-			include: {
+		const booking = await db.query.bookings.findFirst({
+			where: eq(bookings.id, id),
+			with: {
 				service: true,
 				photos: true,
 			},
@@ -33,9 +35,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 		const { status } = body
 
 		// Get old status before update
-		const oldBooking = await prisma.booking.findUnique({
-			where: { id },
-			include: { service: true },
+		const oldBooking = await db.query.bookings.findFirst({
+			where: eq(bookings.id, id),
+			with: { service: true },
 		})
 
 		if (!oldBooking) {
@@ -44,16 +46,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 		const oldStatus = oldBooking.status
 
-		const booking = await prisma.booking.update({
-			where: { id },
-			data: {
-				status,
-			},
-			include: {
+		db.update(bookings)
+			.set({ status, updatedAt: new Date().toISOString() })
+			.where(eq(bookings.id, id))
+			.run()
+
+		const booking = await db.query.bookings.findFirst({
+			where: eq(bookings.id, id),
+			with: {
 				service: true,
 				photos: true,
 			},
 		})
+
+		if (!booking) {
+			return NextResponse.json({ error: "Booking not found" }, { status: 404 })
+		}
 
 		// Send status update email if status changed and email exists
 		if (oldStatus !== status && booking.email) {
@@ -65,7 +73,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 						{
 							bookingId: booking.id,
 							serviceName: booking.service.name,
-							date: booking.date.toISOString(),
+							date: booking.date,
 							time: booking.time,
 							price: booking.service.price,
 							status: booking.status,
@@ -85,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 						html: getBookingCompletedEmail({
 							bookingId: booking.id,
 							serviceName: booking.service.name,
-							date: booking.date.toISOString(),
+							date: booking.date,
 							time: booking.time,
 							price: booking.service.price,
 							status: booking.status,
@@ -97,7 +105,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 				}
 			} catch (emailError) {
 				console.error("Failed to send booking status update email:", emailError)
-				// Don't fail the update if email fails
 			}
 		}
 
@@ -113,25 +120,37 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 		const body = await req.json()
 		const { serviceId, date, time, paymentMethod, mobileProvider, photoUrls, userName, phone, status } = body
 
-		const booking = await prisma.booking.update({
-			where: { id },
-			data: {
-				serviceId,
-				date: date ? new Date(date) : undefined,
-				time,
-				paymentMethod,
-				mobileProvider,
-				userName,
-				phone,
-				status,
-				photos: photoUrls
-					? {
-						deleteMany: {},
-						create: photoUrls.map((url: string) => ({ url })),
-					}
-					: undefined,
-			},
-			include: {
+		// Build update data
+		const updateData: Record<string, any> = { updatedAt: new Date().toISOString() }
+		if (serviceId) updateData.serviceId = serviceId
+		if (date) updateData.date = new Date(date).toISOString()
+		if (time) updateData.time = time
+		if (paymentMethod) updateData.paymentMethod = paymentMethod
+		if (mobileProvider !== undefined) updateData.mobileProvider = mobileProvider
+		if (userName) updateData.userName = userName
+		if (phone) updateData.phone = phone
+		if (status) updateData.status = status
+
+		db.update(bookings)
+			.set(updateData)
+			.where(eq(bookings.id, id))
+			.run()
+
+		// Handle photos: delete existing and create new ones
+		if (photoUrls) {
+			db.delete(photos).where(eq(photos.bookingId, id)).run()
+			for (const url of photoUrls) {
+				db.insert(photos).values({
+					id: crypto.randomUUID(),
+					bookingId: id,
+					url,
+				}).run()
+			}
+		}
+
+		const booking = await db.query.bookings.findFirst({
+			where: eq(bookings.id, id),
+			with: {
 				service: true,
 				photos: true,
 			},
@@ -153,27 +172,24 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
 		const { id } = await params
 
-		// Check if booking exists
-		const booking = await prisma.booking.findUnique({
-			where: { id },
+		const booking = await db.query.bookings.findFirst({
+			where: eq(bookings.id, id),
 		})
 
 		if (!booking) {
 			return NextResponse.json({ error: "Booking not found" }, { status: 404 })
 		}
 
-		// Check if user has permission to delete
 		const userRole = (session.user as any).role
 		const userId = (session.user as any).id
 
-		// Only ADMIN, SUPER_ADMIN, or the booking owner can delete
-		if (!["ADMIN", "SUPER_ADMIN"].includes(userRole) && booking.userId !== userId) {
+		if (![" ADMIN", "SUPER_ADMIN"].includes(userRole) && booking.userId !== userId) {
 			return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 		}
 
-		await prisma.booking.delete({
-			where: { id },
-		})
+		// Delete photos first, then booking
+		db.delete(photos).where(eq(photos.bookingId, id)).run()
+		db.delete(bookings).where(eq(bookings.id, id)).run()
 
 		return NextResponse.json({ message: "Booking deleted" }, { status: 200 })
 	} catch (error) {

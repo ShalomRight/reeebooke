@@ -188,12 +188,12 @@ export function BookingsManagement({ filterByToday = false }: BookingsManagement
 			/>
 
 			{/* Tabs Section */}
-			<Card>
-				<CardHeader>
+			<Card className="border-none shadow-none bg-transparent">
+				<CardHeader className="px-0 pt-0">
 					<div className="flex items-center justify-between flex-wrap gap-4">
 						<div>
-							<CardTitle className="text-2xl font-bold">Booking Management</CardTitle>
-							<CardDescription>Manage all bookings with organized tabs and pagination</CardDescription>
+							<CardTitle className="text-2xl font-semibold text-slate-900" style={{ fontFamily: "var(--font-space-grotesk)" }}>Booking Management</CardTitle>
+							<CardDescription className="text-slate-500">Manage all bookings with organized tabs and pagination</CardDescription>
 						</div>
 						<BookingFilters
 							sortBy={sortBy}
@@ -204,7 +204,7 @@ export function BookingsManagement({ filterByToday = false }: BookingsManagement
 						/>
 					</div>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="px-0">
 					<BookingTabs
 						activeTab={activeTab}
 						viewMode={viewMode}

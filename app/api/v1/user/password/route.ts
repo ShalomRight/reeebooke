@@ -1,7 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
@@ -18,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await db.query.users.findFirst({
       where: { id: (session.user as any).id },
     })
 
@@ -32,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10)
-    await prisma.user.update({
+    db.update(users).set({
       where: { id: (session.user as any).id },
       data: { password: hashedPassword },
     })

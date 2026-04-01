@@ -1,5 +1,8 @@
+// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { discountCodes, discountUsages } from "@/src/db/schema"
+import { eq, desc } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 
@@ -14,13 +17,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 		}
 
 		// Get discount code with usage statistics
-		const discountCode = await prisma.discountCode.findUnique({
-			where: { id },
-			include: {
+		const discountCode = await db.query.discountCodes.findFirst({
+			where: eq(discountCodes.id, id),
+			with: {
 				usages: {
-					include: {
+					with: {
 						user: {
-							select: {
+							columns: {
 								id: true,
 								name: true,
 								email: true,
@@ -28,9 +31,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 							},
 						},
 					},
-					orderBy: {
-						createdAt: "desc",
-					},
+					orderBy: [desc(discountUsages.createdAt)],
 				},
 			},
 		})
@@ -83,7 +84,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 					count: number
 					totalDiscount: number
 					totalSpent: number
-					lastUsed: Date
+					lastUsed: string
 				}
 			>
 		)

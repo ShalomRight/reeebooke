@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { ensureReferralCode } from "@/lib/referral-code-utils"
 import { sendEmail } from "@/lib/email-service"
 import { getWelcomeEmail } from "@/lib/email-templates/auth"
@@ -19,7 +21,7 @@ async function handleRegister(req: NextRequest) {
 		
 		const { email, password, name, phone, role, referralCode } = validation.data
 
-		const existingUser = await prisma.user.findUnique({
+		const existingUser = await db.query.users.findFirst({
 			where: { email },
 		})
 
@@ -32,7 +34,7 @@ async function handleRegister(req: NextRequest) {
 		// Find referrer if referral code is provided
 		let referredById: string | null = null
 		if (referralCode) {
-			const referrer = await prisma.user.findUnique({
+			const referrer = await db.query.users.findFirst({
 				where: { referralCode: referralCode.toUpperCase() },
 				select: { id: true },
 			})
@@ -41,7 +43,7 @@ async function handleRegister(req: NextRequest) {
 			}
 		}
 
-		const user = await prisma.user.create({
+		const user = db.insert(users).values({
 			data: {
 				email,
 				password: hashedPassword,
@@ -75,7 +77,7 @@ async function handleRegister(req: NextRequest) {
 		// Send referral signup email if referred
 		if (referredById) {
 			try {
-				const referrer = await prisma.user.findUnique({
+				const referrer = await db.query.users.findFirst({
 					where: { id: referredById },
 					select: { name: true, referralCode: true },
 				})

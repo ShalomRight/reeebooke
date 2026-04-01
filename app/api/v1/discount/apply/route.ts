@@ -1,6 +1,8 @@
 // app/api/discount/apply/route.ts
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { discountCodes } from "@/src/db/schema"
+import { eq, sql } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
 import { NextResponse } from "next/server"
 import { applyDiscountSchema, validateRequest, validationErrorResponse } from "@/lib/validations"
@@ -17,7 +19,7 @@ export async function POST(req: Request) {
 		
 		const { code, cartTotal } = validation.data
 
-		const discountCode = await prisma.discountCode.findUnique({
+		const discountCode = await db.query.discountCodes.findFirst({
 			where: { code: code.toUpperCase() },
 		})
 
@@ -54,7 +56,7 @@ export async function POST(req: Request) {
 		const finalTotal = cartTotal - discountAmount
 
 		// INCREMENT usedCount
-		await prisma.discountCode.update({
+		db.update(discountCodes).set({
 			where: { id: discountCode.id },
 			data: { usedCount: { increment: 1 } },
 		})

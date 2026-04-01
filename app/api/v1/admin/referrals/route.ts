@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { referralCodes, referralRewards } from "@/src/db/schema"
+import { eq, desc } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 
@@ -13,10 +15,10 @@ export async function GET() {
 		}
 
 		// Get all referral codes with user info and statistics
-		const referralCodes = await prisma.referralCode.findMany({
-			include: {
+		const referralCodesList = await db.query.referralCodes.findMany({
+			with: {
 				user: {
-					select: {
+					columns: {
 						id: true,
 						name: true,
 						email: true,
@@ -25,27 +27,22 @@ export async function GET() {
 					},
 				},
 			},
-			orderBy: {
-				createdAt: "desc",
-			},
+			orderBy: [desc(referralCodes.createdAt)],
 		})
 
 		// Get referral rewards for statistics
-		const referralRewards = await prisma.referralReward.findMany({
-			include: {
-				User: {
-					select: {
-						name: true,
-						email: true,
-					},
-				},
-			},
+		const rewardsList = await db.query.referralRewards.findMany({
+			columns: {
+				referrerId: true,
+				referredId: true,
+				points: true,
+			}
 		})
 
 		// Calculate statistics for each referral code
-		const codesWithStats = referralCodes.map((code) => {
+		const codesWithStats = referralCodesList.map((code) => {
 			// Find rewards where the referrer is the owner of this code
-			const rewards = referralRewards.filter((r) => r.referrerId === code.userId)
+			const rewards = rewardsList.filter((r) => r.referrerId === code.userId)
 
 			const totalPointsAwarded = rewards.reduce((sum, r) => sum + r.points, 0)
 			const uniqueReferrals = new Set(rewards.map((r) => r.referredId)).size

@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users, carts } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -11,7 +13,7 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
+		const user = await db.query.users.findFirst({
 			where: { email: session.user.email },
 		})
 
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Delete all cart items for this user
-		await prisma.cart.deleteMany({
+		db.delete(carts).where({
 			where: { userId: user.id },
 		})
 

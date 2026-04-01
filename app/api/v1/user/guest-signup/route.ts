@@ -1,4 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getGuestSignupEmail } from "@/lib/email-templates/auth"
 import bcrypt from "bcryptjs"
@@ -14,7 +16,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Check if user already exists
-		const existingUser = await prisma.user.findUnique({
+		const existingUser = await db.query.users.findFirst({
 			where: { email },
 		})
 
@@ -26,7 +28,7 @@ export async function POST(req: NextRequest) {
 		const tempPassword = Math.random().toString(36).slice(-12)
 		const hashedPassword = await bcrypt.hash(tempPassword, 10)
 
-		const user = await prisma.user.create({
+		const user = db.insert(users).values({
 			data: {
 				name,
 				email,

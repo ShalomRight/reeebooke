@@ -1,5 +1,7 @@
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db } from "@/src/db"
+import { users } from "@/src/db/schema"
+import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -10,7 +12,7 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const user = await prisma.user.findUnique({
+		const user = await db.query.users.findFirst({
 			where: { id: (session.user as any).id },
 			select: {
 				id: true,
@@ -39,7 +41,7 @@ export async function PUT(req: NextRequest) {
 		const body = await req.json()
 		const { name, phone, image } = body
 
-		const updatedUser = await prisma.user.update({
+		const updatedUser = db.update(users).set({
 			where: { id: (session.user as any).id },
 			data: {
 				...(name && { name }),

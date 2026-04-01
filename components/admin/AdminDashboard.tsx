@@ -1,7 +1,7 @@
 "use client"
 
 import currentUserClient from "@/lib/currentUserClient"
-import { BarChart3, Calendar, Settings, Star, Ticket, TrendingUp, UserPlus, Users } from "lucide-react"
+import { BarChart3, Calendar, Clock, Settings, Star, Ticket, TrendingUp, UserPlus, Users } from "lucide-react"
 import { useState } from "react"
 import LayoutAdmin from "../layout/admin"
 
@@ -13,6 +13,7 @@ import { PopularServices } from "./PopularServices"
 import { RatingsManagement } from "./RatingsManagement"
 import { RecentActivity } from "./RecentActivity"
 import { ReferralManagement } from "./ReferralManagement"
+import { ScheduleManagement } from "./ScheduleManagement"
 import { BookingCalendar } from "@/components/bookings/BookingCalendar"
 import { RevenueChart } from "./RevenueChart"
 import { ServicesManagement } from "./ServicesManagement"
@@ -67,6 +68,12 @@ const SIDEBAR_NAV = [
 		key: "referrals",
 		label: "Referrals",
 		icon: <UserPlus className="w-4 h-4" />,
+		forSuperAdmin: false,
+	},
+	{
+		key: "schedules",
+		label: "Schedules",
+		icon: <Clock className="w-4 h-4" />,
 		forSuperAdmin: false,
 	},
 	{
@@ -136,6 +143,7 @@ export function AdminDashboard() {
 					{activeTab === "bookings" && <BookingsManagement />}
 					{activeTab === "calendar" && <BookingCalendar />}
 					{activeTab === "services" && <ServicesManagement />}
+					{activeTab === "schedules" && <ScheduleManagement />}
 					{activeTab === "discounts" && <DiscountManagement />}
 					{activeTab === "ratings" && <RatingsManagement />}
 					{activeTab === "referrals" && <ReferralManagement />}
