@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { UserSelect } from "@/components/admin/calendar/components/header/user-select";
 import { TodayButton } from "@/components/admin/calendar/components/header/today-button";
 import { DateNavigator } from "@/components/admin/calendar/components/header/date-navigator";
-import { AddBookingDialog } from "@/components/admin/calendar/components/dialogs/add-booking-dialog";
+import { AddBookingSheet } from "@/components/admin/calendar/components/dialogs/AddBookingSheet";
 
 import type { IBooking } from "@/components/admin/calendar/interfaces";
 import type { TCalendarView } from "@/components/admin/calendar/types";
@@ -76,12 +76,14 @@ export function CalendarHeader({ view, setView, bookings }: IProps) {
           <UserSelect />
         </div>
 
-        <AddBookingDialog>
-          <Button className="w-full sm:w-auto">
-            <Plus />
-            Add Booking
-          </Button>
-        </AddBookingDialog>
+        <div className="flex items-center gap-2">
+          <AddBookingSheet>
+            <Button className="max-md:p-2">
+              <Plus />
+              <span className="max-md:hidden">Add New</span>
+            </Button>
+          </AddBookingSheet>
+        </div>
       </div>
     </div>
   );

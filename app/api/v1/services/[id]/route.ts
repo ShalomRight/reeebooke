@@ -32,7 +32,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     const { id } = await params
     const body = await req.json()
-    const { name, price } = body
+    const { name, price, description, mediaUrl } = body
 
     const userRole = (session.user as any).role
 
@@ -41,7 +41,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     db.update(services)
-      .set({ name, price, updatedAt: new Date().toISOString() })
+      .set({
+        name,
+        price,
+        description: description ?? null,
+        mediaUrl: mediaUrl ?? null,
+        updatedAt: new Date().toISOString(),
+      })
       .where(eq(services.id, id))
       .run()
 

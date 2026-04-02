@@ -6,7 +6,10 @@ import { fetcher } from "../fetcher"
 export interface Service {
 	id: string
 	name: string
+	description?: string | null
+	mediaUrl?: string | null
 	price: number
+	stripePriceId?: string | null
 	rating?: number
 	ratingsCount?: number
 }

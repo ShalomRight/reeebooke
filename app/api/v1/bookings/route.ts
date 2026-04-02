@@ -109,7 +109,7 @@ async function handleCreateBooking(req: NextRequest) {
 			return validationErrorResponse(validation.error)
 		}
 		
-		const { serviceIds, date, time, paymentMethod, mobileProvider, photoUrls, userName, phone } = validation.data
+		const { serviceIds, date, time, paymentMethod, mobileProvider, photoUrls, userName, phone, email } = validation.data
 
 		// Create bookings for each selected service
 		const createdBookings = await Promise.all(serviceIds.map(async (serviceId: string) => {
@@ -124,6 +124,7 @@ async function handleCreateBooking(req: NextRequest) {
 				mobileProvider,
 				userName,
 				phone,
+				email,
 			}).run()
 
 			// Create photos for this booking

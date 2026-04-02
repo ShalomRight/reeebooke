@@ -4,7 +4,7 @@ import { useCalendar } from "@/components/admin/calendar/contexts/calendar-conte
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { AddBookingDialog } from "@/components/admin/calendar/components/dialogs/add-booking-dialog";
+import { AddBookingSheet } from "@/components/admin/calendar/components/dialogs/AddBookingSheet";
 import { BookingBlock } from "@/components/admin/calendar/components/week-and-day-view/booking-block";
 import { DroppableTimeBlock } from "@/components/admin/calendar/components/dnd/droppable-time-block";
 import { CalendarTimeline } from "@/components/admin/calendar/components/week-and-day-view/calendar-time-line";
@@ -82,29 +82,29 @@ export function CalendarWeekView({ singleDayBookings, multiDayBookings }: IProps
                             {index !== 0 && <div className="pointer-bookings-none absolute inset-x-0 top-0 border-b"></div>}
 
                             <DroppableTimeBlock date={day} hour={hour} minute={0}>
-                              <AddBookingDialog startDate={day} startTime={{ hour, minute: 0 }}>
+                              <AddBookingSheet initialDate={day} initialTime={{ hour, minute: 0 }}>
                                 <div className="absolute inset-x-0 top-0 h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                              </AddBookingDialog>
+                              </AddBookingSheet>
                             </DroppableTimeBlock>
 
                             <DroppableTimeBlock date={day} hour={hour} minute={15}>
-                              <AddBookingDialog startDate={day} startTime={{ hour, minute: 15 }}>
+                              <AddBookingSheet initialDate={day} initialTime={{ hour, minute: 15 }}>
                                 <div className="absolute inset-x-0 top-[24px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                              </AddBookingDialog>
+                              </AddBookingSheet>
                             </DroppableTimeBlock>
 
                             <div className="pointer-bookings-none absolute inset-x-0 top-1/2 border-b border-dashed"></div>
 
                             <DroppableTimeBlock date={day} hour={hour} minute={30}>
-                              <AddBookingDialog startDate={day} startTime={{ hour, minute: 30 }}>
+                              <AddBookingSheet initialDate={day} initialTime={{ hour, minute: 30 }}>
                                 <div className="absolute inset-x-0 top-[48px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                              </AddBookingDialog>
+                              </AddBookingSheet>
                             </DroppableTimeBlock>
 
                             <DroppableTimeBlock date={day} hour={hour} minute={45}>
-                              <AddBookingDialog startDate={day} startTime={{ hour, minute: 45 }}>
+                              <AddBookingSheet initialDate={day} initialTime={{ hour, minute: 45 }}>
                                 <div className="absolute inset-x-0 top-[72px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                              </AddBookingDialog>
+                              </AddBookingSheet>
                             </DroppableTimeBlock>
                           </div>
                         );

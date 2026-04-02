@@ -5,8 +5,10 @@ import { useCalendar } from "@/components/admin/calendar/contexts/calendar-conte
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SingleCalendar } from "@/components/ui/single-calendar";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
-import { AddBookingDialog } from "@/components/admin/calendar/components/dialogs/add-booking-dialog";
+import { AddBookingSheet } from "@/components/admin/calendar/components/dialogs/AddBookingSheet";
 import { BookingBlock } from "@/components/admin/calendar/components/week-and-day-view/booking-block";
 import { DroppableTimeBlock } from "@/components/admin/calendar/components/dnd/droppable-time-block";
 import { CalendarTimeline } from "@/components/admin/calendar/components/week-and-day-view/calendar-time-line";
@@ -75,33 +77,49 @@ export function CalendarDayView({ singleDayBookings, multiDayBookings }: IProps)
                   const isDisabled = !isWorkingHour(selectedDate, hour, workingHours);
 
                   return (
-                    <div key={hour} className={cn("relative", isDisabled && "bg-calendar-disabled-hour")} style={{ height: "96px" }}>
+                    <div key={hour} className={cn("group relative", isDisabled && "bg-calendar-disabled-hour")} style={{ height: "96px" }}>
                       {index !== 0 && <div className="pointer-bookings-none absolute inset-x-0 top-0 border-b"></div>}
 
                       <DroppableTimeBlock date={selectedDate} hour={hour} minute={0}>
-                        <AddBookingDialog startDate={selectedDate} startTime={{ hour, minute: 0 }}>
-                          <div className="absolute inset-x-0 top-0 h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddBookingDialog>
+                        <div className="absolute top-0 bottom-0 left-0 right-0 group-hover:bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pb-2">
+                          <AddBookingSheet initialDate={selectedDate} initialTime={{ hour, minute: 0 }}>
+                            <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-slate-200">
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </AddBookingSheet>
+                        </div>
                       </DroppableTimeBlock>
 
                       <DroppableTimeBlock date={selectedDate} hour={hour} minute={15}>
-                        <AddBookingDialog startDate={selectedDate} startTime={{ hour, minute: 15 }}>
-                          <div className="absolute inset-x-0 top-[24px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddBookingDialog>
+                        <div className="absolute top-0 bottom-0 left-0 right-0 group-hover:bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pb-2">
+                          <AddBookingSheet initialDate={selectedDate} initialTime={{ hour, minute: 15 }}>
+                            <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-slate-200">
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </AddBookingSheet>
+                        </div>
                       </DroppableTimeBlock>
 
                       <div className="pointer-bookings-none absolute inset-x-0 top-1/2 border-b border-dashed"></div>
 
                       <DroppableTimeBlock date={selectedDate} hour={hour} minute={30}>
-                        <AddBookingDialog startDate={selectedDate} startTime={{ hour, minute: 30 }}>
-                          <div className="absolute inset-x-0 top-[48px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddBookingDialog>
+                        <div className="absolute top-0 bottom-0 left-0 right-0 group-hover:bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pb-2">
+                          <AddBookingSheet initialDate={selectedDate} initialTime={{ hour, minute: 30 }}>
+                            <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-slate-200">
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </AddBookingSheet>
+                        </div>
                       </DroppableTimeBlock>
 
                       <DroppableTimeBlock date={selectedDate} hour={hour} minute={45}>
-                        <AddBookingDialog startDate={selectedDate} startTime={{ hour, minute: 45 }}>
-                          <div className="absolute inset-x-0 top-[72px] h-[24px] cursor-pointer transition-colors hover:bg-accent" />
-                        </AddBookingDialog>
+                        <div className="absolute top-0 bottom-0 left-0 right-0 group-hover:bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pb-2">
+                          <AddBookingSheet initialDate={selectedDate} initialTime={{ hour, minute: 45 }}>
+                            <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-slate-200">
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </AddBookingSheet>
+                        </div>
                       </DroppableTimeBlock>
                     </div>
                   );
@@ -139,7 +157,7 @@ export function CalendarDayView({ singleDayBookings, multiDayBookings }: IProps)
       </div>
 
       <div className="hidden w-64 divide-y border-l md:block">
-        <SingleCalendar className="mx-auto w-fit" mode="single" selected={selectedDate} onSelect={setSelectedDate} initialFocus />
+        <SingleCalendar mode="single" selected={selectedDate} onSelect={setSelectedDate} initialFocus />
 
         <div className="flex-1 space-y-3">
           {currentBookings.length > 0 ? (

@@ -110,6 +110,8 @@ export const users = sqliteTable(
 export const services = sqliteTable("services", {
   id:            text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name:          text("name").notNull(),
+  description:   text("description"),           // short description (optional)
+  mediaUrl:      text("media_url"),              // optional image URL
   price:         integer("price").notNull(),
   stripePriceId: text("stripe_price_id"),
   createdAt:     timestamp("created_at"),
@@ -439,6 +441,15 @@ export const servicesRelations = relations(services, ({ many }) => ({
   carts:     many(carts),
   favorites: many(favorites),
   ratings:   many(ratings),
+  schedules: many(schedules, { relationName: "serviceSchedules" }),
+}));
+
+export const schedulesServicesRelations = relations(schedules, ({ one }) => ({
+  service: one(services, {
+    fields: [schedules.resourceId],
+    references: [services.id],
+    relationName: "serviceSchedules",
+  }),
 }));
 
 export const bookingsRelations = relations(bookings, ({ one, many }) => ({

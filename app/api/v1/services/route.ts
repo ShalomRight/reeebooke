@@ -54,6 +54,8 @@ export async function GET(req: NextRequest) {
 			return {
 				id: service.id,
 				name: service.name,
+				description: service.description,
+				mediaUrl: service.mediaUrl,
 				price: service.price,
 				stripePriceId: service.stripePriceId,
 				createdAt: service.createdAt,
@@ -113,7 +115,7 @@ export async function POST(req: NextRequest) {
 			return validationErrorResponse(validation.error)
 		}
 		
-		const { name, price } = validation.data
+		const { name, price, description, mediaUrl } = validation.data
 
 		let stripePriceId: string | undefined
 
@@ -139,6 +141,8 @@ export async function POST(req: NextRequest) {
 			id: serviceId,
 			name,
 			price,
+			description: description || null,
+			mediaUrl: mediaUrl || null,
 			stripePriceId: stripePriceId || null,
 		}).run()
 
