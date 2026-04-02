@@ -14,7 +14,7 @@ import { RatingsManagement } from "./RatingsManagement"
 import { RecentActivity } from "./RecentActivity"
 import { ReferralManagement } from "./ReferralManagement"
 import { ScheduleManagement } from "./ScheduleManagement"
-import { BookingCalendar } from "@/components/bookings/BookingCalendar"
+import { AdminBookingCalendarWrapper } from "@/components/admin/calendar/AdminBookingCalendarWrapper"
 import { RevenueChart } from "./RevenueChart"
 import { ServicesManagement } from "./ServicesManagement"
 import { StaffManagement } from "./StaffManagement"
@@ -141,7 +141,7 @@ export function AdminDashboard() {
 					)}
 					{activeTab === "analytics" && <ComprehensiveAnalytics />}
 					{activeTab === "bookings" && <BookingsManagement />}
-					{activeTab === "calendar" && <BookingCalendar />}
+					{activeTab === "calendar" && <AdminBookingCalendarWrapper />}
 					{activeTab === "services" && <ServicesManagement />}
 					{activeTab === "schedules" && <ScheduleManagement />}
 					{activeTab === "discounts" && <DiscountManagement />}

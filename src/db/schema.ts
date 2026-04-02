@@ -40,13 +40,13 @@ export const accounts = sqliteTable(
     type:              text("type").notNull(),
     provider:          text("provider").notNull(),
     providerAccountId: text("provider_account_id").notNull(),
-    refreshToken:      text("refresh_token"),
-    accessToken:       text("access_token"),
-    expiresAt:         integer("expires_at"),
-    tokenType:         text("token_type"),
+    refresh_token:     text("refresh_token"),
+    access_token:      text("access_token"),
+    expires_at:        integer("expires_at"),
+    token_type:        text("token_type"),
     scope:             text("scope"),
-    idToken:           text("id_token"),
-    sessionState:      text("session_state"),
+    id_token:          text("id_token"),
+    session_state:     text("session_state"),
   },
   (t) => [
     uniqueIndex("accounts_provider_account_idx").on(t.provider, t.providerAccountId),
@@ -57,10 +57,9 @@ export const accounts = sqliteTable(
 export const sessions = sqliteTable(
   "sessions",
   {
-    id:           text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-    sessionToken: text("session_token").notNull().unique(),
-    userId:       text("user_id").notNull(),
-    expires:      text("expires").notNull(),
+    sessionToken: text("session_token").primaryKey(),
+    userId:       text("user_id").notNull().references(() => users.id),
+    expires:      integer("expires", { mode: "timestamp_ms" }).notNull(),
   },
   (t) => [
     index("sessions_user_id_idx").on(t.userId),
@@ -72,7 +71,7 @@ export const verificationTokens = sqliteTable(
   {
     identifier: text("identifier").notNull(),
     token:      text("token").notNull().unique(),
-    expires:    text("expires").notNull(),
+    expires:    integer("expires", { mode: "timestamp_ms" }).notNull(),
   },
   (t) => [
     uniqueIndex("verification_tokens_identifier_token_idx").on(t.identifier, t.token),
@@ -87,7 +86,7 @@ export const users = sqliteTable(
     id:               text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
     name:             text("name"),
     email:            text("email").notNull().unique(),
-    emailVerified:    timestampNullable("email_verified"),
+    emailVerified:    integer("email_verified", { mode: "timestamp_ms" }),
     password:         text("password"),
     role:             text("role").notNull().default("CLIENT"),
     phone:            text("phone"),

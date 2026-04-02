@@ -44,6 +44,7 @@ function ReferralManagement() {
     const [editPoints, setEditPoints] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [isEditDialogOpen, setIsEditDialogOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [isGenerating, setIsGenerating] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [isGeneratingOne, setIsGeneratingOne] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     // Load referral codes
     const loadCodes = async ()=>{
         setLoading(true);
@@ -128,6 +129,30 @@ function ReferralManagement() {
             setIsGenerating(false);
         }
     };
+    // Generate a referral code for a single user without one
+    const generateOneCode = async ()=>{
+        setIsGeneratingOne(true);
+        try {
+            const res = await fetch("/api/v1/admin/referrals/generate", {
+                method: "POST"
+            });
+            const data = await res.json();
+            if (res.ok) {
+                __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$sonner$40$1$2e$7$2e$4_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].success(data.message || "Referral code generated successfully");
+                loadCodes(); // Refresh the list
+            } else {
+                if (res.status === 404) {
+                    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$sonner$40$1$2e$7$2e$4_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].info(data.message || "All users already have referral codes.");
+                } else {
+                    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$sonner$40$1$2e$7$2e$4_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error(data.error || "Failed to generate referral code");
+                }
+            }
+        } catch (err) {
+            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$sonner$40$1$2e$7$2e$4_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$sonner$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["toast"].error("Failed to generate referral code");
+        } finally{
+            setIsGeneratingOne(false);
+        }
+    };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "space-y-6",
         children: [
@@ -144,7 +169,7 @@ function ReferralManagement() {
                                 children: "Referral & Affiliate Management"
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 184,
+                                lineNumber: 210,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -152,13 +177,13 @@ function ReferralManagement() {
                                 children: "Manage referral codes and track affiliate performance"
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 187,
+                                lineNumber: 213,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 183,
+                        lineNumber: 209,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -167,21 +192,41 @@ function ReferralManagement() {
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                 variant: "outline",
                                 size: "sm",
+                                onClick: generateOneCode,
+                                disabled: isGeneratingOne || isGenerating || loading,
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$553$2e$0_react$40$19$2e$2$2e$4$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$sparkles$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Sparkles$3e$__["Sparkles"], {
+                                        className: `w-4 h-4 mr-2 ${isGeneratingOne ? "animate-spin" : ""}`
+                                    }, void 0, false, {
+                                        fileName: "[project]/components/admin/ReferralManagement.tsx",
+                                        lineNumber: 217,
+                                        columnNumber: 7
+                                    }, this),
+                                    "Generate One"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/components/admin/ReferralManagement.tsx",
+                                lineNumber: 216,
+                                columnNumber: 6
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                variant: "outline",
+                                size: "sm",
                                 onClick: generateAllCodes,
-                                disabled: isGenerating || loading,
+                                disabled: isGenerating || isGeneratingOne || loading,
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$553$2e$0_react$40$19$2e$2$2e$4$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$sparkles$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Sparkles$3e$__["Sparkles"], {
                                         className: `w-4 h-4 mr-2 ${isGenerating ? "animate-spin" : ""}`
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                        lineNumber: 191,
+                                        lineNumber: 221,
                                         columnNumber: 7
                                     }, this),
                                     "Generate All Codes"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 190,
+                                lineNumber: 220,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -194,26 +239,26 @@ function ReferralManagement() {
                                         className: `w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                        lineNumber: 195,
+                                        lineNumber: 225,
                                         columnNumber: 7
                                     }, this),
                                     "Refresh"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 194,
+                                lineNumber: 224,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 189,
+                        lineNumber: 215,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                lineNumber: 182,
+                lineNumber: 208,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -230,7 +275,7 @@ function ReferralManagement() {
                                             className: "w-4 h-4 text-muted-foreground"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 206,
+                                            lineNumber: 236,
                                             columnNumber: 8
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -238,13 +283,13 @@ function ReferralManagement() {
                                             children: "Total Codes"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 207,
+                                            lineNumber: 237,
                                             columnNumber: 8
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 205,
+                                    lineNumber: 235,
                                     columnNumber: 7
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -252,18 +297,18 @@ function ReferralManagement() {
                                     children: codes.length
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 209,
+                                    lineNumber: 239,
                                     columnNumber: 7
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 204,
+                            lineNumber: 234,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 203,
+                        lineNumber: 233,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -277,7 +322,7 @@ function ReferralManagement() {
                                             className: "w-4 h-4 text-muted-foreground"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 215,
+                                            lineNumber: 245,
                                             columnNumber: 8
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -285,13 +330,13 @@ function ReferralManagement() {
                                             children: "Total Referrals"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 216,
+                                            lineNumber: 246,
                                             columnNumber: 8
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 214,
+                                    lineNumber: 244,
                                     columnNumber: 7
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -299,18 +344,18 @@ function ReferralManagement() {
                                     children: codes.reduce((sum, c)=>sum + c.uniqueReferrals, 0)
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 218,
+                                    lineNumber: 248,
                                     columnNumber: 7
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 213,
+                            lineNumber: 243,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 212,
+                        lineNumber: 242,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -324,7 +369,7 @@ function ReferralManagement() {
                                             className: "w-4 h-4 text-muted-foreground"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 226,
+                                            lineNumber: 256,
                                             columnNumber: 8
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -332,13 +377,13 @@ function ReferralManagement() {
                                             children: "Total Points Awarded"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 227,
+                                            lineNumber: 257,
                                             columnNumber: 8
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 225,
+                                    lineNumber: 255,
                                     columnNumber: 7
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -346,18 +391,18 @@ function ReferralManagement() {
                                     children: codes.reduce((sum, c)=>sum + c.totalPointsAwarded, 0)
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 229,
+                                    lineNumber: 259,
                                     columnNumber: 7
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 224,
+                            lineNumber: 254,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 223,
+                        lineNumber: 253,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -371,7 +416,7 @@ function ReferralManagement() {
                                             className: "w-4 h-4 text-muted-foreground"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 237,
+                                            lineNumber: 267,
                                             columnNumber: 8
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -379,13 +424,13 @@ function ReferralManagement() {
                                             children: "Active Affiliates"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 238,
+                                            lineNumber: 268,
                                             columnNumber: 8
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 236,
+                                    lineNumber: 266,
                                     columnNumber: 7
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -393,24 +438,24 @@ function ReferralManagement() {
                                     children: codes.filter((c)=>c.uniqueReferrals > 0).length
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 240,
+                                    lineNumber: 270,
                                     columnNumber: 7
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 235,
+                            lineNumber: 265,
                             columnNumber: 6
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 234,
+                        lineNumber: 264,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                lineNumber: 202,
+                lineNumber: 232,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -421,20 +466,20 @@ function ReferralManagement() {
                                 children: "All Referral Codes"
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 250,
+                                lineNumber: 280,
                                 columnNumber: 6
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                 children: "View and manage all user referral codes"
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 251,
+                                lineNumber: 281,
                                 columnNumber: 6
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 249,
+                        lineNumber: 279,
                         columnNumber: 5
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -445,12 +490,12 @@ function ReferralManagement() {
                                 children: "No referral codes yet"
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 256,
+                                lineNumber: 286,
                                 columnNumber: 8
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 255,
+                            lineNumber: 285,
                             columnNumber: 7
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "space-y-3",
@@ -468,7 +513,7 @@ function ReferralManagement() {
                                                             children: code.code
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 267,
+                                                            lineNumber: 297,
                                                             columnNumber: 12
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -479,13 +524,13 @@ function ReferralManagement() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 268,
+                                                            lineNumber: 298,
                                                             columnNumber: 12
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 266,
+                                                    lineNumber: 296,
                                                     columnNumber: 11
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -498,7 +543,7 @@ function ReferralManagement() {
                                                                     children: code.userName
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 272,
+                                                                    lineNumber: 302,
                                                                     columnNumber: 13
                                                                 }, this),
                                                                 " (",
@@ -507,7 +552,7 @@ function ReferralManagement() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 271,
+                                                            lineNumber: 301,
                                                             columnNumber: 12
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -517,7 +562,7 @@ function ReferralManagement() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 274,
+                                                            lineNumber: 304,
                                                             columnNumber: 12
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -527,7 +572,7 @@ function ReferralManagement() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 275,
+                                                            lineNumber: 305,
                                                             columnNumber: 12
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -537,7 +582,7 @@ function ReferralManagement() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 276,
+                                                            lineNumber: 306,
                                                             columnNumber: 12
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -548,19 +593,19 @@ function ReferralManagement() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 277,
+                                                            lineNumber: 307,
                                                             columnNumber: 12
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 270,
+                                                    lineNumber: 300,
                                                     columnNumber: 11
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 265,
+                                            lineNumber: 295,
                                             columnNumber: 10
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -574,41 +619,41 @@ function ReferralManagement() {
                                                         className: "w-4 h-4 mr-2"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 282,
+                                                        lineNumber: 312,
                                                         columnNumber: 12
                                                     }, this),
                                                     "View Details"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                lineNumber: 281,
+                                                lineNumber: 311,
                                                 columnNumber: 11
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 280,
+                                            lineNumber: 310,
                                             columnNumber: 10
                                         }, this)
                                     ]
                                 }, code.id, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 261,
+                                    lineNumber: 291,
                                     columnNumber: 9
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 259,
+                            lineNumber: 289,
                             columnNumber: 7
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                        lineNumber: 253,
+                        lineNumber: 283,
                         columnNumber: 5
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                lineNumber: 248,
+                lineNumber: 278,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -623,20 +668,20 @@ function ReferralManagement() {
                                     children: "Referral Code Details"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 297,
+                                    lineNumber: 327,
                                     columnNumber: 7
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                     children: "Detailed analytics and referral information"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 298,
+                                    lineNumber: 328,
                                     columnNumber: 7
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 296,
+                            lineNumber: 326,
                             columnNumber: 6
                         }, this),
                         loadingDetails ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -645,12 +690,12 @@ function ReferralManagement() {
                                 className: "w-6 h-6 animate-spin text-muted-foreground"
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 303,
+                                lineNumber: 333,
                                 columnNumber: 8
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 302,
+                            lineNumber: 332,
                             columnNumber: 7
                         }, this) : details ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "space-y-6",
@@ -669,7 +714,7 @@ function ReferralManagement() {
                                                                 className: "w-4 h-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 312,
+                                                                lineNumber: 342,
                                                                 columnNumber: 12
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -677,13 +722,13 @@ function ReferralManagement() {
                                                                 children: "Total Referrals"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 313,
+                                                                lineNumber: 343,
                                                                 columnNumber: 12
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 311,
+                                                        lineNumber: 341,
                                                         columnNumber: 11
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -691,18 +736,18 @@ function ReferralManagement() {
                                                         children: details.statistics.totalReferrals
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 315,
+                                                        lineNumber: 345,
                                                         columnNumber: 11
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                lineNumber: 310,
+                                                lineNumber: 340,
                                                 columnNumber: 10
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 309,
+                                            lineNumber: 339,
                                             columnNumber: 9
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -716,7 +761,7 @@ function ReferralManagement() {
                                                                 className: "w-4 h-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 321,
+                                                                lineNumber: 351,
                                                                 columnNumber: 12
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -724,13 +769,13 @@ function ReferralManagement() {
                                                                 children: "Points Awarded"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 322,
+                                                                lineNumber: 352,
                                                                 columnNumber: 12
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 320,
+                                                        lineNumber: 350,
                                                         columnNumber: 11
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -738,18 +783,18 @@ function ReferralManagement() {
                                                         children: details.statistics.totalPointsAwarded
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 324,
+                                                        lineNumber: 354,
                                                         columnNumber: 11
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                lineNumber: 319,
+                                                lineNumber: 349,
                                                 columnNumber: 10
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 318,
+                                            lineNumber: 348,
                                             columnNumber: 9
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -763,7 +808,7 @@ function ReferralManagement() {
                                                                 className: "w-4 h-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 330,
+                                                                lineNumber: 360,
                                                                 columnNumber: 12
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -771,13 +816,13 @@ function ReferralManagement() {
                                                                 children: "Total Rewards"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 331,
+                                                                lineNumber: 361,
                                                                 columnNumber: 12
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 329,
+                                                        lineNumber: 359,
                                                         columnNumber: 11
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -785,24 +830,24 @@ function ReferralManagement() {
                                                         children: details.statistics.totalRewards
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 333,
+                                                        lineNumber: 363,
                                                         columnNumber: 11
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                lineNumber: 328,
+                                                lineNumber: 358,
                                                 columnNumber: 10
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 327,
+                                            lineNumber: 357,
                                             columnNumber: 9
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 308,
+                                    lineNumber: 338,
                                     columnNumber: 8
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -812,12 +857,12 @@ function ReferralManagement() {
                                                 children: "Code Information"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 371,
                                                 columnNumber: 10
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 340,
+                                            lineNumber: 370,
                                             columnNumber: 9
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -832,7 +877,7 @@ function ReferralManagement() {
                                                                     children: "Referral Code"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 346,
+                                                                    lineNumber: 376,
                                                                     columnNumber: 12
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -843,7 +888,7 @@ function ReferralManagement() {
                                                                             children: details.referralCode.code
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                            lineNumber: 348,
+                                                                            lineNumber: 378,
                                                                             columnNumber: 13
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -854,24 +899,24 @@ function ReferralManagement() {
                                                                                 className: "w-4 h-4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                                lineNumber: 354,
+                                                                                lineNumber: 384,
                                                                                 columnNumber: 14
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                            lineNumber: 349,
+                                                                            lineNumber: 379,
                                                                             columnNumber: 13
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 347,
+                                                                    lineNumber: 377,
                                                                     columnNumber: 12
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 345,
+                                                            lineNumber: 375,
                                                             columnNumber: 11
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -880,7 +925,7 @@ function ReferralManagement() {
                                                                     children: "Points Per Referral"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 359,
+                                                                    lineNumber: 389,
                                                                     columnNumber: 12
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -891,7 +936,7 @@ function ReferralManagement() {
                                                                             children: details.referralCode.pointsPerReferral
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                            lineNumber: 361,
+                                                                            lineNumber: 391,
                                                                             columnNumber: 13
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -901,25 +946,25 @@ function ReferralManagement() {
                                                                             children: "Edit"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                            lineNumber: 362,
+                                                                            lineNumber: 392,
                                                                             columnNumber: 13
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 360,
+                                                                    lineNumber: 390,
                                                                     columnNumber: 12
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 358,
+                                                            lineNumber: 388,
                                                             columnNumber: 11
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 344,
+                                                    lineNumber: 374,
                                                     columnNumber: 10
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -928,7 +973,7 @@ function ReferralManagement() {
                                                             children: "Code Owner"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 369,
+                                                            lineNumber: 399,
                                                             columnNumber: 11
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -943,25 +988,25 @@ function ReferralManagement() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 370,
+                                                            lineNumber: 400,
                                                             columnNumber: 11
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 368,
+                                                    lineNumber: 398,
                                                     columnNumber: 10
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 343,
+                                            lineNumber: 373,
                                             columnNumber: 9
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 339,
+                                    lineNumber: 369,
                                     columnNumber: 8
                                 }, this),
                                 details.referralsByUser.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -972,20 +1017,20 @@ function ReferralManagement() {
                                                     children: "Referrals by User"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 381,
+                                                    lineNumber: 411,
                                                     columnNumber: 11
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Users who were referred by this code"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 382,
+                                                    lineNumber: 412,
                                                     columnNumber: 11
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 380,
+                                            lineNumber: 410,
                                             columnNumber: 10
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1006,7 +1051,7 @@ function ReferralManagement() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 392,
+                                                                    lineNumber: 422,
                                                                     columnNumber: 15
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1023,7 +1068,7 @@ function ReferralManagement() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 395,
+                                                                    lineNumber: 425,
                                                                     columnNumber: 15
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1037,34 +1082,34 @@ function ReferralManagement() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 399,
+                                                                    lineNumber: 429,
                                                                     columnNumber: 15
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                            lineNumber: 391,
+                                                            lineNumber: 421,
                                                             columnNumber: 14
                                                         }, this)
                                                     }, idx, false, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 387,
+                                                        lineNumber: 417,
                                                         columnNumber: 13
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                lineNumber: 385,
+                                                lineNumber: 415,
                                                 columnNumber: 11
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 384,
+                                            lineNumber: 414,
                                             columnNumber: 10
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 379,
+                                    lineNumber: 409,
                                     columnNumber: 9
                                 }, this),
                                 details.recentRewards.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1075,20 +1120,20 @@ function ReferralManagement() {
                                                     children: "Recent Rewards"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 415,
+                                                    lineNumber: 445,
                                                     columnNumber: 11
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Latest points awarded"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                    lineNumber: 416,
+                                                    lineNumber: 446,
                                                     columnNumber: 11
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 414,
+                                            lineNumber: 444,
                                             columnNumber: 10
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1109,7 +1154,7 @@ function ReferralManagement() {
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                        lineNumber: 426,
+                                                                        lineNumber: 456,
                                                                         columnNumber: 15
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1117,13 +1162,13 @@ function ReferralManagement() {
                                                                         children: new Date(reward.createdAt).toLocaleString()
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                        lineNumber: 429,
+                                                                        lineNumber: 459,
                                                                         columnNumber: 15
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 425,
+                                                                lineNumber: 455,
                                                                 columnNumber: 14
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1137,51 +1182,51 @@ function ReferralManagement() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                    lineNumber: 434,
+                                                                    lineNumber: 464,
                                                                     columnNumber: 15
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                                lineNumber: 433,
+                                                                lineNumber: 463,
                                                                 columnNumber: 14
                                                             }, this)
                                                         ]
                                                     }, reward.id, true, {
                                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                        lineNumber: 421,
+                                                        lineNumber: 451,
                                                         columnNumber: 13
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                                lineNumber: 419,
+                                                lineNumber: 449,
                                                 columnNumber: 11
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                            lineNumber: 418,
+                                            lineNumber: 448,
                                             columnNumber: 10
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 413,
+                                    lineNumber: 443,
                                     columnNumber: 9
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 306,
+                            lineNumber: 336,
                             columnNumber: 7
                         }, this) : null
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                    lineNumber: 295,
+                    lineNumber: 325,
                     columnNumber: 5
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                lineNumber: 294,
+                lineNumber: 324,
                 columnNumber: 4
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -1195,20 +1240,20 @@ function ReferralManagement() {
                                     children: "Edit Points Per Referral"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 451,
+                                    lineNumber: 481,
                                     columnNumber: 7
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                     children: "Update the points awarded for each referral"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 452,
+                                    lineNumber: 482,
                                     columnNumber: 7
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 450,
+                            lineNumber: 480,
                             columnNumber: 6
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1220,7 +1265,7 @@ function ReferralManagement() {
                                         children: "Points Per Referral"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                        lineNumber: 456,
+                                        lineNumber: 486,
                                         columnNumber: 8
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1231,18 +1276,18 @@ function ReferralManagement() {
                                         min: "0"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                        lineNumber: 457,
+                                        lineNumber: 487,
                                         columnNumber: 8
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                lineNumber: 455,
+                                lineNumber: 485,
                                 columnNumber: 7
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 454,
+                            lineNumber: 484,
                             columnNumber: 6
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -1253,7 +1298,7 @@ function ReferralManagement() {
                                     children: "Cancel"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 467,
+                                    lineNumber: 497,
                                     columnNumber: 7
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1261,34 +1306,34 @@ function ReferralManagement() {
                                     children: "Update"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                                    lineNumber: 470,
+                                    lineNumber: 500,
                                     columnNumber: 7
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/ReferralManagement.tsx",
-                            lineNumber: 466,
+                            lineNumber: 496,
                             columnNumber: 6
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/admin/ReferralManagement.tsx",
-                    lineNumber: 449,
+                    lineNumber: 479,
                     columnNumber: 5
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/admin/ReferralManagement.tsx",
-                lineNumber: 448,
+                lineNumber: 478,
                 columnNumber: 4
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/admin/ReferralManagement.tsx",
-        lineNumber: 181,
+        lineNumber: 207,
         columnNumber: 3
     }, this);
 }
-_s(ReferralManagement, "S2zNmiFKz9pEbrR+LiH0HUfj0WA=");
+_s(ReferralManagement, "yCxgWXn/Ul/nEv7GL0a+SJFEfbY=");
 _c = ReferralManagement;
 var _c;
 __turbopack_context__.k.register(_c, "ReferralManagement");
