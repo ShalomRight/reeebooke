@@ -13,17 +13,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Date parameter required" }, { status: 400 })
     }
 
-    const bookings = await db.query.bookings.findMany({
-      where: {
-        date: {
-          gte: new Date(date),
-          lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
-        },
-      },
-      select: { time: true },
+    const bookingsData = await db.query.bookings.findMany({
+      where: (fields, { and, gte, lt }) => and(
+        gte(fields.date, new Date(date).toISOString()),
+        lt(fields.date, new Date(new Date(date).setDate(new Date(date).getDate() + 1)).toISOString())
+      ),
+      columns: { time: true },
     })
 
-    const availableSlots = await generateSmartAvailability(bookings)
+    const availableSlots = await generateSmartAvailability(bookingsData)
 
     return NextResponse.json({ availableSlots })
   } catch (error) {

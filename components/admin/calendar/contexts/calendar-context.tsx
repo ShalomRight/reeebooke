@@ -20,6 +20,7 @@ interface ICalendarContext {
   setVisibleHours: Dispatch<SetStateAction<TVisibleHours>>;
   bookings: IBooking[];
   setLocalBookings: Dispatch<SetStateAction<IBooking[]>>;
+  mode: "admin" | "staff" | "client";
 }
 
 const CalendarContext = createContext({} as ICalendarContext);
@@ -36,7 +37,7 @@ const WORKING_HOURS = {
 
 const VISIBLE_HOURS = { from: 7, to: 18 };
 
-export function CalendarProvider({ children, users, bookings }: { children: React.ReactNode; users: IUser[]; bookings: IBooking[] }) {
+export function CalendarProvider({ children, users, bookings, mode = "admin" }: { children: React.ReactNode; users: IUser[]; bookings: IBooking[]; mode?: "admin" | "staff" | "client" }) {
   const [badgeVariant, setBadgeVariant] = useState<TBadgeVariant>("colored");
   const [visibleHours, setVisibleHours] = useState<TVisibleHours>(VISIBLE_HOURS);
   const [workingHours, setWorkingHours] = useState<TWorkingHours>(WORKING_HOURS);
@@ -72,6 +73,7 @@ export function CalendarProvider({ children, users, bookings }: { children: Reac
         // If you go to the refetch approach, you can remove the localBookings and pass the bookings directly
         bookings: localBookings,
         setLocalBookings,
+        mode,
       }}
     >
       {children}

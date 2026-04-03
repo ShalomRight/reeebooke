@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Search, Calendar, User, Package, Loader2, X, Ticket, Gift } from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
@@ -197,6 +197,7 @@ export function GlobalSearch() {
 					setTimeout(() => inputRef.current?.focus(), 50)
 				}}
 			>
+				<DialogTitle className="sr-only">Global Search</DialogTitle>
 				{/* Search Input */}
 				<div className="flex items-center gap-2 p-4 border-b border-border">
 					<Search className="w-5 h-5 text-muted-foreground" />

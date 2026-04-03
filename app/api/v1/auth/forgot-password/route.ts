@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
 		// Check if user exists
 		const user = await db.query.users.findFirst({
-			where: { email },
+			where: (fields, { eq }) => eq(fields.email, email),
 		})
 
 		if (!user) {
@@ -31,13 +31,12 @@ export async function POST(req: NextRequest) {
 		const resetTokenExpiry = new Date(Date.now() + 3600000) // 1 hour from now
 
 		// Store reset token in database
-		db.update(users).set({
-			where: { id: user.id },
-			data: {
+		await db.update(users)
+			.set({
 				resetToken,
-				resetTokenExpiry,
-			},
-		})
+				resetTokenExpiry: resetTokenExpiry.toISOString(),
+			})
+			.where(eq(users.id, user.id))
 
 		// Send reset email
 		const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"

@@ -25,7 +25,13 @@ function getStatusColor(status: string): TBookingColor {
   }
 }
 
-export function AdminBookingCalendarWrapper() {
+export function AdminBookingCalendarWrapper({ 
+  mode = "admin", 
+  currentUserId 
+}: { 
+  mode?: "admin" | "staff" | "client", 
+  currentUserId?: string 
+}) {
   const [bookings, setBookings] = useState<IBooking[]>([]);
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +44,15 @@ export function AdminBookingCalendarWrapper() {
           const data = await res.json();
           const uniqueUsersMap = new Map<string, IUser>();
           
-          const mappedBookings: IBooking[] = (data.bookings || []).map((b: any) => {
+          let allBookings = data.bookings || [];
+          if (mode === "client" && currentUserId) {
+            allBookings = allBookings.filter((b: any) => {
+              const uId = b.user?.id || b.userId;
+              return uId === currentUserId;
+            });
+          }
+
+          const mappedBookings: IBooking[] = allBookings.map((b: any) => {
             const userId = b.user?.id || b.userId || "anonymous";
             const userName = b.userName || b.user?.name || "Guest";
             if (!uniqueUsersMap.has(userId)) {
@@ -118,28 +132,30 @@ export function AdminBookingCalendarWrapper() {
         </p>
       </div>
 
-      <CalendarProvider users={users} bookings={bookings}>
+      <CalendarProvider users={users} bookings={bookings} mode={mode}>
         <div className="mx-auto flex w-full flex-col gap-4">
           <ClientContainer initialView="month" />
 
-          <Accordion type="single" collapsible>
-            <AccordionItem value="item-1" className="border-none">
-              <AccordionTrigger className="flex-none gap-2 py-0 hover:no-underline">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Settings className="size-4" />
-                  <p className="text-sm font-semibold">Calendar Preferences</p>
-                </div>
-              </AccordionTrigger>
+          {mode === "admin" && (
+            <Accordion type="single" collapsible>
+              <AccordionItem value="item-1" className="border-none">
+                <AccordionTrigger className="flex-none gap-2 py-0 hover:no-underline">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Settings className="size-4" />
+                    <p className="text-sm font-semibold">Calendar Preferences</p>
+                  </div>
+                </AccordionTrigger>
 
-              <AccordionContent>
-                <div className="mt-4 flex flex-col gap-6 max-w-sm">
-                  <ChangeBadgeVariantInput />
-                  <ChangeVisibleHoursInput />
-                  <ChangeWorkingHoursInput />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                <AccordionContent>
+                  <div className="mt-4 flex flex-col gap-6 max-w-sm">
+                    <ChangeBadgeVariantInput />
+                    <ChangeVisibleHoursInput />
+                    <ChangeWorkingHoursInput />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
         </div>
       </CalendarProvider>
     </div>

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
 		// Check if user already exists
 		const existingUser = await db.query.users.findFirst({
-			where: { email },
+			where: (fields, { eq }) => eq(fields.email, email),
 		})
 
 		if (existingUser) {
@@ -28,15 +28,13 @@ export async function POST(req: NextRequest) {
 		const tempPassword = Math.random().toString(36).slice(-12)
 		const hashedPassword = await bcrypt.hash(tempPassword, 10)
 
-		const user = db.insert(users).values({
-			data: {
-				name,
-				email,
-				phone,
-				password: hashedPassword,
-				role: "CLIENT",
-			},
-		})
+		const [user] = await db.insert(users).values({
+			name,
+			email,
+			phone,
+			password: hashedPassword,
+			role: "CLIENT",
+		}).returning({ id: users.id })
 
 		// Generate referral code for all users
 		try {

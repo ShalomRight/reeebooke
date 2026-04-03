@@ -7,8 +7,8 @@ import { AlertCircle, BarChart3, Calendar, CheckCircle2, Clock, DollarSign } fro
 import { useSession } from "next-auth/react"
 import { useState } from "react"
 import { BookingsManagement } from "../admin/BookingsManagement"
-import { BookingCalendar } from "@/components/bookings/BookingCalendar"
-import LayoutAdmin from "../layout/admin"
+import { AdminBookingCalendarWrapper } from "@/components/admin/calendar/AdminBookingCalendarWrapper"
+import { DashboardLayout } from "../layout/dashboard/DashboardLayout"
 import { StaffAnalytics } from "./StaffAnalytics"
 
 export function StaffDashboard() {
@@ -28,9 +28,16 @@ export function StaffDashboard() {
 	const completedBookings = bookings?.filter((b) => b.status === "COMPLETED") || []
 	const totalRevenue = bookings?.reduce((sum, b) => sum + b.service.price, 0) || 0
 
+	const navItems = [
+		{ key: "today", label: "Today's Bookings", icon: Clock },
+		{ key: "all", label: "All Bookings", icon: Calendar },
+		{ key: "calendar", label: "Calendar", icon: Calendar },
+		{ key: "analytics", label: "Analytics", icon: BarChart3 }
+	]
+
 	return (
-		<LayoutAdmin>
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<DashboardLayout navItems={navItems} activeTab={activeTab} onTabChange={setActiveTab}>
+			<div className="max-w-7xl mx-auto space-y-6">
 				<div className="mb-8">
 					<h1 className="text-4xl font-bold text-foreground mb-2">Staff Dashboard</h1>
 					<p className="text-muted-foreground">Manage today's appointments and bookings</p>
@@ -82,31 +89,13 @@ export function StaffDashboard() {
 					</Card>
 				</div>
 
-				<Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-					<TabsList className="grid w-full grid-cols-4">
-						<TabsTrigger value="analytics">Analytics</TabsTrigger>
-						<TabsTrigger value="calendar">Calendar</TabsTrigger>
-						<TabsTrigger value="today">Today's Bookings</TabsTrigger>
-						<TabsTrigger value="all">All Bookings</TabsTrigger>
-					</TabsList>
-
-					<TabsContent value="analytics" className="space-y-6">
-						<StaffAnalytics />
-					</TabsContent>
-
-					<TabsContent value="calendar" className="space-y-6">
-						<BookingCalendar />
-					</TabsContent>
-
-					<TabsContent value="today" className="space-y-6">
-						<BookingsManagement filterByToday={true} />
-					</TabsContent>
-
-					<TabsContent value="all" className="space-y-6">
-						<BookingsManagement />
-					</TabsContent>
-				</Tabs>
+				<div>
+					{activeTab === "analytics" && <StaffAnalytics />}
+					{activeTab === "calendar" && <AdminBookingCalendarWrapper mode="staff" />}
+					{activeTab === "today" && <BookingsManagement filterByToday={true} />}
+					{activeTab === "all" && <BookingsManagement />}
+				</div>
 			</div>
-		</LayoutAdmin>
+		</DashboardLayout>
 	)
 }

@@ -14,7 +14,10 @@ interface IProps {
   children: React.ReactNode;
 }
 
+import { useCalendar } from "@/components/admin/calendar/contexts/calendar-context";
+
 export function BookingDetailsDialog({ booking, children }: IProps) {
+  const { mode } = useCalendar();
   const startDate = parseISO(booking.startDate);
   const endDate = parseISO(booking.endDate);
 
@@ -63,11 +66,13 @@ export function BookingDetailsDialog({ booking, children }: IProps) {
           </div>
 
           <DialogFooter>
-            <EditBookingDialog booking={booking}>
-              <Button type="button" variant="outline">
-                Edit
-              </Button>
-            </EditBookingDialog>
+            {mode === "admin" && (
+              <EditBookingDialog booking={booking}>
+                <Button type="button" variant="outline">
+                  Edit
+                </Button>
+              </EditBookingDialog>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

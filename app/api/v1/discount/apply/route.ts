@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 		const { code, cartTotal } = validation.data
 
 		const discountCode = await db.query.discountCodes.findFirst({
-			where: { code: code.toUpperCase() },
+			where: (fields, { eq }) => eq(fields.code, code.toUpperCase()),
 		})
 
 		if (!discountCode) {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 			return NextResponse.json({ error: "Coupon is not active" }, { status: 400 })
 		}
 
-		if (discountCode.expiresAt && new Date() > discountCode.expiresAt) {
+		if (discountCode.expiresAt && new Date() > new Date(discountCode.expiresAt)) {
 			return NextResponse.json({ error: "Coupon has expired" }, { status: 400 })
 		}
 
@@ -56,10 +56,9 @@ export async function POST(req: Request) {
 		const finalTotal = cartTotal - discountAmount
 
 		// INCREMENT usedCount
-		db.update(discountCodes).set({
-			where: { id: discountCode.id },
-			data: { usedCount: { increment: 1 } },
-		})
+		await db.update(discountCodes)
+			.set({ usedCount: discountCode.usedCount + 1 })
+			.where(eq(discountCodes.id, discountCode.id))
 
 		return NextResponse.json({
 			success: true,

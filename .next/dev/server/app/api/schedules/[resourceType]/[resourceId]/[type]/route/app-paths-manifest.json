@@ -1,3 +1,0 @@
-{
-  "/api/schedules/[resourceType]/[resourceId]/[type]/route": "app/api/schedules/[resourceType]/[resourceId]/[type]/route.js"
-}

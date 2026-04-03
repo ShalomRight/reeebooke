@@ -27,9 +27,10 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Invalid cart items" }, { status: 400 })
 		}
 
+		const sessionUserEmail = session.user.email as string;
 		// Get user
 		const user = await db.query.users.findFirst({
-			where: { email: session.user.email },
+			where: (fields, { eq }) => eq(fields.email, sessionUserEmail),
 		})
 
 		if (!user) {
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
 
 		// Get existing cart items
 		const existingCartItems = await db.query.carts.findMany({
-			where: { userId: user.id },
+			where: (fields, { eq }) => eq(fields.userId, user.id),
 		})
 
 		const existingItemsSet = new Set(
@@ -75,22 +76,21 @@ export async function POST(req: NextRequest) {
 				endOfDay.setHours(23, 59, 59, 999)
 
 				const exists = await db.query.carts.findFirst({
-					where: {
-						userId: user.id,
-						serviceId: item.serviceId,
-						date: { gte: startOfDay, lte: endOfDay },
-						time: item.time,
-					},
+					where: (fields, { and, eq, gte, lte }) => and(
+						eq(fields.userId, user.id),
+						eq(fields.serviceId, item.serviceId),
+						gte(fields.date, startOfDay.toISOString()),
+						lte(fields.date, endOfDay.toISOString()),
+						eq(fields.time, item.time)
+					)
 				})
 
 				if (!exists) {
-					db.insert(carts).values({
-						data: {
-							userId: user.id,
-							serviceId: item.serviceId,
-							date: itemDate,
-							time: item.time,
-						},
+					await db.insert(carts).values({
+						userId: user.id,
+						serviceId: item.serviceId,
+						date: itemDate.toISOString(),
+						time: item.time,
 					})
 					itemsAddedCount++
 				}
@@ -101,9 +101,9 @@ export async function POST(req: NextRequest) {
 
 		// Fetch updated cart
 		const updatedCart = await db.query.carts.findMany({
-			where: { userId: user.id },
+			where: (fields, { eq }) => eq(fields.userId, user.id),
 			with: { service: true },
-			orderBy: { createdAt: "desc" },
+			orderBy: (fields, { desc }) => [desc(fields.createdAt)],
 		})
 
 		// Remove duplicates (keep latest createdAt)
@@ -126,13 +126,13 @@ export async function POST(req: NextRequest) {
 		})
 
 		if (itemsToDelete.length > 0) {
-			db.delete(carts).where({ where: { id: { in: itemsToDelete } } })
+			await db.delete(carts).where(inArray(carts.id, itemsToDelete))
 		}
 
 		const finalCart = await db.query.carts.findMany({
-			where: { userId: user.id },
+			where: (fields, { eq }) => eq(fields.userId, user.id),
 			with: { service: true },
-			orderBy: { createdAt: "desc" },
+			orderBy: (fields, { desc }) => [desc(fields.createdAt)],
 		})
 
 		return NextResponse.json({

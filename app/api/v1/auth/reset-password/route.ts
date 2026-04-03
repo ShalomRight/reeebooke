@@ -20,34 +20,33 @@ export async function POST(req: NextRequest) {
 
 		// Find user with valid reset token
 		const user = await db.query.users.findFirst({
-			where: { email },
+			where: (fields, { eq }) => eq(fields.email, email),
 		})
 
 		if (!user || !user.resetToken || user.resetToken !== token) {
 			return NextResponse.json({ error: "Invalid or expired reset token" }, { status: 400 })
 		}
 
-		if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+		if (!user.resetTokenExpiry || new Date(user.resetTokenExpiry) < new Date()) {
 			return NextResponse.json({ error: "Reset token has expired" }, { status: 400 })
 		}
 
 		// Hash new password and clear reset token
 		const hashedPassword = await bcrypt.hash(newPassword, 10)
-		const updatedUser = db.update(users).set({
-			where: { id: user.id },
-			data: {
+		await db.update(users)
+			.set({
 				password: hashedPassword,
 				resetToken: null,
 				resetTokenExpiry: null,
-			},
-		})
+			})
+			.where(eq(users.id, user.id))
 
 		// Send success email
 		try {
 			await sendEmail({
 				to: email,
 				subject: "Password Reset Successful - Luxury Nail Spa",
-				html: getPasswordResetSuccessEmail(updatedUser.name || "there"),
+				html: getPasswordResetSuccessEmail(user.name || "there"),
 			})
 		} catch (emailError) {
 			console.error("Failed to send password reset success email:", emailError)

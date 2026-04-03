@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
-import LayoutAdmin from "../layout/admin"
+import { DashboardLayout } from "../layout/dashboard/DashboardLayout"
 import { AIRecommendations } from "./AIRecommendations"
 import { BookingStats } from "./BookingStats"
 import { ClientAnalytics } from "./ClientAnalytics"
@@ -27,7 +27,8 @@ import { LoyaltyWidget } from "./LoyaltyWidget"
 import { QuickRebook } from "./QuickRebook"
 import { UpcomingReminders } from "./UpcomingReminders"
 import { RatingDialog } from "@/components/ratings/RatingDialog"
-import { BookingCalendar } from "@/components/bookings/BookingCalendar"
+import { AdminBookingCalendarWrapper } from "@/components/admin/calendar/AdminBookingCalendarWrapper"
+import { AddBookingSheet } from "@/components/admin/calendar/components/dialogs/AddBookingSheet"
 
 export function ClientDashboard() {
 	const { data: session } = useSession()
@@ -89,9 +90,15 @@ export function ClientDashboard() {
 	const completedBookings = bookings?.filter((b) => b.status === "COMPLETED") || []
 	const totalSpent = bookings?.reduce((sum, b) => sum + b.service.price, 0) || 0
 
+	const navItems = [
+		{ key: "overview", label: "Overview", icon: Calendar },
+		{ key: "calendar", label: "Calendar", icon: Calendar },
+		{ key: "analytics", label: "Analytics", icon: TrendingUp }
+	]
+
 	return (
-		<LayoutAdmin>
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<DashboardLayout navItems={navItems} activeTab={activeTab} onTabChange={setActiveTab}>
+			<div className="max-w-7xl mx-auto space-y-6">
 				<div className="mb-8">
 					<h1 className="text-4xl font-bold text-foreground mb-2">Welcome back, {session?.user?.name}</h1>
 					<p className="text-muted-foreground">
@@ -100,22 +107,20 @@ export function ClientDashboard() {
 				</div>
 
 				<div className="mb-8">
-					<Link href="/">
+					<AddBookingSheet 
+						title="Book New Appointment" 
+						description="Select a service, date, and time to schedule your next visit."
+					>
 						<Button size="lg" className="gap-2">
 							<Sparkles className="w-5 h-5" />
 							Book New Appointment
 						</Button>
-					</Link>
+					</AddBookingSheet>
 				</div>
 
-				<Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-					<TabsList className="grid w-full grid-cols-3">
-						<TabsTrigger value="overview">Overview</TabsTrigger>
-						<TabsTrigger value="calendar">Calendar</TabsTrigger>
-						<TabsTrigger value="analytics">Analytics</TabsTrigger>
-					</TabsList>
-
-					<TabsContent value="overview" className="space-y-6">
+				<div>
+					{activeTab === "overview" && (
+						<div className="space-y-6">
 						{bookings && bookings.length > 0 && (
 							<div className="mb-8">
 								<BookingStats bookings={bookings} />
@@ -345,17 +350,22 @@ export function ClientDashboard() {
 						)}
 					</div>
 						</div>
-					</TabsContent>
+						</div>
+					)}
 
-					<TabsContent value="calendar" className="space-y-6">
-						<BookingCalendar userId={userId} />
-					</TabsContent>
+					{activeTab === "calendar" && (
+						<div className="space-y-6">
+							<AdminBookingCalendarWrapper mode="client" currentUserId={userId} />
+						</div>
+					)}
 
-					<TabsContent value="analytics" className="space-y-6">
-						<ClientAnalytics />
-					</TabsContent>
-				</Tabs>
+					{activeTab === "analytics" && (
+						<div className="space-y-6">
+							<ClientAnalytics />
+						</div>
+					)}
+				</div>
 			</div>
-		</LayoutAdmin>
+		</DashboardLayout>
 	)
 }

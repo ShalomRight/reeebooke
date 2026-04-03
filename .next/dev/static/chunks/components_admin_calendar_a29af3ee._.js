@@ -49,7 +49,7 @@ const VISIBLE_HOURS = {
     from: 7,
     to: 18
 };
-function CalendarProvider({ children, users, bookings }) {
+function CalendarProvider({ children, users, bookings, mode = "admin" }) {
     _s();
     const [badgeVariant, setBadgeVariant] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("colored");
     const [visibleHours, setVisibleHours] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(VISIBLE_HOURS);
@@ -80,12 +80,13 @@ function CalendarProvider({ children, users, bookings }) {
             setWorkingHours,
             // If you go to the refetch approach, you can remove the localBookings and pass the bookings directly
             bookings: localBookings,
-            setLocalBookings
+            setLocalBookings,
+            mode
         },
         children: children
     }, void 0, false, {
         fileName: "[project]/components/admin/calendar/contexts/calendar-context.tsx",
-        lineNumber: 59,
+        lineNumber: 60,
         columnNumber: 5
     }, this);
 }
@@ -805,28 +806,38 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$ne
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$2d$dnd$40$16$2e$0$2e$1_$40$types$2b$node$40$24$2e$12$2e$0_$40$types$2b$react$40$19$2e$2$2e$14_react$40$19$2e$2$2e$4$2f$node_modules$2f$react$2d$dnd$2f$dist$2f$core$2f$DndProvider$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/react-dnd@16.0.1_@types+node@24.12.0_@types+react@19.2.14_react@19.2.4/node_modules/react-dnd/dist/core/DndProvider.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$2d$dnd$2d$html5$2d$backend$40$16$2e$0$2e$1$2f$node_modules$2f$react$2d$dnd$2d$html5$2d$backend$2f$dist$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/react-dnd-html5-backend@16.0.1/node_modules/react-dnd-html5-backend/dist/index.js [app-client] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dnd$2f$custom$2d$drag$2d$layer$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/components/dnd/custom-drag-layer.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/contexts/calendar-context.tsx [app-client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
 "use client";
 ;
 ;
 ;
 ;
 function DndProviderWrapper({ children }) {
+    _s();
+    const { mode } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCalendar"])();
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$2d$dnd$40$16$2e$0$2e$1_$40$types$2b$node$40$24$2e$12$2e$0_$40$types$2b$react$40$19$2e$2$2e$14_react$40$19$2e$2$2e$4$2f$node_modules$2f$react$2d$dnd$2f$dist$2f$core$2f$DndProvider$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DndProvider"], {
         backend: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$react$2d$dnd$2d$html5$2d$backend$40$16$2e$0$2e$1$2f$node_modules$2f$react$2d$dnd$2d$html5$2d$backend$2f$dist$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["HTML5Backend"],
         children: [
             children,
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dnd$2f$custom$2d$drag$2d$layer$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CustomDragLayer"], {}, void 0, false, {
+            mode === "admin" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dnd$2f$custom$2d$drag$2d$layer$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CustomDragLayer"], {}, void 0, false, {
                 fileName: "[project]/components/admin/calendar/components/dnd/dnd-provider.tsx",
-                lineNumber: 16,
-                columnNumber: 7
+                lineNumber: 18,
+                columnNumber: 28
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/admin/calendar/components/dnd/dnd-provider.tsx",
-        lineNumber: 14,
+        lineNumber: 16,
         columnNumber: 5
     }, this);
 }
+_s(DndProviderWrapper, "syah4/aB14vWA1AntAFWfFbSj+M=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCalendar"]
+    ];
+});
 _c = DndProviderWrapper;
 var _c;
 __turbopack_context__.k.register(_c, "DndProviderWrapper");
@@ -1533,7 +1544,7 @@ const guestDetailsSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_
     guestEmail: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$zod$40$3$2e$25$2e$76$2f$node_modules$2f$zod$2f$v3$2f$external$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__$2a$__as__z$3e$__["z"].string().email("Valid email is required").optional().or(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$zod$40$3$2e$25$2e$76$2f$node_modules$2f$zod$2f$v3$2f$external$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__$2a$__as__z$3e$__["z"].literal("")),
     guestPhone: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$zod$40$3$2e$25$2e$76$2f$node_modules$2f$zod$2f$v3$2f$external$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__$2a$__as__z$3e$__["z"].string().min(1, "Phone number is required")
 });
-function AddBookingSheet({ children, initialDate, initialTime }) {
+function AddBookingSheet({ children, initialDate, initialTime, title = "Admin Booking Override", description = "This interface strictly adheres to Zap Calendar capacities." }) {
     _s();
     const [isOpen, setIsOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [step, setStep] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(1);
@@ -1648,7 +1659,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                lineNumber: 158,
+                lineNumber: 160,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SheetContent"], {
@@ -1660,23 +1671,23 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SheetHeader"], {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SheetTitle"], {
-                                        children: "Admin Booking Override"
+                                        children: title
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 166,
+                                        lineNumber: 168,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$sheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SheetDescription"], {
-                                        children: "This interface strictly adheres to Zap Calendar capacities."
+                                        children: description
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 167,
+                                        lineNumber: 169,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 165,
+                                lineNumber: 167,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1686,7 +1697,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                         className: "absolute left-0 right-0 top-1/2 h-[2px] bg-slate-100 -z-10"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 172,
+                                        lineNumber: 174,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1696,7 +1707,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 173,
+                                        lineNumber: 175,
                                         columnNumber: 13
                                     }, this),
                                     [
@@ -1710,24 +1721,24 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                 className: "w-3.5 h-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 180,
+                                                lineNumber: 182,
                                                 columnNumber: 29
                                             }, this) : s
                                         }, s, false, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                            lineNumber: 176,
+                                            lineNumber: 178,
                                             columnNumber: 15
                                         }, this))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 171,
+                                lineNumber: 173,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                        lineNumber: 164,
+                        lineNumber: 166,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1747,14 +1758,14 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         className: "w-3.5 h-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 194,
+                                                        lineNumber: 196,
                                                         columnNumber: 21
                                                     }, this),
                                                     " 1. Select Service First"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 193,
+                                                lineNumber: 195,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1762,7 +1773,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                 children: "Picking a service loads real-time schedule capacities."
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 196,
+                                                lineNumber: 198,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SimpleBookingForm$2f$ServiceSelection$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ServiceSelection"], {
@@ -1772,23 +1783,23 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                 isLoading: isLoadingServices
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 198,
+                                                lineNumber: 200,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 192,
+                                        lineNumber: 194,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                    lineNumber: 191,
+                                    lineNumber: 193,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 190,
+                                lineNumber: 192,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1803,14 +1814,14 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                     className: "w-3.5 h-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                    lineNumber: 212,
+                                                    lineNumber: 214,
                                                     columnNumber: 21
                                                 }, this),
                                                 " 2. Pick a Capacity-Mined Date"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                            lineNumber: 211,
+                                            lineNumber: 213,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$availability$2d$calendar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AvailabilityCalendar"], {
@@ -1820,18 +1831,18 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                             className: "w-full shadow-sm"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                            lineNumber: 214,
+                                            lineNumber: 216,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                    lineNumber: 210,
+                                    lineNumber: 212,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 209,
+                                lineNumber: 211,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1846,12 +1857,12 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                     className: "w-5 h-5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                    lineNumber: 227,
+                                                    lineNumber: 229,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 226,
+                                                lineNumber: 228,
                                                 columnNumber: 18
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1861,7 +1872,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: "Selected Date"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 230,
+                                                        lineNumber: 232,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1869,19 +1880,19 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: selectedDateObj ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(selectedDateObj, "EEEE, MMMM do, yyyy") : ""
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 231,
+                                                        lineNumber: 233,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 229,
+                                                lineNumber: 231,
                                                 columnNumber: 18
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 225,
+                                        lineNumber: 227,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1894,14 +1905,14 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         className: "w-3.5 h-3.5"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 237,
+                                                        lineNumber: 239,
                                                         columnNumber: 19
                                                     }, this),
                                                     " 3. Available Time Slots"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 236,
+                                                lineNumber: 238,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1914,24 +1925,24 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                     disabled: false
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                    lineNumber: 240,
+                                                    lineNumber: 242,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 239,
+                                                lineNumber: 241,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 235,
+                                        lineNumber: 237,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 224,
+                                lineNumber: 226,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1945,7 +1956,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                 children: "Booking Summary"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 255,
+                                                lineNumber: 257,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1956,7 +1967,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: "Service"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 257,
+                                                        lineNumber: 259,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1964,13 +1975,13 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: selectedServiceData?.name
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 258,
+                                                        lineNumber: 260,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 256,
+                                                lineNumber: 258,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1981,7 +1992,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: "When"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 261,
+                                                        lineNumber: 263,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1989,19 +2000,19 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: selectedDateObj && selectedTime ? `${(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(selectedDateObj, "MMM do")} at ${selectedTime}` : ''
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 262,
+                                                        lineNumber: 264,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 260,
+                                                lineNumber: 262,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 254,
+                                        lineNumber: 256,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -2014,7 +2025,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                 children: "Guest Details"
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 271,
+                                                lineNumber: 273,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2027,7 +2038,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                                 className: "w-3.5 h-3.5 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                                lineNumber: 274,
+                                                                lineNumber: 276,
                                                                 columnNumber: 72
                                                             }, this),
                                                             " Full Name ",
@@ -2036,13 +2047,13 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                                 children: "*"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                                lineNumber: 274,
+                                                                lineNumber: 276,
                                                                 columnNumber: 137
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 274,
+                                                        lineNumber: 276,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2051,7 +2062,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         className: "bg-white h-10 shadow-sm"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 275,
+                                                        lineNumber: 277,
                                                         columnNumber: 19
                                                     }, this),
                                                     detailsForm.formState.errors.guestName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2059,13 +2070,13 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: detailsForm.formState.errors.guestName.message
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 280,
+                                                        lineNumber: 282,
                                                         columnNumber: 62
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 273,
+                                                lineNumber: 275,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2078,7 +2089,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                                 className: "w-3.5 h-3.5 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                                lineNumber: 284,
+                                                                lineNumber: 286,
                                                                 columnNumber: 72
                                                             }, this),
                                                             " Mobile Phone ",
@@ -2087,13 +2098,13 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                                 children: "*"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                                lineNumber: 284,
+                                                                lineNumber: 286,
                                                                 columnNumber: 141
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 284,
+                                                        lineNumber: 286,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2102,7 +2113,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         className: "bg-white h-10 shadow-sm"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 285,
+                                                        lineNumber: 287,
                                                         columnNumber: 19
                                                     }, this),
                                                     detailsForm.formState.errors.guestPhone && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2110,13 +2121,13 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: detailsForm.formState.errors.guestPhone.message
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 290,
+                                                        lineNumber: 292,
                                                         columnNumber: 63
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 283,
+                                                lineNumber: 285,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2129,7 +2140,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                                 className: "w-3.5 h-3.5 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                                lineNumber: 294,
+                                                                lineNumber: 296,
                                                                 columnNumber: 72
                                                             }, this),
                                                             " Email Address ",
@@ -2138,13 +2149,13 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                                 children: "(Optional, for reminders)"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                                lineNumber: 294,
+                                                                lineNumber: 296,
                                                                 columnNumber: 141
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 294,
+                                                        lineNumber: 296,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2154,7 +2165,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         className: "bg-white h-10 shadow-sm"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 295,
+                                                        lineNumber: 297,
                                                         columnNumber: 19
                                                     }, this),
                                                     detailsForm.formState.errors.guestEmail && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2162,31 +2173,31 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                                         children: detailsForm.formState.errors.guestEmail.message
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                        lineNumber: 301,
+                                                        lineNumber: 303,
                                                         columnNumber: 63
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                                lineNumber: 293,
+                                                lineNumber: 295,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 270,
+                                        lineNumber: 272,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 252,
+                                lineNumber: 254,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                        lineNumber: 187,
+                        lineNumber: 189,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2202,14 +2213,14 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                         className: "w-4 h-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 312,
+                                        lineNumber: 314,
                                         columnNumber: 16
                                     }, this),
                                     " Back"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 311,
+                                lineNumber: 313,
                                 columnNumber: 14
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                 type: "button",
@@ -2219,7 +2230,7 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                 children: "Cancel"
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 315,
+                                lineNumber: 317,
                                 columnNumber: 14
                             }, this),
                             step < 4 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2233,13 +2244,13 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                         className: "w-4 h-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 320,
+                                        lineNumber: 322,
                                         columnNumber: 26
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 319,
+                                lineNumber: 321,
                                 columnNumber: 14
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                 type: "submit",
@@ -2251,38 +2262,38 @@ function AddBookingSheet({ children, initialDate, initialTime }) {
                                         className: "w-4 h-4 animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 324,
+                                        lineNumber: 326,
                                         columnNumber: 32
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$553$2e$0_react$40$19$2e$2$2e$4$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__CheckCircle2$3e$__["CheckCircle2"], {
                                         className: "w-4 h-4"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                        lineNumber: 324,
+                                        lineNumber: 326,
                                         columnNumber: 79
                                     }, this),
                                     "Create Booking"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                                lineNumber: 323,
+                                lineNumber: 325,
                                 columnNumber: 14
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                        lineNumber: 309,
+                        lineNumber: 311,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-                lineNumber: 162,
+                lineNumber: 164,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx",
-        lineNumber: 156,
+        lineNumber: 158,
         columnNumber: 5
     }, this);
 }
@@ -2318,6 +2329,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calen
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$header$2f$today$2d$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/components/header/today-button.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$header$2f$date$2d$navigator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/components/header/date-navigator.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dialogs$2f$AddBookingSheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/components/dialogs/AddBookingSheet.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/contexts/calendar-context.tsx [app-client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
@@ -2326,6 +2340,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calen
 ;
 ;
 function CalendarHeader({ view, setView, bookings }) {
+    _s();
+    const { mode } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCalendar"])();
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "flex flex-col gap-4 border-b p-4 lg:flex-row lg:items-center lg:justify-between",
         children: [
@@ -2334,7 +2350,7 @@ function CalendarHeader({ view, setView, bookings }) {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$header$2f$today$2d$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TodayButton"], {}, void 0, false, {
                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                        lineNumber: 24,
+                        lineNumber: 27,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$header$2f$date$2d$navigator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DateNavigator"], {
@@ -2342,13 +2358,13 @@ function CalendarHeader({ view, setView, bookings }) {
                         bookings: bookings
                     }, void 0, false, {
                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                        lineNumber: 25,
+                        lineNumber: 28,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                lineNumber: 23,
+                lineNumber: 26,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2370,12 +2386,12 @@ function CalendarHeader({ view, setView, bookings }) {
                                             strokeWidth: 1.8
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                            lineNumber: 32,
+                                            lineNumber: 35,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                        lineNumber: 31,
+                                        lineNumber: 34,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2388,12 +2404,12 @@ function CalendarHeader({ view, setView, bookings }) {
                                             strokeWidth: 1.8
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                            lineNumber: 42,
+                                            lineNumber: 45,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                        lineNumber: 35,
+                                        lineNumber: 38,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2406,12 +2422,12 @@ function CalendarHeader({ view, setView, bookings }) {
                                             strokeWidth: 1.8
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                            lineNumber: 52,
+                                            lineNumber: 55,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                        lineNumber: 45,
+                                        lineNumber: 48,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2424,12 +2440,12 @@ function CalendarHeader({ view, setView, bookings }) {
                                             strokeWidth: 1.8
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                            lineNumber: 62,
+                                            lineNumber: 65,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                        lineNumber: 55,
+                                        lineNumber: 58,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2442,79 +2458,84 @@ function CalendarHeader({ view, setView, bookings }) {
                                             strokeWidth: 1.8
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                            lineNumber: 72,
+                                            lineNumber: 75,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                        lineNumber: 65,
+                                        lineNumber: 68,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                lineNumber: 30,
+                                lineNumber: 33,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$header$2f$user$2d$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["UserSelect"], {}, void 0, false, {
                                 fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                lineNumber: 76,
+                                lineNumber: 79,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                        lineNumber: 29,
+                        lineNumber: 32,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex items-center gap-2",
-                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dialogs$2f$AddBookingSheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AddBookingSheet"], {
+                        children: mode === "admin" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dialogs$2f$AddBookingSheet$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AddBookingSheet"], {
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                 className: "max-md:p-2",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$553$2e$0_react$40$19$2e$2$2e$4$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$plus$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Plus$3e$__["Plus"], {}, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                        lineNumber: 82,
-                                        columnNumber: 15
+                                        lineNumber: 86,
+                                        columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "max-md:hidden",
                                         children: "Add New"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                        lineNumber: 83,
-                                        columnNumber: 15
+                                        lineNumber: 87,
+                                        columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                                lineNumber: 81,
-                                columnNumber: 13
+                                lineNumber: 85,
+                                columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                            lineNumber: 80,
-                            columnNumber: 11
+                            lineNumber: 84,
+                            columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                        lineNumber: 79,
+                        lineNumber: 82,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-                lineNumber: 28,
+                lineNumber: 31,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/admin/calendar/components/header/calendar-header.tsx",
-        lineNumber: 22,
+        lineNumber: 25,
         columnNumber: 5
     }, this);
 }
+_s(CalendarHeader, "syah4/aB14vWA1AntAFWfFbSj+M=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCalendar"]
+    ];
+});
 _c = CalendarHeader;
 var _c;
 __turbopack_context__.k.register(_c, "CalendarHeader");
@@ -3974,6 +3995,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lu
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ui/button.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dialogs$2f$edit$2d$booking$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/components/dialogs/edit-booking-dialog.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ui/dialog.tsx [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/calendar/contexts/calendar-context.tsx [app-client] (ecmascript)");
+;
+var _s = __turbopack_context__.k.signature();
 "use client";
 ;
 ;
@@ -3982,6 +4006,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2
 ;
 ;
 function BookingDetailsDialog({ booking, children }) {
+    _s();
+    const { mode } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCalendar"])();
     const startDate = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$parseISO$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["parseISO"])(booking.startDate);
     const endDate = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$parseISO$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["parseISO"])(booking.endDate);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -3992,7 +4018,7 @@ function BookingDetailsDialog({ booking, children }) {
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                    lineNumber: 24,
+                    lineNumber: 27,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogContent"], {
@@ -4002,12 +4028,12 @@ function BookingDetailsDialog({ booking, children }) {
                                 children: booking.title
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                lineNumber: 28,
+                                lineNumber: 31,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                            lineNumber: 27,
+                            lineNumber: 30,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4020,7 +4046,7 @@ function BookingDetailsDialog({ booking, children }) {
                                             className: "mt-1 size-4 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 33,
+                                            lineNumber: 36,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4030,7 +4056,7 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: "Responsible"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 35,
+                                                    lineNumber: 38,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4038,19 +4064,19 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: booking.user.name
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 36,
+                                                    lineNumber: 39,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 34,
+                                            lineNumber: 37,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                    lineNumber: 32,
+                                    lineNumber: 35,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4060,7 +4086,7 @@ function BookingDetailsDialog({ booking, children }) {
                                             className: "mt-1 size-4 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 41,
+                                            lineNumber: 44,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4070,7 +4096,7 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: "Start Date"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 43,
+                                                    lineNumber: 46,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4078,19 +4104,19 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(startDate, "MMM d, yyyy h:mm a")
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 44,
+                                                    lineNumber: 47,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 42,
+                                            lineNumber: 45,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                    lineNumber: 40,
+                                    lineNumber: 43,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4100,7 +4126,7 @@ function BookingDetailsDialog({ booking, children }) {
                                             className: "mt-1 size-4 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 49,
+                                            lineNumber: 52,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4110,7 +4136,7 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: "End Date"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 51,
+                                                    lineNumber: 54,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4118,19 +4144,19 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$date$2d$fns$40$4$2e$1$2e$0$2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(endDate, "MMM d, yyyy h:mm a")
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 52,
+                                                    lineNumber: 55,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 50,
+                                            lineNumber: 53,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                    lineNumber: 48,
+                                    lineNumber: 51,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4140,7 +4166,7 @@ function BookingDetailsDialog({ booking, children }) {
                                             className: "mt-1 size-4 shrink-0"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 57,
+                                            lineNumber: 60,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4150,7 +4176,7 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: "Description"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 59,
+                                                    lineNumber: 62,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4158,29 +4184,29 @@ function BookingDetailsDialog({ booking, children }) {
                                                     children: booking.description
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                                    lineNumber: 60,
+                                                    lineNumber: 63,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                            lineNumber: 58,
+                                            lineNumber: 61,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                    lineNumber: 56,
+                                    lineNumber: 59,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                            lineNumber: 31,
+                            lineNumber: 34,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
-                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dialogs$2f$edit$2d$booking$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["EditBookingDialog"], {
+                            children: mode === "admin" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$dialogs$2f$edit$2d$booking$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["EditBookingDialog"], {
                                 booking: booking,
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                     type: "button",
@@ -4188,33 +4214,38 @@ function BookingDetailsDialog({ booking, children }) {
                                     children: "Edit"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                    lineNumber: 67,
-                                    columnNumber: 15
+                                    lineNumber: 71,
+                                    columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                                lineNumber: 66,
-                                columnNumber: 13
+                                lineNumber: 70,
+                                columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                            lineNumber: 65,
+                            lineNumber: 68,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-                    lineNumber: 26,
+                    lineNumber: 29,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/components/admin/calendar/components/dialogs/booking-details-dialog.tsx",
-            lineNumber: 23,
+            lineNumber: 26,
             columnNumber: 7
         }, this)
     }, void 0, false);
 }
+_s(BookingDetailsDialog, "syah4/aB14vWA1AntAFWfFbSj+M=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCalendar"]
+    ];
+});
 _c = BookingDetailsDialog;
 var _c;
 __turbopack_context__.k.register(_c, "BookingDetailsDialog");
@@ -6991,7 +7022,7 @@ function getStatusColor(status) {
             return "gray";
     }
 }
-function AdminBookingCalendarWrapper() {
+function AdminBookingCalendarWrapper({ mode = "admin", currentUserId }) {
     _s();
     const [bookings, setBookings] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [users, setUsers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
@@ -7004,7 +7035,16 @@ function AdminBookingCalendarWrapper() {
                     if (res.ok) {
                         const data = await res.json();
                         const uniqueUsersMap = new Map();
-                        const mappedBookings = (data.bookings || []).map({
+                        let allBookings = data.bookings || [];
+                        if (mode === "client" && currentUserId) {
+                            allBookings = allBookings.filter({
+                                "AdminBookingCalendarWrapper.useEffect.loadData": (b)=>{
+                                    const uId = b.user?.id || b.userId;
+                                    return uId === currentUserId;
+                                }
+                            }["AdminBookingCalendarWrapper.useEffect.loadData"]);
+                        }
+                        const mappedBookings = allBookings.map({
                             "AdminBookingCalendarWrapper.useEffect.loadData.mappedBookings": (b)=>{
                                 const userId = b.user?.id || b.userId || "anonymous";
                                 const userName = b.userName || b.user?.name || "Guest";
@@ -7067,12 +7107,12 @@ function AdminBookingCalendarWrapper() {
                 className: "w-8 h-8 animate-spin text-primary"
             }, void 0, false, {
                 fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                lineNumber: 107,
+                lineNumber: 121,
                 columnNumber: 67
             }, this)
         }, void 0, false, {
             fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-            lineNumber: 107,
+            lineNumber: 121,
             columnNumber: 12
         }, this);
     }
@@ -7087,7 +7127,7 @@ function AdminBookingCalendarWrapper() {
                         children: "Dynamic Bookings Calendar"
                     }, void 0, false, {
                         fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                        lineNumber: 113,
+                        lineNumber: 127,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -7095,18 +7135,19 @@ function AdminBookingCalendarWrapper() {
                         children: "Drag and drop support for managing blocks of time and visualizing appointments dynamically."
                     }, void 0, false, {
                         fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                        lineNumber: 116,
+                        lineNumber: 130,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                lineNumber: 112,
+                lineNumber: 126,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$contexts$2f$calendar$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CalendarProvider"], {
                 users: users,
                 bookings: bookings,
+                mode: mode,
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "mx-auto flex w-full flex-col gap-4",
                     children: [
@@ -7114,10 +7155,10 @@ function AdminBookingCalendarWrapper() {
                             initialView: "month"
                         }, void 0, false, {
                             fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                            lineNumber: 123,
+                            lineNumber: 137,
                             columnNumber: 11
                         }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Accordion"], {
+                        mode === "admin" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Accordion"], {
                             type: "single",
                             collapsible: true,
                             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionItem"], {
@@ -7133,27 +7174,27 @@ function AdminBookingCalendarWrapper() {
                                                     className: "size-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                                    lineNumber: 129,
-                                                    columnNumber: 19
+                                                    lineNumber: 144,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                     className: "text-sm font-semibold",
                                                     children: "Calendar Preferences"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                                    lineNumber: 130,
-                                                    columnNumber: 19
+                                                    lineNumber: 145,
+                                                    columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                            lineNumber: 128,
-                                            columnNumber: 17
+                                            lineNumber: 143,
+                                            columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                        lineNumber: 127,
-                                        columnNumber: 15
+                                        lineNumber: 142,
+                                        columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -7161,56 +7202,56 @@ function AdminBookingCalendarWrapper() {
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$change$2d$badge$2d$variant$2d$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChangeBadgeVariantInput"], {}, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                                    lineNumber: 136,
-                                                    columnNumber: 19
+                                                    lineNumber: 151,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$change$2d$visible$2d$hours$2d$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChangeVisibleHoursInput"], {}, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                                    lineNumber: 137,
-                                                    columnNumber: 19
+                                                    lineNumber: 152,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$4_react$40$19$2e$2$2e$4$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$calendar$2f$components$2f$change$2d$working$2d$hours$2d$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChangeWorkingHoursInput"], {}, void 0, false, {
                                                     fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                                    lineNumber: 138,
-                                                    columnNumber: 19
+                                                    lineNumber: 153,
+                                                    columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                            lineNumber: 135,
-                                            columnNumber: 17
+                                            lineNumber: 150,
+                                            columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                        lineNumber: 134,
-                                        columnNumber: 15
+                                        lineNumber: 149,
+                                        columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                                lineNumber: 126,
-                                columnNumber: 13
+                                lineNumber: 141,
+                                columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                            lineNumber: 125,
-                            columnNumber: 11
+                            lineNumber: 140,
+                            columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                    lineNumber: 122,
+                    lineNumber: 136,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-                lineNumber: 121,
+                lineNumber: 135,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/admin/calendar/AdminBookingCalendarWrapper.tsx",
-        lineNumber: 111,
+        lineNumber: 125,
         columnNumber: 5
     }, this);
 }

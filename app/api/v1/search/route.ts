@@ -1,8 +1,6 @@
-// TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { authOptions } from "@/lib/auth"
 import { db } from "@/src/db"
-import { users, bookings, services, referralCodes, discountCodes } from "@/src/db/schema"
-import { eq, and, or, desc, inArray } from "drizzle-orm"
+import { sql, or, like, and, inArray, eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -10,6 +8,7 @@ export async function GET(req: NextRequest) {
 	try {
 		const session = await getServerSession(authOptions)
 		const userRole = (session?.user as any)?.role || null
+		const userId = (session?.user as any)?.id || null
 
 		const { searchParams } = new URL(req.url)
 		const query = searchParams.get("q")?.trim() || ""
@@ -22,91 +21,81 @@ export async function GET(req: NextRequest) {
 			})
 		}
 
+		const searchTerm = `%${query}%`
+
 		// Search bookings (accessible to all authenticated users, but filtered by role)
-		let bookings: any[] = []
+		let bookingsResult: any[] = []
 		if (userRole) {
-			const bookingWhere: any = {
-				OR: [
-					{ userName: { contains: query, mode: "insensitive" } },
-					{ phone: { contains: query, mode: "insensitive" } },
-					{ email: { contains: query, mode: "insensitive" } },
-					{ service: { name: { contains: query, mode: "insensitive" } } },
-				],
-			}
+			bookingsResult = await db.query.bookings.findMany({
+				where: (fields, { or, like, and, eq }) => {
+					const searchCondition = or(
+						like(fields.userName, searchTerm),
+						like(fields.phone, searchTerm),
+						like(fields.email, searchTerm),
+						sql`serviceId IN (SELECT id FROM services WHERE name LIKE ${searchTerm})`
+					);
 
-			// Clients can only see their own bookings
-			if (userRole === "CLIENT") {
-				bookingWhere.userId = (session?.user as any)?.id
-			}
-
-			bookings = await db.query.bookings.findMany({
-				where: bookingWhere,
+					if (userRole === "CLIENT" && userId) {
+						return and(searchCondition, eq(fields.userId, userId));
+					}
+					return searchCondition;
+				},
 				with: {
 					service: {
-						select: {
+						columns: {
 							id: true,
 							name: true,
 							price: true,
 						},
 					},
 					user: {
-						select: {
+						columns: {
 							id: true,
 							name: true,
 							email: true,
 						},
 					},
 				},
-				orderBy: { createdAt: "desc" },
-				take: 5,
+				orderBy: (fields, { desc }) => [desc(fields.createdAt)],
+				limit: 5,
 			})
 		}
 
 		// Search services (accessible to all)
-		const services = await db.query.services.findMany({
-			where: {
-				name: { contains: query, mode: "insensitive" },
-			},
-			select: {
+		const servicesResult = await db.query.services.findMany({
+			where: (fields, { like }) => like(fields.name, searchTerm),
+			columns: {
 				id: true,
 				name: true,
 				price: true,
 			},
-			take: 5,
+			limit: 5,
 		})
 
 		// Search users (only for admins and super admins)
-		let users: any[] = []
+		let usersResult: any[] = []
 		if (userRole && (userRole.includes("ADMIN") || userRole === "SUPER_ADMIN")) {
-			const searchConditions = {
-				OR: [
-					{ name: { contains: query, mode: "insensitive" } },
-					{ email: { contains: query, mode: "insensitive" } },
-					{ phone: { contains: query, mode: "insensitive" } },
-					{ referralCode: { contains: query, mode: "insensitive" } },
-				],
-			}
+			usersResult = await db.query.users.findMany({
+				where: (fields, { or, and, like, inArray, eq }) => {
+					const searchCondition = or(
+						like(fields.name, searchTerm),
+						like(fields.email, searchTerm),
+						like(fields.phone, searchTerm),
+						like(fields.referralCode, searchTerm)
+					);
 
-			// Admin can only see their own account and clients/staff
-			// Super admin can see everyone
-			let userWhere: any = searchConditions
-			if (userRole === "ADMIN") {
-				userWhere = {
-					AND: [
-						searchConditions,
-						{
-							OR: [
-								{ id: (session?.user as any)?.id }, // Admin's own account
-								{ role: { in: ["CLIENT", "STAFF"] } }, // Clients and staff
-							],
-						},
-					],
-				}
-			}
-
-			users = await db.query.users.findMany({
-				where: userWhere,
-				select: {
+					if (userRole === "ADMIN") {
+						return and(
+							searchCondition,
+							or(
+								eq(fields.id, userId),
+								inArray(fields.role, ["CLIENT", "STAFF"])
+							)
+						);
+					}
+					return searchCondition;
+				},
+				columns: {
 					id: true,
 					name: true,
 					email: true,
@@ -115,18 +104,16 @@ export async function GET(req: NextRequest) {
 					image: true,
 					referralCode: true,
 				},
-				take: 5,
+				limit: 5,
 			})
 		}
 
 		// Search discount codes (only for admins and super admins)
-		let discountCodes: any[] = []
+		let discountCodesResult: any[] = []
 		if (userRole && (userRole.includes("ADMIN") || userRole === "SUPER_ADMIN")) {
-			discountCodes = await db.query.discountCodes.findMany({
-				where: {
-					code: { contains: query.toUpperCase(), mode: "insensitive" },
-				},
-				select: {
+			discountCodesResult = await db.query.discountCodes.findMany({
+				where: (fields, { like }) => like(fields.code, `%${query.toUpperCase()}%`),
+				columns: {
 					id: true,
 					code: true,
 					type: true,
@@ -134,53 +121,50 @@ export async function GET(req: NextRequest) {
 					active: true,
 					usedCount: true,
 				},
-				take: 5,
+				limit: 5,
 			})
 		}
 
 		// Search referral codes (only for super admin)
-		let referralCodes: any[] = []
+		let referralCodesResult: any[] = []
 		if (userRole === "SUPER_ADMIN") {
-			referralCodes = await db.query.referralCodes.findMany({
-				where: {
-					OR: [
-						{ code: { contains: query.toUpperCase(), mode: "insensitive" } },
-						{ user: { name: { contains: query, mode: "insensitive" } } },
-						{ user: { email: { contains: query, mode: "insensitive" } } },
-					],
-				},
+			referralCodesResult = await db.query.referralCodes.findMany({
+				where: (fields, { or, like }) => or(
+					like(fields.code, `%${query.toUpperCase()}%`),
+					sql`userId IN (SELECT id FROM users WHERE name LIKE ${searchTerm} OR email LIKE ${searchTerm})`
+				),
 				with: {
 					user: {
-						select: {
+						columns: {
 							id: true,
 							name: true,
 							email: true,
 						},
 					},
 				},
-				take: 5,
+				limit: 5,
 			})
 		}
 
 		return NextResponse.json({
-			bookings: bookings.map((b) => ({
+			bookings: bookingsResult.map((b) => ({
 				id: b.id,
 				type: "booking",
-				title: b.service.name,
+				title: b.service?.name || "Unknown Service",
 				subtitle: `${b.userName} • ${new Date(b.date).toLocaleDateString()} at ${b.time}`,
 				status: b.status,
 				url: userRole && (userRole.includes("ADMIN") || userRole === "SUPER_ADMIN" || userRole === "STAFF")
 					? `/admin/bookings`
 					: `/dashboard`,
 			})),
-			services: services.map((s) => ({
+			services: servicesResult.map((s) => ({
 				id: s.id,
 				type: "service",
 				title: s.name,
 				subtitle: `$${s.price.toLocaleString()}`,
 				url: "/",
 			})),
-			users: users.map((u) => ({
+			users: usersResult.map((u) => ({
 				id: u.id,
 				type: "user",
 				title: u.name || "No name",
@@ -190,19 +174,19 @@ export async function GET(req: NextRequest) {
 				referralCode: u.referralCode,
 				url: userRole === "SUPER_ADMIN" ? `/admin/super?tab=users` : `/admin?tab=users`,
 			})),
-			discountCodes: discountCodes.map((d) => ({
+			discountCodes: discountCodesResult.map((d) => ({
 				id: d.id,
 				type: "discount",
 				title: d.code,
-				subtitle: `${d.type === "PERCENT" ? `${d.value}%` : `$${d.value}`} off • ${d.usedCount} uses`,
+				subtitle: `${d.type === "PERCENT" ? \`\${d.value}%\` : \`$\${d.value}\`} off • ${d.usedCount} uses`,
 				active: d.active,
 				url: userRole === "SUPER_ADMIN" ? `/admin/super?tab=discounts` : `/admin?tab=discounts`,
 			})),
-			referralCodes: referralCodes.map((r) => ({
+			referralCodes: referralCodesResult.map((r) => ({
 				id: r.id,
 				type: "referral",
 				title: r.code,
-				subtitle: `${r.user.name || r.user.email} • ${r.usageCount} uses`,
+				subtitle: `${r.user?.name || r.user?.email || "Unknown"} • ${r.usageCount} uses`,
 				url: `/admin/super?tab=referrals`,
 			})),
 		})
@@ -211,4 +195,3 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({ error: "Failed to perform search" }, { status: 500 })
 	}
 }
-

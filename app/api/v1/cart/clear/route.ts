@@ -13,8 +13,9 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
+		const sessionUserEmail = session.user.email as string;
 		const user = await db.query.users.findFirst({
-			where: { email: session.user.email },
+			where: (fields, { eq }) => eq(fields.email, sessionUserEmail),
 		})
 
 		if (!user) {
@@ -22,9 +23,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Delete all cart items for this user
-		db.delete(carts).where({
-			where: { userId: user.id },
-		})
+		await db.delete(carts).where(eq(carts.userId, user.id))
 
 		return NextResponse.json({ success: true, message: "Cart cleared successfully" })
 	} catch (error) {

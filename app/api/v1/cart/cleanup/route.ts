@@ -13,18 +13,14 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Delete carts that have expired
-		const result = db.delete(carts).where({
-			where: {
-				expiresAt: {
-					lt: new Date(),
-				},
-			},
-		})
+		const result = await db.delete(carts)
+			.where(lt(carts.expiresAt, new Date().toISOString()))
+			.returning({ id: carts.id })
 
 		return NextResponse.json({
 			success: true,
-			deletedCount: result.count,
-			message: `Cleaned up ${result.count} expired cart items`,
+			deletedCount: result.length,
+			message: `Cleaned up ${result.length} expired cart items`,
 		})
 	} catch (error) {
 		console.error("Cart cleanup error:", error)

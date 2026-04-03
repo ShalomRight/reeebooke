@@ -17,7 +17,10 @@ interface IProps {
   bookings: IBooking[];
 }
 
+import { useCalendar } from "@/components/admin/calendar/contexts/calendar-context";
+
 export function CalendarHeader({ view, setView, bookings }: IProps) {
+  const { mode } = useCalendar();
   return (
     <div className="flex flex-col gap-4 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-center gap-3">
@@ -77,12 +80,14 @@ export function CalendarHeader({ view, setView, bookings }: IProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <AddBookingSheet>
-            <Button className="max-md:p-2">
-              <Plus />
-              <span className="max-md:hidden">Add New</span>
-            </Button>
-          </AddBookingSheet>
+          {mode === "admin" && (
+            <AddBookingSheet>
+              <Button className="max-md:p-2">
+                <Plus />
+                <span className="max-md:hidden">Add New</span>
+              </Button>
+            </AddBookingSheet>
+          )}
         </div>
       </div>
     </div>

@@ -18,7 +18,9 @@ import { LogOut, Settings, User, Home } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import Link from "next/link"
 
-export default function Header() {
+import { SidebarTrigger } from "@/components/ui/sidebar"
+
+export default function Header({ showSidebarTrigger = false }: { showSidebarTrigger?: boolean }) {
 	const { data: session } = useSession()
 
 	const userRole = (session?.user as any)?.role
@@ -43,7 +45,10 @@ export default function Header() {
 		<header className="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-card/95">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex items-center justify-between h-16">
-					<Logo href={getDashboardLink()} variant="default" />
+					<div className="flex items-center gap-2">
+						{showSidebarTrigger && <SidebarTrigger className="-ml-2 md:hidden" />}
+						<Logo href={getDashboardLink()} variant="default" />
+					</div>
 
 					<div className="flex items-center gap-3">
 						<GlobalSearch />

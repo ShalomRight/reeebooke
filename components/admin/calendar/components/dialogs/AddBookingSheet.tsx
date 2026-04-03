@@ -37,9 +37,11 @@ interface Props {
   children?: React.ReactNode
   initialDate?: Date
   initialTime?: { hour: number; minute: number }
+  title?: string
+  description?: string
 }
 
-export function AddBookingSheet({ children, initialDate, initialTime }: Props) {
+export function AddBookingSheet({ children, initialDate, initialTime, title = "Admin Booking Override", description = "This interface strictly adheres to Zap Calendar capacities." }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -163,8 +165,8 @@ export function AddBookingSheet({ children, initialDate, initialTime }: Props) {
         {/* Header */}
         <div className="px-6 py-5 bg-white border-b sticky top-0 z-10">
           <SheetHeader>
-            <SheetTitle>Admin Booking Override</SheetTitle>
-            <SheetDescription>This interface strictly adheres to Zap Calendar capacities.</SheetDescription>
+            <SheetTitle>{title}</SheetTitle>
+            <SheetDescription>{description}</SheetDescription>
           </SheetHeader>
 
           {/* Stepper Wizard Indicator */}
