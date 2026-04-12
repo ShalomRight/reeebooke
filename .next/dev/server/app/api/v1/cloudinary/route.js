@@ -1,6 +1,0 @@
-var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/v1/cloudinary/route.js")
-R.c("server/chunks/5b4e5_next_300c5fe5._.js")
-R.c("server/chunks/[root-of-the-server]__b3d77159._.js")
-R.c("server/chunks/_next-internal_server_app_api_v1_cloudinary_route_actions_c5e9a245.js")
-R.m("[project]/node_modules/.pnpm/next@16.0.1_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/app/api/v1/cloudinary/route.js [app-route] (ecmascript)\" } [app-route] (ecmascript)")
-module.exports=R.m("[project]/node_modules/.pnpm/next@16.0.1_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/app/api/v1/cloudinary/route.js [app-route] (ecmascript)\" } [app-route] (ecmascript)").exports

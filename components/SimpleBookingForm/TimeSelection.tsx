@@ -106,7 +106,7 @@ export function TimeSelection({
 							>
 								<span
 									className={cn(
-										"flex-1 text-left font-semibold truncate",
+										"flex-1 text-left font-semibold truncate font-source",
 										slot.available
 											? isSelected
 												? "text-primary"
@@ -115,7 +115,6 @@ export function TimeSelection({
 												? "text-destructive line-through"
 												: "text-muted-foreground line-through"
 									)}
-									style={{ fontFamily: "var(--font-dm-sans)" }}
 								>
 									{slot.time}
 								</span>

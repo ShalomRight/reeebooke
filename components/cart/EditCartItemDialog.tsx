@@ -13,6 +13,7 @@ import { ServiceSelection } from "@/components/SimpleBookingForm/ServiceSelectio
 import { PhotoUpload } from "@/components/SimpleBookingForm/PhotoUpload"
 import { TimeSelection } from "@/components/SimpleBookingForm/TimeSelection"
 import type { CartItem } from "@/store/cartSlice"
+import { DEFAULT_LEGACY_SLOT_TIMES, normalizeTimeTo24h } from "@/lib/booking/time"
 import { Edit2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -27,6 +28,7 @@ type Service = {
 
 type TimeSlot = {
 	time: string
+	displayLabel?: string
 	available: boolean
 	isBooked?: boolean
 }
@@ -35,14 +37,11 @@ type BookingCount = {
 	[key: number]: number
 }
 
-const defaultTimeSlots: TimeSlot[] = [
-	{ time: "8:30 AM", available: true },
-	{ time: "10:00 AM", available: true },
-	{ time: "11:30 AM", available: true },
-	{ time: "1:30 PM", available: true },
-	{ time: "3:00 PM", available: true },
-	{ time: "4:30 PM", available: true },
-]
+const defaultTimeSlots: TimeSlot[] = DEFAULT_LEGACY_SLOT_TIMES.map((s) => ({
+	time: s.time,
+	displayLabel: s.displayLabel,
+	available: true,
+}))
 
 const generateCalendarDays = (month: number, year: number) => {
 	const days: (number | null)[] = []
@@ -57,12 +56,10 @@ const generateCalendarDays = (month: number, year: number) => {
 	return days
 }
 
-const parseTimeToDate = (time: string, date: Date) => {
-	const [timePart, period] = time.split(" ")
-	const [hours, minutes] = timePart.split(":").map(Number)
-	const adjustedHours = period === "PM" && hours !== 12 ? hours + 12 : period === "AM" && hours === 12 ? 0 : hours
+const parseSlotTimeToDate = (time24: string, date: Date) => {
+	const [hours, minutes] = time24.split(":").map(Number)
 	const timeDate = new Date(date)
-	timeDate.setHours(adjustedHours, minutes, 0, 0)
+	timeDate.setHours(hours, minutes, 0, 0)
 	return timeDate
 }
 
@@ -76,7 +73,13 @@ export function EditCartItemDialog({ item, onUpdate }: EditCartItemDialogProps) 
 	const [services, setServices] = useState<Service[]>([])
 	const [selectedService, setSelectedService] = useState<string>(item.serviceId)
 	const [selectedDate, setSelectedDate] = useState<number | null>(null)
-	const [selectedTime, setSelectedTime] = useState<string>(item.time)
+	const [selectedTime, setSelectedTime] = useState<string>(() => {
+		try {
+			return normalizeTimeTo24h(item.time)
+		} catch {
+			return item.time
+		}
+	})
 	const [photos, setPhotos] = useState<string[]>(item.photos || [])
 	const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(defaultTimeSlots)
 	const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1)
@@ -127,10 +130,10 @@ export function EditCartItemDialog({ item, onUpdate }: EditCartItemDialogProps) 
 				const response = await fetch(`/api/v1/bookings?startDate=${startDate}&endDate=${endDate}&limit=1000`)
 				if (!response.ok) throw new Error("Failed to fetch bookings")
 				const data = await response.json()
-				const bookings = data.bookings || []
+				const bookings = data.bookings ?? (Array.isArray(data) ? data : [])
 				const counts: BookingCount = {}
 				bookings.forEach((booking: { date: string }) => {
-					const day = new Date(booking.date).getDate()
+					const day = new Date(booking.date.includes("T") ? booking.date : `${booking.date}T12:00:00`).getDate()
 					counts[day] = (counts[day] || 0) + 1
 				})
 				setBookingCounts(counts)
@@ -157,16 +160,22 @@ export function EditCartItemDialog({ item, onUpdate }: EditCartItemDialogProps) 
 				const bookings = data.bookings || []
 				const bookedTimes = bookings.map((booking: { time: string }) => booking.time)
 
-				// Exclude current item's time if editing the same date/service
-				const excludeTime = item.date === date && item.serviceId === selectedService ? item.time : null
-				const filteredBookedTimes = bookedTimes.filter((time: string) => time !== excludeTime)
+				let excludeNormalized: string | null = null
+				if (item.date === date && item.serviceId === selectedService) {
+					try {
+						excludeNormalized = normalizeTimeTo24h(item.time)
+					} catch {
+						excludeNormalized = item.time
+					}
+				}
+				const filteredBookedTimes = bookedTimes.filter((t: string) => t !== excludeNormalized)
 
 				const isToday = selectedDate === todayDay && currentMonth === todayMonth && currentYear === todayYear
 				const selectedDateTime = new Date(currentYear, currentMonth - 1, selectedDate)
 
 				const updatedTimeSlots = defaultTimeSlots.map((slot) => {
 					const isBooked = filteredBookedTimes.includes(slot.time)
-					const slotTime = parseTimeToDate(slot.time, selectedDateTime)
+					const slotTime = parseSlotTimeToDate(slot.time, selectedDateTime)
 					if (isBooked) {
 						return { ...slot, available: false, isBooked: true }
 					}

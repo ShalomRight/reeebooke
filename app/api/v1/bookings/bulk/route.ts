@@ -7,6 +7,8 @@ import { getBookingConfirmationEmail, getBookingCompletedEmail } from "@/lib/ema
 import { getDiscountAppliedEmail } from "@/lib/email-templates/discounts"
 import { getReferralRewardEmail } from "@/lib/email-templates/referrals"
 import { awardReferralPointsOnPayment } from "@/lib/referral-utils"
+import { normalizeBookingDateYmd, normalizeTimeTo24h } from "@/lib/booking/time"
+import { isZapSlotBookable } from "@/lib/booking/slot-guard"
 import bcrypt from "bcryptjs"
 import { getServerSession } from "next-auth/next"
 import { type NextRequest, NextResponse } from "next/server"
@@ -160,19 +162,63 @@ async function handleBulkBooking(req: NextRequest) {
 			}
 		}
 
+		function isSqliteUniqueViolation(e: unknown): boolean {
+			const msg = e instanceof Error ? e.message : String(e)
+			return msg.includes("UNIQUE") || msg.includes("unique") || msg.includes("SQLITE_CONSTRAINT_UNIQUE")
+		}
+
 		// Create bookings for each item in cart
 		const insertedBookings = []
 		for (const item of cartItems) {
-			const [insertedBooking] = await db.insert(bookings).values({
-				serviceId: item.serviceId,
-				date: item.date, // ISO string as passed from client
-				time: item.time,
-				paymentMethod,
-				userName,
-				phone,
-				email: finalEmail,
-				userId: finalUserId || null,
-			}).returning()
+			let dateYmd: string
+			let time24: string
+			try {
+				dateYmd = normalizeBookingDateYmd(item.date)
+				time24 = normalizeTimeTo24h(item.time)
+			} catch {
+				return NextResponse.json({ error: "Invalid cart item date or time" }, { status: 400 })
+			}
+
+			const slotOk = await isZapSlotBookable(item.serviceId, dateYmd, time24)
+			if (!slotOk) {
+				return NextResponse.json(
+					{
+						error:
+							"One or more selected times are no longer available. Please return to the booking flow and pick a new time.",
+					},
+					{ status: 409 },
+				)
+			}
+
+			let insertedBooking: (typeof bookings.$inferSelect)
+			try {
+				const [row] = await db.insert(bookings).values({
+					serviceId: item.serviceId,
+					date: dateYmd,
+					time: time24,
+					paymentMethod,
+					userName,
+					phone,
+					email: finalEmail,
+					userId: finalUserId || null,
+				}).returning()
+				insertedBooking = row
+			} catch (e) {
+				if (isSqliteUniqueViolation(e)) {
+					return NextResponse.json(
+						{
+							error:
+								"A slot was taken while you were checking out. Please choose another time and try again.",
+						},
+						{ status: 409 },
+					)
+				}
+				throw e
+			}
+
+			if (!insertedBooking) {
+				return NextResponse.json({ error: "Failed to create booking" }, { status: 500 })
+			}
 
 			if (item.photos && item.photos.length > 0) {
 				await Promise.all(

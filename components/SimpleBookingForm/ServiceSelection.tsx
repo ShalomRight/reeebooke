@@ -4,7 +4,7 @@ import { RatingDetailsDialog } from "@/components/ratings/RatingDetailsDialog"
 import { RatingDisplay } from "@/components/ratings/RatingDisplay"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useFavorites } from "@/hooks/use-favorites"
-import { Brush, Droplet, Footprints, Hand, Heart, Palette } from "lucide-react"
+import { Scissors, Droplet, Sparkles, Wind, Leaf, Heart, Palette } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useState } from "react"
 
@@ -59,15 +59,17 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 						// Map service names to icons (case-insensitive)
 						const serviceNameLower = service.name.toLowerCase()
 						const Icon =
-							serviceNameLower.includes("manicure")
-								? Hand
-								: serviceNameLower.includes("pedicure")
-									? Footprints
-									: serviceNameLower.includes("refill")
-										? Brush
-										: serviceNameLower.includes("nail art") || serviceNameLower.includes("nail-art")
-											? Palette
-											: Droplet
+							serviceNameLower.includes("cut") || serviceNameLower.includes("trim") || serviceNameLower.includes("shaping")
+								? Scissors
+								: serviceNameLower.includes("wash") || serviceNameLower.includes("treatment")
+									? Droplet
+									: serviceNameLower.includes("color") || serviceNameLower.includes("dye") || serviceNameLower.includes("highlight")
+										? Sparkles
+										: serviceNameLower.includes("twist") || serviceNameLower.includes("braid") || serviceNameLower.includes("locs")
+											? Wind
+											: serviceNameLower.includes("natural") || serviceNameLower.includes("organic")
+												? Leaf
+												: Scissors
 						const isSelected = selectedService === service.id
 						return (
 							<button
@@ -84,8 +86,7 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 									<div className="flex-1 text-left">
 										<div className="flex items-center gap-2">
 											<h3
-												className="font-semibold text-card-foreground text-lg"
-												style={{ fontFamily: "var(--font-space-grotesk)" }}
+												className="font-playfair text-[#1A2421] text-lg"
 											>
 												{service.name}
 											</h3>
@@ -146,7 +147,7 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 										</div>
 									</div>
 									<div className="text-right">
-										<span className="font-bold text-primary text-lg" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+										<span className="font-source font-bold text-[#BD9354] text-lg">
 											${service.price.toLocaleString()}
 										</span>
 									</div>

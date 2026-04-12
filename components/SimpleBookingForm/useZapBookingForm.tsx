@@ -3,14 +3,14 @@ import { toast } from "sonner"
 import { useSession } from "next-auth/react"
 import { useCallback, useEffect, useState } from "react"
 import { useServices } from "@/lib/swr/hooks/services"
-import { useBookings } from "@/lib/swr/hooks/bookings"
 import useSWR from "swr"
+import { format24hTo12hLabel } from "@/lib/booking/time"
 
 // Standard SWR fetcher
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 type Service = { id: string; name: string; price: number; stripePriceId?: string; rating?: number; ratingsCount?: number }
-type TimeSlot = { time: string; available: boolean; isBooked?: boolean }
+type TimeSlot = { time: string; displayLabel?: string; available: boolean; isBooked?: boolean }
 export type DailyCapacityMap = Record<number, { total: number; available: number }>
 
 const generateCalendarDays = (month: number, year: number) => {
@@ -95,13 +95,12 @@ export const useZapBookingForm = (initialServiceId?: string) => {
 		}
 		
 		if (zapSlotsData?.data?.slots) {
-            // Map Zap TimeSlot[] to our local TimeSlot[] format
-			const slots = zapSlotsData.data.slots.map((s: any) => ({
-                // parse military time to standard AM/PM if desired, or keep "14:00" -> "2:00 PM"
-                time: convertMilitaryToStandard(s.start_time),
-                available: s.is_available,
-                isBooked: !s.is_available
-            }))
+			const slots = zapSlotsData.data.slots.map((s: { start_time: string; is_available: boolean }) => ({
+				time: s.start_time,
+				displayLabel: format24hTo12hLabel(s.start_time),
+				available: s.is_available,
+				isBooked: !s.is_available,
+			}))
 			setTimeSlots(slots)
             
             // Auto deselect if the current selectedTime is no longer in the list or is not available
@@ -139,12 +138,34 @@ export const useZapBookingForm = (initialServiceId?: string) => {
 		setError(null)
 		try {
 			const dateStr = `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`
-			const bookingData = { serviceIds: [selectedService], date: dateStr, time: selectedTime, photoUrls: photos }
+			const digits = session?.user?.phone?.replace(/\D/g, "") ?? ""
+			const phone =
+				digits.length >= 7 && digits.length <= 15
+					? `+${digits}`
+					: ""
+			if (!session?.user?.name?.trim() || !phone) {
+				toast.error("Please sign in and add your name and phone on your profile before booking.")
+				return
+			}
+			const bookingData = {
+				serviceIds: [selectedService],
+				date: dateStr,
+				time: selectedTime,
+				paymentMethod: "cash" as const,
+				userName: session.user.name.trim(),
+				phone,
+				email: session.user.email ?? undefined,
+				photoUrls: photos,
+			}
 			const res = await fetch("/api/v1/bookings", {
 				method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bookingData)
 			})
-			if (!res.ok) throw new Error((await res.json()).error || "Failed to create booking")
-			
+			const body = await res.json().catch(() => ({}))
+			if (!res.ok) {
+				const msg = typeof body?.error === "string" ? body.error : "Failed to create booking"
+				throw new Error(msg)
+			}
+
 			toast.success("Booking confirmed!")
 			setSelectedService(""); setSelectedDate(null); setSelectedTime(""); setPhotos([]); setError(null)
 		} catch (err: any) {
@@ -162,13 +183,4 @@ export const useZapBookingForm = (initialServiceId?: string) => {
 		calendarDays, weekDays, timeSlots, dailyCapacities, error, isSubmitting,
 		handleSubmit, totalPrice, selectedServiceData, removePhoto, isLoadingTimeSlots, isLoadingServices,
 	}
-}
-
-function convertMilitaryToStandard(time: string) {
-    const [hourStr, minuteStr] = time.split(':');
-    let hour = parseInt(hourStr, 10);
-    const suffix = hour >= 12 ? 'PM' : 'AM';
-    if (hour === 0) hour = 12;
-    if (hour > 12) hour -= 12;
-    return `${hour}:${minuteStr} ${suffix}`;
 }

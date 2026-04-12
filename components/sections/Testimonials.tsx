@@ -23,8 +23,8 @@ export function Testimonials() {
     <section className="py-24 md:py-32 bg-white">
       <Container>
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-3xl md:text-4xl text-[#2D3A31] mb-4">
-             Client <span className="italic text-[#8C9A84]">Notes</span>
+          <h2 className="font-playfair text-3xl md:text-4xl text-[#1A2421] mb-4">
+             Client <span className="italic text-[#5B7065]">Notes</span>
           </h2>
         </div>
 
@@ -36,13 +36,13 @@ export function Testimonials() {
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true, margin: "-50px" }}
                transition={{ duration: 0.6, delay: idx * 0.1, ease: "easeOut" }}
-               className="bg-[#F9F8F4] p-8 md:p-10 rounded-3xl border border-[#E6E2DA]/50 flex flex-col h-full"
+               className="bg-[#FDFCFB] p-8 md:p-10 rounded-3xl border border-[#E2E0D9]/50 flex flex-col h-full"
              >
-                <div className="text-4xl text-[#DCCFC2] font-playfair leading-none mb-4">"</div>
-                <p className="font-source text-[#2D3A31]/80 text-lg leading-relaxed flex-1">
+                <div className="text-4xl text-[#C8B9A6] font-playfair leading-none mb-4">"</div>
+                <p className="font-source text-[#1A2421]/80 text-lg leading-relaxed flex-1">
                    {quote.text}
                 </p>
-                <p className="mt-8 font-playfair font-semibold text-[#8C9A84] tracking-wider">— {quote.author}</p>
+                <p className="mt-8 font-playfair font-semibold text-[#5B7065] tracking-wider">— {quote.author}</p>
              </motion.div>
            ))}
         </div>

@@ -1,6 +1,6 @@
 import { db } from "@/src/db"
 import { schedules, schedulePeriods, bookings } from "@/src/db/schema"
-import { eq, and, gte, lt } from "drizzle-orm"
+import { eq, and, gte, lt, ne } from "drizzle-orm"
 import { format, parseISO, getDay, getISOWeek, differenceInDays } from "date-fns"
 
 export type TimeSlot = {
@@ -155,7 +155,8 @@ export async function getBookableSlots(
       where: and(
         eq(bookings.serviceId, resourceId),
         gte(bookings.date, dateStr),
-        lt(bookings.date, format(nextDate, "yyyy-MM-dd"))
+        lt(bookings.date, format(nextDate, "yyyy-MM-dd")),
+        ne(bookings.status, "CANCELLED")
       ),
       columns: { time: true } // "HH:mm"
     })

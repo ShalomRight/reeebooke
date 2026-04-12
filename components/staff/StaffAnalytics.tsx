@@ -64,13 +64,13 @@ export function StaffAnalytics() {
 	// Revenue calculations
 	const todayRevenue = todayBookings
 		.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED")
-		.reduce((sum, b) => sum + b.service.price, 0)
+		.reduce((sum, b) => sum + (b.service?.price || 0), 0)
 	const weekRevenue = weekBookings
 		.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED")
-		.reduce((sum, b) => sum + b.service.price, 0)
+		.reduce((sum, b) => sum + (b.service?.price || 0), 0)
 	const monthRevenue = monthBookings
 		.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED")
-		.reduce((sum, b) => sum + b.service.price, 0)
+		.reduce((sum, b) => sum + (b.service?.price || 0), 0)
 
 	// Completion rates
 	const todayCompletionRate =
@@ -94,7 +94,7 @@ export function StaffAnalytics() {
 		const completed = weekBookings.filter((b) => b.status === "COMPLETED").length
 		const revenue = weekBookings
 			.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED")
-			.reduce((sum, b) => sum + b.service.price, 0)
+			.reduce((sum, b) => sum + (b.service?.price || 0), 0)
 
 		return {
 			week: `Week ${4 - i}`,
@@ -131,6 +131,7 @@ export function StaffAnalytics() {
 	// Service breakdown
 	const serviceBreakdown = bookings?.reduce(
 		(acc, booking) => {
+			if (!booking.service) return acc
 			const serviceName = booking.service.name
 			if (!acc[serviceName]) {
 				acc[serviceName] = { name: serviceName, count: 0 }

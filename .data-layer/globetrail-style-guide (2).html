@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlobeTrail — UI Style Guide v1.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+/* ══════════════════════════════════════════
+   GLOBETRAIL DESIGN TOKENS
+══════════════════════════════════════════ */
+:root {
+  /* ── Core Palette ── */
+  --pink:        #FF1B8D;
+  --pink-dark:   #D4007A;
+  --pink-light:  #FFD6EE;
+  --blue:        #0041C2;
+  --blue-dark:   #00288A;
+  --blue-light:  #C9D8FF;
+  --cream:       #F5F0E4;
+  --cream-2:     #EDE7D3;
+  --cream-3:     #DDD5BF;
+  --black:       #0A0A0A;
+  --white:       #FFFFFF;
+  --yellow:      #FFD93D;
+  --yellow-dark: #E5C000;
+
+  /* ── Typography ── */
+  --font-display: 'Anton', Impact, sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+
+  /* ── Border ── */
+  --border:       3px solid var(--black);
+  --border-2:     2px solid var(--black);
+  --border-thin:  1.5px solid var(--black);
+
+  /* ── Radius ── */
+  --r-none:  0px;
+  --r-sm:    4px;
+  --r-md:    8px;
+  --r-lg:    16px;
+  --r-pill:  100px;
+  --r-full:  50%;
+
+  /* ── Shadows (brutalist offset) ── */
+  --sh-sm:   3px 3px 0px var(--black);
+  --sh-md:   5px 5px 0px var(--black);
+  --sh-lg:   8px 8px 0px var(--black);
+  --sh-pink: 5px 5px 0px var(--pink);
+  --sh-blue: 5px 5px 0px var(--blue);
+
+  /* ── Spacing ── */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px;
+  --sp-4: 16px; --sp-5: 20px; --sp-6: 24px;
+  --sp-8: 32px; --sp-10: 40px; --sp-12: 48px;
+  --sp-16: 64px;
+
+  --transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ══════════════════════════════════════════
+   RESET
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--black);
+  font-size: 15px;
+  line-height: 1.6;
+}
+a { text-decoration: none; color: inherit; }
+button { border: none; cursor: pointer; font-family: inherit; }
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 230px;
+  background: var(--black);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 0 0 48px;
+  border-right: var(--border);
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.sidebar-logo {
+  padding: 26px 22px 22px;
+  border-bottom: var(--border);
+  margin-bottom: 12px;
+}
+
+.sidebar-wordmark {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.sidebar-wordmark .gl { color: var(--white); }
+.sidebar-wordmark .orb {
+  display: inline-flex;
+  width: 22px; height: 22px;
+  background: var(--pink);
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  margin: 0 1px;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+.sidebar-wordmark .be { color: var(--white); }
+.sidebar-wordmark .trail { color: var(--pink); }
+
+.sidebar-version {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sidebar-section {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  padding: 14px 22px 6px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 22px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,.5);
+  transition: var(--transition);
+  border-left: 3px solid transparent;
+}
+.sidebar-link:hover, .sidebar-link.active {
+  color: var(--white);
+  background: rgba(255,27,141,.1);
+  border-left-color: var(--pink);
+}
+.sidebar-link .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  flex-shrink: 0;
+}
+.sidebar-link.active .dot { background: var(--pink); }
+
+/* ══════════════════════════════════════════
+   MAIN
+══════════════════════════════════════════ */
+.main { margin-left: 230px; }
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+.hero {
+  background: var(--cream);
+  border-bottom: var(--border);
+  padding: 72px 64px 56px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-stamp-bg {
+  position: absolute;
+  top: -20px; right: 60px;
+  opacity: 0.06;
+  font-family: var(--font-display);
+  font-size: 200px;
+  color: var(--black);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.02em;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--pink);
+  border: var(--border);
+  padding: 5px 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 80px;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+
+.hero-title .highlight { color: var(--pink); }
+
+.hero-subtitle {
+  font-size: 16px;
+  color: #444;
+  font-weight: 400;
+  max-width: 500px;
+  line-height: 1.6;
+  margin-bottom: 36px;
+  margin-top: 14px;
+}
+
+.hero-meta-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.hero-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #555;
+  border: var(--border-2);
+  padding: 5px 12px;
+  background: var(--white);
+}
+
+.hero-meta-pill strong { color: var(--black); }
+
+/* ══════════════════════════════════════════
+   SECTION SHELL
+══════════════════════════════════════════ */
+.section {
+  padding: 64px;
+  border-bottom: var(--border);
+}
+
+.section:nth-child(even) { background: var(--white); }
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--pink);
+  color: var(--white);
+  padding: 3px 10px;
+  border: var(--border-2);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--black);
+  margin-bottom: 10px;
+}
+
+.section-desc {
+  font-size: 14.5px;
+  color: #555;
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.section-header { margin-bottom: 44px; }
+
+/* ══════════════════════════════════════════
+   DIVIDER
+══════════════════════════════════════════ */
+.divider {
+  height: 3px;
+  background: var(--black);
+  margin: 36px 0;
+  position: relative;
+}
+
+/* ══════════════════════════════════════════
+   COMP LABEL
+══════════════════════════════════════════ */
+.comp-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 14px;
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.comp-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 2px;
+  background: var(--pink);
+}
+.comp-label:first-child { margin-top: 0; }
+
+/* ══════════════════════════════════════════
+   COLORS
+══════════════════════════════════════════ */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.swatch {
+  border: var(--border);
+  box-shadow: var(--sh-sm);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.swatch-block {
+  height: 80px;
+  width: 100%;
+  position: relative;
+}
+
+.swatch-num {
+  position: absolute;
+  bottom: 6px; right: 8px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: rgba(255,255,255,.3);
+  line-height: 1;
+}
+
+.swatch-info {
+  padding: 10px 12px;
+  border-top: var(--border-2);
+}
+
+.swatch-name {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 2px;
+}
+
+.swatch-hex {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #666;
+}
+
+.swatch-token {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--pink-dark);
+  margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════
+   GRADIENTS / SURFACES
+══════════════════════════════════════════ */
+.grad-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.grad-swatch {
+  height: 100px;
+  border: var(--border);
+  box-shadow: var(--sh-sm);
+  display: flex;
+  align-items: flex-end;
+  padding: 10px 12px;
+}
+
+.grad-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,.9);
+  text-shadow: 1px 1px 0 rgba(0,0,0,.4);
+}
+
+.grad-label.dark { color: rgba(0,0,0,.7); text-shadow: none; }
+
+/* ══════════════════════════════════════════
+   TYPOGRAPHY
+══════════════════════════════════════════ */
+.type-specimen {
+  border: var(--border);
+  background: var(--white);
+  box-shadow: var(--sh-md);
+  overflow: hidden;
+}
+
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 28px;
+  padding: 20px 28px;
+  border-bottom: var(--border-2);
+}
+.type-row:last-child { border-bottom: none; }
+
+.type-meta {
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.type-name {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+}
+
+.type-specs {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #bbb;
+  line-height: 1.5;
+}
+
+/* Type scale */
+.ts-d1  { font-family: var(--font-display); font-size: 72px; line-height: 0.95; color: var(--black); letter-spacing: -0.01em; }
+.ts-d2  { font-family: var(--font-display); font-size: 56px; line-height: 1; color: var(--black); letter-spacing: -0.01em; }
+.ts-h1  { font-family: var(--font-display); font-size: 40px; line-height: 1.05; color: var(--black); }
+.ts-h2  { font-family: var(--font-display); font-size: 28px; line-height: 1.1; color: var(--black); }
+.ts-h3  { font-family: var(--font-body); font-size: 20px; font-weight: 700; line-height: 1.2; color: var(--black); }
+.ts-body { font-family: var(--font-body); font-size: 15px; font-weight: 400; line-height: 1.65; color: #333; }
+.ts-sm  { font-family: var(--font-body); font-size: 13px; font-weight: 400; line-height: 1.55; color: #666; }
+.ts-mono { font-family: var(--font-mono); font-size: 12px; color: #444; letter-spacing: 0.04em; }
+.ts-cap { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #888; }
+
+/* pairing block */
+.pairing-block {
+  background: var(--black);
+  border: var(--border);
+  padding: 40px 48px;
+  box-shadow: var(--sh-lg);
+  margin-top: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pairing-block::before {
+  content: 'Aa';
+  position: absolute;
+  right: 40px; top: 20px;
+  font-family: var(--font-display);
+  font-size: 160px;
+  color: rgba(255,255,255,.04);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.pairing-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 14px;
+}
+
+.pairing-h {
+  font-family: var(--font-display);
+  font-size: 60px;
+  line-height: 1;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.pairing-h .p { color: var(--pink); }
+.pairing-h .b { color: var(--blue-light); }
+
+.pairing-sub {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,.5);
+  max-width: 420px;
+  line-height: 1.65;
+  margin-top: 18px;
+  border-top: 2px solid rgba(255,255,255,.1);
+  padding-top: 18px;
+}
+
+/* ══════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════ */
+.comp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  border: var(--border);
+  padding: 12px 22px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--pink);
+  color: var(--white);
+  box-shadow: var(--sh-sm);
+}
+.btn-primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-md);
+}
+
+.btn-blue {
+  background: var(--blue);
+  color: var(--white);
+  box-shadow: var(--sh-sm);
+}
+.btn-blue:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-md);
+}
+
+.btn-outline {
+  background: var(--white);
+  color: var(--black);
+  box-shadow: var(--sh-sm);
+}
+.btn-outline:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-md);
+}
+
+.btn-yellow {
+  background: var(--yellow);
+  color: var(--black);
+  box-shadow: var(--sh-sm);
+}
+.btn-yellow:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-md);
+}
+
+.btn-cream {
+  background: var(--cream);
+  color: var(--black);
+  box-shadow: var(--sh-sm);
+}
+.btn-cream:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-md);
+}
+
+.btn-black {
+  background: var(--black);
+  color: var(--white);
+  box-shadow: 5px 5px 0px var(--pink);
+}
+.btn-black:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0px var(--pink);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--black);
+  border-color: var(--black);
+  box-shadow: none;
+}
+.btn-ghost:hover { background: var(--cream-2); }
+
+.btn-sm { padding: 7px 14px; font-size: 11.5px; }
+.btn-lg { padding: 16px 30px; font-size: 15px; }
+
+/* ══════════════════════════════════════════
+   CHIPS & BADGES
+══════════════════════════════════════════ */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 13px;
+  border: var(--border-2);
+  cursor: pointer;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.chip-cream    { background: var(--cream); color: var(--black); }
+.chip-cream:hover { background: var(--cream-2); }
+.chip-pink     { background: var(--pink); color: var(--white); }
+.chip-blue     { background: var(--blue); color: var(--white); }
+.chip-yellow   { background: var(--yellow); color: var(--black); }
+.chip-white    { background: var(--white); color: var(--black); }
+
+/* badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border: 2px solid;
+}
+
+.badge-pink  { background: var(--pink-light); color: var(--pink-dark); border-color: var(--pink); }
+.badge-blue  { background: var(--blue-light); color: var(--blue-dark); border-color: var(--blue); }
+.badge-yell  { background: var(--yellow); color: var(--black); border-color: var(--yellow-dark); }
+.badge-black { background: var(--black); color: var(--white); border-color: var(--black); }
+
+/* ══════════════════════════════════════════
+   STAMP CARD (Signature component)
+══════════════════════════════════════════ */
+.stamp-card {
+  background: var(--white);
+  border: var(--border);
+  box-shadow: var(--sh-md);
+  width: 160px;
+  position: relative;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+/* Perforated edge via SVG repeating radial-gradient */
+.stamp-card::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background-image:
+    radial-gradient(circle, var(--cream) 3px, transparent 3px),
+    radial-gradient(circle, var(--cream) 3px, transparent 3px),
+    radial-gradient(circle, var(--cream) 3px, transparent 3px),
+    radial-gradient(circle, var(--cream) 3px, transparent 3px);
+  background-position: top center, bottom center, left center, right center;
+  background-size: 14px 8px, 14px 8px, 8px 14px, 8px 14px;
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stamp-card > * { position: relative; z-index: 1; }
+
+.stamp-img {
+  height: 110px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  border-bottom: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stamp-img-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; height: 100%;
+  font-size: 44px;
+}
+
+.stamp-postmark {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 36px; height: 36px;
+  border: 2.5px solid rgba(255,255,255,.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: rgba(255,255,255,.8);
+  transform: rotate(-15deg);
+}
+
+.stamp-body {
+  padding: 10px 12px;
+}
+
+.stamp-country {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 3px;
+}
+
+.stamp-city {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--black);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.stamp-price {
+  margin-top: 8px;
+  background: var(--pink);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  display: inline-block;
+  border: 2px solid var(--black);
+}
+
+/* ══════════════════════════════════════════
+   DESTINATION CIRCLE (Popular Destinations)
+══════════════════════════════════════════ */
+.dest-circles-wrap {
+  background: var(--pink);
+  border: var(--border);
+  padding: 32px;
+  box-shadow: var(--sh-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dest-circle {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  border: var(--border);
+  background: var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  cursor: pointer;
+  box-shadow: var(--sh-sm);
+  transition: var(--transition);
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.dest-circle:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--sh-md);
+}
+
+.dest-circle .circle-label {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  background: rgba(0,0,0,.65);
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 3px 0;
+  text-transform: uppercase;
+}
+
+.dest-circle-lg {
+  width: 120px; height: 120px;
+}
+
+/* ══════════════════════════════════════════
+   STAT BOX
+══════════════════════════════════════════ */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: var(--border);
+  background: var(--white);
+  box-shadow: var(--sh-md);
+}
+
+.stat-box {
+  padding: 24px 20px;
+  border-right: var(--border-2);
+  text-align: center;
+}
+.stat-box:last-child { border-right: none; }
+
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 42px;
+  line-height: 1;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+
+.stat-num .stat-plus { color: var(--pink); }
+
+.stat-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ══════════════════════════════════════════
+   STEP / HOW IT WORKS CARD
+══════════════════════════════════════════ */
+.steps-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: var(--border);
+  box-shadow: var(--sh-md);
+  background: var(--blue);
+}
+
+.step-card {
+  padding: 28px 24px;
+  border-right: var(--border-2);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.step-card:last-child { border-right: none; }
+
+.step-num {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--pink);
+  border: 2.5px solid var(--pink);
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-bg-num {
+  position: absolute;
+  bottom: -10px; right: 10px;
+  font-family: var(--font-display);
+  font-size: 100px;
+  color: rgba(255,255,255,.04);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.step-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--white);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-desc {
+  font-size: 12.5px;
+  color: rgba(255,255,255,.65);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* ══════════════════════════════════════════
+   TESTIMONIAL CARD
+══════════════════════════════════════════ */
+.testimonial-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.testimonial-card {
+  background: var(--white);
+  border: var(--border);
+  padding: 24px 22px;
+  box-shadow: var(--sh-sm);
+  position: relative;
+}
+
+.testimonial-quote {
+  font-family: var(--font-display);
+  font-size: 48px;
+  color: var(--pink);
+  line-height: 0.7;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.testimonial-text {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.testimonial-author {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.testimonial-origin {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════
+   SEARCH / FORM INPUTS
+══════════════════════════════════════════ */
+.search-bar {
+  display: flex;
+  border: var(--border);
+  background: var(--white);
+  box-shadow: var(--sh-sm);
+  overflow: hidden;
+}
+
+.search-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-right: var(--border-2);
+}
+
+.search-field:last-of-type { border-right: none; }
+
+.search-icon { color: #888; flex-shrink: 0; }
+
+.search-input {
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--black);
+  outline: none;
+  width: 100%;
+}
+
+.search-input::placeholder { color: #bbb; }
+
+.search-btn {
+  background: var(--blue);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0 22px;
+  border: none;
+  cursor: pointer;
+  border-left: var(--border-2);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+.search-btn:hover { background: var(--blue-dark); }
+
+/* Input standalone */
+.input-field {
+  display: block;
+  width: 100%;
+  background: var(--white);
+  border: var(--border);
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--black);
+  outline: none;
+  box-shadow: var(--sh-sm);
+  transition: var(--transition);
+}
+.input-field:focus {
+  box-shadow: var(--sh-md);
+  outline: none;
+}
+.input-field::placeholder { color: #bbb; }
+
+.input-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--black);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ══════════════════════════════════════════
+   CTA BANNER
+══════════════════════════════════════════ */
+.cta-banner {
+  background: var(--blue);
+  border: var(--border);
+  padding: 44px 48px;
+  box-shadow: var(--sh-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-banner::after {
+  content: '';
+  position: absolute;
+  right: -60px; top: -60px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.08);
+  pointer-events: none;
+}
+
+.cta-banner-title {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+.cta-banner-title .accent { color: var(--yellow); }
+
+.cta-banner-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,.6);
+  max-width: 380px;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.cta-banner-btns {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════════
+   NAVIGATION BAR
+══════════════════════════════════════════ */
+.navbar-demo {
+  background: var(--white);
+  border: var(--border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  box-shadow: var(--sh-sm);
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--black);
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-logo .orb {
+  display: inline-block;
+  width: 18px; height: 18px;
+  background: var(--pink);
+  border-radius: 50%;
+  border: 2px solid var(--black);
+  margin: 0 1px;
+  vertical-align: middle;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  list-style: none;
+}
+
+.nav-links li a {
+  display: block;
+  padding: 8px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--black);
+  border: 2px solid transparent;
+  transition: var(--transition);
+}
+.nav-links li a:hover {
+  background: var(--cream);
+  border-color: var(--black);
+}
+
+.nav-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: var(--border-2);
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--black);
+  cursor: pointer;
+  background: var(--cream);
+  transition: var(--transition);
+}
+.nav-search:hover { background: var(--cream-2); box-shadow: var(--sh-sm); }
+
+/* ══════════════════════════════════════════
+   SPACING SCALE
+══════════════════════════════════════════ */
+.spacing-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: var(--border);
+  background: var(--white);
+  box-shadow: var(--sh-sm);
+}
+
+.spacing-table th {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  text-align: left;
+  border-right: var(--border-2);
+}
+
+.spacing-table td {
+  padding: 10px 16px;
+  border-bottom: var(--border-2);
+  border-right: var(--border-2);
+  font-size: 13px;
+}
+.spacing-table tr:last-child td { border-bottom: none; }
+
+.spacing-table td:last-child,
+.spacing-table th:last-child { border-right: none; }
+
+.sp-bar {
+  background: var(--pink);
+  height: 12px;
+  border: 2px solid var(--black);
+  display: inline-block;
+}
+
+/* ══════════════════════════════════════════
+   SHADOW DEMO
+══════════════════════════════════════════ */
+.shadow-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-end;
+}
+
+.shadow-card {
+  background: var(--white);
+  border: var(--border);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 150px;
+}
+
+.shadow-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.shadow-val {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--pink-dark);
+  word-break: break-all;
+}
+
+/* ══════════════════════════════════════════
+   ICON GRID
+══════════════════════════════════════════ */
+.icon-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 72px;
+}
+
+.icon-box {
+  width: 48px; height: 48px;
+  background: var(--white);
+  border: var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sh-sm);
+}
+.icon-box svg { width: 20px; height: 20px; stroke: var(--black); }
+
+.icon-name {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #888;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ══════════════════════════════════════════
+   MOTION TABLE
+══════════════════════════════════════════ */
+.motion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.motion-card {
+  background: var(--white);
+  border: var(--border);
+  padding: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.motion-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--pink-dark);
+  margin-bottom: 8px;
+}
+
+.motion-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+
+.motion-desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  margin-top: 8px;
+  border-top: 2px solid var(--cream-2);
+  padding-top: 8px;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCK
+══════════════════════════════════════════ */
+.code-block {
+  background: var(--black);
+  border: var(--border);
+  padding: 28px 32px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.9;
+  color: rgba(255,255,255,.65);
+  overflow-x: auto;
+  box-shadow: var(--sh-md);
+}
+
+.c-comment { color: rgba(255,255,255,.2); font-style: italic; }
+.c-key     { color: #A9A2E0; }
+.c-val     { color: var(--pink); }
+.c-str     { color: var(--yellow); }
+
+/* ══════════════════════════════════════════
+   NOTE
+══════════════════════════════════════════ */
+.note {
+  background: var(--yellow);
+  border: var(--border);
+  padding: 13px 18px;
+  font-size: 13px;
+  color: var(--black);
+  line-height: 1.6;
+  margin-top: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.note strong { font-weight: 700; }
+
+/* ══════════════════════════════════════════
+   TWO-COL / THREE-COL
+══════════════════════════════════════════ */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+/* ══════════════════════════════════════════
+   LAYOUT ANATOMY
+══════════════════════════════════════════ */
+.layout-demo {
+  border: var(--border);
+  background: var(--white);
+  box-shadow: var(--sh-md);
+  overflow: hidden;
+}
+
+.layout-nav {
+  background: var(--black);
+  height: 44px;
+  border-bottom: var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+}
+.layout-nav .l-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--pink);
+}
+.layout-nav .l-dot:nth-child(2) { background: var(--yellow); }
+.layout-nav .l-dot:nth-child(3) { background: var(--blue-light); }
+
+.layout-hero-band {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--cream) 0, var(--cream) 10px,
+    var(--cream-2) 10px, var(--cream-2) 20px
+  );
+  height: 80px;
+  border-bottom: var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.layout-hero-band span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #aaa;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: var(--white);
+  border: 2px solid var(--cream-3);
+  padding: 3px 10px;
+}
+
+.layout-body-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  height: 60px;
+}
+
+.layout-cell {
+  border-right: var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.layout-cell:last-child { border-right: none; }
+.layout-cell span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #bbb;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.layout-footer {
+  background: var(--black);
+  height: 30px;
+  border-top: var(--border);
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═════════════════ SIDEBAR ═════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-wordmark">
+      <span class="gl">GL</span><span class="orb"></span><span class="be">BE</span><span class="trail">TRAIL</span>
+    </div>
+    <div class="sidebar-version">Style Guide v1.0</div>
+  </div>
+
+  <div class="sidebar-section">Foundations</div>
+  <a href="#overview"    class="sidebar-link active"><span class="dot"></span>Overview</a>
+  <a href="#colors"      class="sidebar-link"><span class="dot"></span>Color Palette</a>
+  <a href="#surfaces"    class="sidebar-link"><span class="dot"></span>Surfaces & Fills</a>
+  <a href="#typography"  class="sidebar-link"><span class="dot"></span>Typography</a>
+  <a href="#spacing"     class="sidebar-link"><span class="dot"></span>Spacing</a>
+  <a href="#elevation"   class="sidebar-link"><span class="dot"></span>Borders & Shadows</a>
+  <a href="#motion"      class="sidebar-link"><span class="dot"></span>Motion</a>
+
+  <div class="sidebar-section">Components</div>
+  <a href="#buttons"     class="sidebar-link"><span class="dot"></span>Buttons</a>
+  <a href="#chips"       class="sidebar-link"><span class="dot"></span>Chips & Badges</a>
+  <a href="#stamp-card"  class="sidebar-link"><span class="dot"></span>Stamp Card</a>
+  <a href="#dest-circles" class="sidebar-link"><span class="dot"></span>Destination Circles</a>
+  <a href="#stats"       class="sidebar-link"><span class="dot"></span>Stat Bar</a>
+  <a href="#steps"       class="sidebar-link"><span class="dot"></span>How It Works</a>
+  <a href="#testimonials" class="sidebar-link"><span class="dot"></span>Testimonials</a>
+  <a href="#search"      class="sidebar-link"><span class="dot"></span>Search & Inputs</a>
+  <a href="#cta"         class="sidebar-link"><span class="dot"></span>CTA Banner</a>
+  <a href="#navbar"      class="sidebar-link"><span class="dot"></span>Navigation Bar</a>
+  <a href="#icons"       class="sidebar-link"><span class="dot"></span>Icons</a>
+
+  <div class="sidebar-section">Reference</div>
+  <a href="#tokens"      class="sidebar-link"><span class="dot"></span>CSS Tokens</a>
+</nav>
+
+<!-- ═════════════════ MAIN ═════════════════ -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero" id="overview">
+    <div class="hero-stamp-bg">84</div>
+    <div class="hero-badge">● GlobeTrail Design System</div>
+    <h1 class="hero-title">PLAN.<br>BOOK.<br><span class="highlight">EXPLORE.</span></h1>
+    <p class="hero-subtitle">A bold, brutalist design language built for high-energy travel. Ink borders, offset shadows, postage stamp motifs, and an unapologetically loud pink-blue-cream palette.</p>
+    <div class="hero-meta-row">
+      <div class="hero-meta-pill"><strong>Version</strong> 1.0</div>
+      <div class="hero-meta-pill"><strong>Style</strong> Neo-Brutalist</div>
+      <div class="hero-meta-pill"><strong>Stack</strong> HTML / CSS / React</div>
+      <div class="hero-meta-pill"><strong>Updated</strong> April 2026</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ COLORS ═══════════════ -->
+  <section class="section" id="colors">
+    <div class="section-header">
+      <div class="section-tag">01 — Foundations</div>
+      <h2 class="section-title">COLOR PALETTE</h2>
+      <p class="section-desc">Three power colours — hot pink, royal blue, and warm cream — anchored by carbon black. Yellow is a supporting accent for CTAs and stat highlights. Never soften these tones.</p>
+    </div>
+
+    <div class="comp-label">Primary Brand</div>
+    <div class="color-grid">
+      <div class="swatch">
+        <div class="swatch-block" style="background:#FF1B8D"><div class="swatch-num">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Hot Pink</div><div class="swatch-hex">#FF1B8D</div><div class="swatch-token">--pink</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#D4007A"><div class="swatch-num">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Pink Dark</div><div class="swatch-hex">#D4007A</div><div class="swatch-token">--pink-dark</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#FFD6EE; border-bottom:3px solid #0A0A0A"><div class="swatch-num" style="color:rgba(0,0,0,.15)">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Pink Light</div><div class="swatch-hex">#FFD6EE</div><div class="swatch-token">--pink-light</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#0041C2"><div class="swatch-num">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Royal Blue</div><div class="swatch-hex">#0041C2</div><div class="swatch-token">--blue</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#00288A"><div class="swatch-num">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Blue Dark</div><div class="swatch-hex">#00288A</div><div class="swatch-token">--blue-dark</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#C9D8FF; border-bottom:3px solid #0A0A0A"><div class="swatch-num" style="color:rgba(0,0,0,.12)">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Blue Light</div><div class="swatch-hex">#C9D8FF</div><div class="swatch-token">--blue-light</div></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="comp-label">Neutrals & Accents</div>
+    <div class="color-grid">
+      <div class="swatch">
+        <div class="swatch-block" style="background:#F5F0E4; border-bottom:3px solid #0A0A0A"><div class="swatch-num" style="color:rgba(0,0,0,.1)">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Cream</div><div class="swatch-hex">#F5F0E4</div><div class="swatch-token">--cream</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#EDE7D3; border-bottom:3px solid #0A0A0A"></div>
+        <div class="swatch-info"><div class="swatch-name">Cream 2</div><div class="swatch-hex">#EDE7D3</div><div class="swatch-token">--cream-2</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#0A0A0A"><div class="swatch-num">84</div></div>
+        <div class="swatch-info"><div class="swatch-name">Carbon Black</div><div class="swatch-hex">#0A0A0A</div><div class="swatch-token">--black</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#FFFFFF; border-bottom:3px solid #0A0A0A"></div>
+        <div class="swatch-info"><div class="swatch-name">White</div><div class="swatch-hex">#FFFFFF</div><div class="swatch-token">--white</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#FFD93D; border-bottom:3px solid #0A0A0A"></div>
+        <div class="swatch-info"><div class="swatch-name">Yellow</div><div class="swatch-hex">#FFD93D</div><div class="swatch-token">--yellow</div></div>
+      </div>
+    </div>
+
+    <div class="note"><strong>Colour roles:</strong> Hot Pink → primary CTAs, badges, active states, accent underlines. Royal Blue → secondary CTAs, step cards, section backgrounds. Yellow → support CTAs, stat highlights, warning notes. Cream → page background. Carbon Black → all borders, shadows, text.</div>
+  </section>
+
+  <!-- ═══════════════ SURFACES ═══════════════ -->
+  <section class="section" id="surfaces">
+    <div class="section-header">
+      <div class="section-tag">01 — Foundations</div>
+      <h2 class="section-title">SURFACES & FILLS</h2>
+      <p class="section-desc">Sections alternate between cream and white. Large filled sections use flat solid blue or pink — no gradients except inside destination circles and stamp image areas.</p>
+    </div>
+    <div class="grad-row">
+      <div class="grad-swatch" style="background:#F5F0E4; border:3px solid #0A0A0A">
+        <div class="grad-label dark">Cream — page bg</div>
+      </div>
+      <div class="grad-swatch" style="background:#FFFFFF; border:3px solid #0A0A0A">
+        <div class="grad-label dark">White — section alt</div>
+      </div>
+      <div class="grad-swatch" style="background:#0041C2; border:3px solid #0A0A0A">
+        <div class="grad-label">Blue — step cards, hero sections</div>
+      </div>
+      <div class="grad-swatch" style="background:#FF1B8D; border:3px solid #0A0A0A">
+        <div class="grad-label">Pink — popular dest bg, CTA bands</div>
+      </div>
+      <div class="grad-swatch" style="background:#0A0A0A; border:3px solid #0A0A0A">
+        <div class="grad-label">Black — navbar, footer, sidebar</div>
+      </div>
+      <div class="grad-swatch" style="background:linear-gradient(135deg,#0041C2,#FF1B8D); border:3px solid #0A0A0A">
+        <div class="grad-label">Blue→Pink — destination circles only</div>
+      </div>
+    </div>
+    <div class="note"><strong>Rule:</strong> Gradients are only used inside circular destination images and stamp card thumbnail backgrounds — never on section backgrounds or buttons.</div>
+  </section>
+
+  <!-- ═══════════════ TYPOGRAPHY ═══════════════ -->
+  <section class="section" id="typography">
+    <div class="section-header">
+      <div class="section-tag">01 — Foundations</div>
+      <h2 class="section-title">TYPOGRAPHY</h2>
+      <p class="section-desc">Two families: Anton for all headlines (slab-heavy, condensed, screaming) and Space Grotesk for body and UI text. Space Mono is used for all metadata, codes, tags, and labels only.</p>
+    </div>
+
+    <!-- Pairing hero -->
+    <div class="pairing-block">
+      <div class="pairing-eyebrow">Font Pairing — Anton + Space Grotesk + Space Mono</div>
+      <div class="pairing-h"><span class="p">PLAN.</span> BOOK. <span class="b">EXPLORE.</span></div>
+      <div class="pairing-sub">Anton dominates every headline — uppercase, condensed, zero-kerning correction. Space Grotesk handles body copy, descriptions, and UI labels with precision. Space Mono locks in metadata: tags, prices, codes, filter labels, and navigation.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="comp-label">Type Scale</div>
+    <div class="type-specimen">
+      <div class="type-row" style="background:#0A0A0A">
+        <div class="type-meta">
+          <div class="type-name" style="color:rgba(255,255,255,.3)">Display 1</div>
+          <div class="type-specs" style="color:rgba(255,255,255,.2)">72px · Anton · lh 0.95</div>
+        </div>
+        <div class="ts-d1" style="color:#fff">ADVENTURES</div>
+      </div>
+      <div class="type-row" style="background:#0A0A0A">
+        <div class="type-meta">
+          <div class="type-name" style="color:rgba(255,255,255,.3)">Display 2</div>
+          <div class="type-specs" style="color:rgba(255,255,255,.2)">56px · Anton · lh 1.0</div>
+        </div>
+        <div class="ts-d2" style="color:#fff">PLAN YOUR TRIP</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Heading 1</div>
+          <div class="type-specs">40px · Anton · lh 1.05</div>
+        </div>
+        <div class="ts-h1">FEATURED DESTINATIONS</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Heading 2</div>
+          <div class="type-specs">28px · Anton · lh 1.1</div>
+        </div>
+        <div class="ts-h2">POPULAR TRIPS</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Heading 3</div>
+          <div class="type-specs">20px · Space Grotesk · 700</div>
+        </div>
+        <div class="ts-h3">How It Works</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Body</div>
+          <div class="type-specs">15px · Space Grotesk · 400 · lh 1.65</div>
+        </div>
+        <div class="ts-body">From dream destinations to curated itineraries, we help you plan, book, and enjoy every step of your journey.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">
+          <div class="type-name">Small</div>
+          <div class="type-specs">13px · Space Grotesk · 400</div>
+        </div>
+        <div class="ts-sm">Round trip · Flexible dates · 2 adults</div>
+      </div>
+      <div class="type-row" style="background:var(--cream)">
+        <div class="type-meta">
+          <div class="type-name">Mono Label</div>
+          <div class="type-specs">12px · Space Mono</div>
+        </div>
+        <div class="ts-mono">PACKAGES · PLANE · TRAIN · HOTEL</div>
+      </div>
+      <div class="type-row" style="background:var(--cream)">
+        <div class="type-meta">
+          <div class="type-name">Caption</div>
+          <div class="type-specs">10px · Space Mono · 700 · UC</div>
+        </div>
+        <div class="ts-cap">10K+ Trips planned · 5K+ Travelers · 24/7 Support</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="two-col">
+      <div>
+        <div class="comp-label">Display font — Anton</div>
+        <div style="background:var(--white); border:var(--border); padding:20px 22px; box-shadow:var(--sh-sm)">
+          <div style="font-family:var(--font-display); font-size:28px; color:var(--black); line-height:1.1; letter-spacing:0.01em">ABCDEFGHIJKLM<br>NOPQRSTUVWXYZ</div>
+          <div style="font-family:var(--font-display); font-size:28px; color:var(--pink); line-height:1.1; margin-top:6px">0123456789 ! ?</div>
+          <div class="divider" style="margin:12px 0; height:2px; background:var(--cream-2)"></div>
+          <div style="font-family:var(--font-mono); font-size:10px; color:#888; line-height:1.6">Single weight (400/normal) — always uppercase.<br>Never use sentence case with Anton.</div>
+        </div>
+      </div>
+      <div>
+        <div class="comp-label">UI / Mono — Space Mono</div>
+        <div style="background:var(--black); border:var(--border); padding:20px 22px; box-shadow:var(--sh-sm)">
+          <div style="font-family:var(--font-mono); font-size:13px; color:var(--yellow); line-height:1.8">PACKAGES · PLANE · TRAIN<br>HOTEL · SEARCH · 10K+</div>
+          <div style="font-family:var(--font-mono); font-size:13px; color:var(--pink); line-height:1.8; margin-top:8px">FROM / TO · DATES · SORT</div>
+          <div class="divider" style="margin:12px 0; height:2px; background:rgba(255,255,255,.1)"></div>
+          <div style="font-family:var(--font-mono); font-size:10px; color:rgba(255,255,255,.3); line-height:1.6">Used only for: tags, prices, stat labels,<br>metadata, nav items, filter chips.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ SPACING ═══════════════ -->
+  <section class="section" id="spacing">
+    <div class="section-header">
+      <div class="section-tag">01 — Foundations</div>
+      <h2 class="section-title">SPACING</h2>
+      <p class="section-desc">4px base grid. Brutalist design needs bold whitespace — sections use 64px+ padding. Never compress content to fit more in; let each block breathe and dominate.</p>
+    </div>
+    <table class="spacing-table">
+      <thead>
+        <tr>
+          <th>Token</th>
+          <th>Value</th>
+          <th>Visual</th>
+          <th>Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-1</code></td><td>4px</td><td><div class="sp-bar" style="width:4px"></div></td><td>Icon gap, tight padding</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-2</code></td><td>8px</td><td><div class="sp-bar" style="width:8px"></div></td><td>Component internal gap</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-3</code></td><td>12px</td><td><div class="sp-bar" style="width:12px"></div></td><td>Card body padding</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-4</code></td><td>16px</td><td><div class="sp-bar" style="width:16px"></div></td><td>Default gap between items</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-6</code></td><td>24px</td><td><div class="sp-bar" style="width:24px"></div></td><td>Card padding, step card internal</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-8</code></td><td>32px</td><td><div class="sp-bar" style="width:32px"></div></td><td>Section sub-content gap</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-10</code></td><td>40px</td><td><div class="sp-bar" style="width:40px"></div></td><td>Section header margin-bottom</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-12</code></td><td>48px</td><td><div class="sp-bar" style="width:48px"></div></td><td>Large component padding</td></tr>
+        <tr><td><code style="font-family:var(--font-mono); color:var(--pink-dark)">--sp-16</code></td><td>64px</td><td><div class="sp-bar" style="width:64px"></div></td><td>Section padding (default)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═══════════════ ELEVATION ═══════════════ -->
+  <section class="section" id="elevation">
+    <div class="section-header">
+      <div class="section-tag">01 — Foundations</div>
+      <h2 class="section-title">BORDERS & SHADOWS</h2>
+      <p class="section-desc">GlobeTrail uses <strong>hard offset box-shadows</strong> — no blurred drop shadows. Depth is expressed by the shadow offset distance (3, 5, or 8px). All elements carry a solid black border. On hover, elements shift 2px up/left while the shadow grows.</p>
+    </div>
+
+    <div class="comp-label">Border weights</div>
+    <div style="display:flex; flex-direction:column; gap:12px; max-width:360px">
+      <div style="padding:12px 16px; background:var(--white); border:3px solid var(--black); font-family:var(--font-mono); font-size:11px; color:#666">3px — Default border (cards, buttons, sections)</div>
+      <div style="padding:12px 16px; background:var(--white); border:2px solid var(--black); font-family:var(--font-mono); font-size:11px; color:#666">2px — Secondary border (inner dividers, inputs)</div>
+      <div style="padding:12px 16px; background:var(--white); border:1.5px solid var(--black); font-family:var(--font-mono); font-size:11px; color:#666">1.5px — Fine border (badges, chips)</div>
+    </div>
+
+    <div class="comp-label">Offset shadows</div>
+    <div class="shadow-row">
+      <div class="shadow-card" style="box-shadow:3px 3px 0px #0A0A0A">
+        <div class="shadow-name">sm</div>
+        <div class="shadow-val">3px 3px 0px black</div>
+        <div class="shadow-val" style="color:#aaa; font-size:9.5px; margin-top:2px">--sh-sm</div>
+        <div class="motion-desc">Chips, small cards, default buttons</div>
+      </div>
+      <div class="shadow-card" style="box-shadow:5px 5px 0px #0A0A0A">
+        <div class="shadow-name">md</div>
+        <div class="shadow-val">5px 5px 0px black</div>
+        <div class="shadow-val" style="color:#aaa; font-size:9.5px; margin-top:2px">--sh-md</div>
+        <div class="motion-desc">Stamp cards, modals, hover state</div>
+      </div>
+      <div class="shadow-card" style="box-shadow:8px 8px 0px #0A0A0A">
+        <div class="shadow-name">lg</div>
+        <div class="shadow-val">8px 8px 0px black</div>
+        <div class="shadow-val" style="color:#aaa; font-size:9.5px; margin-top:2px">--sh-lg</div>
+        <div class="motion-desc">CTA banner, hero blocks, feature sections</div>
+      </div>
+      <div class="shadow-card" style="box-shadow:5px 5px 0px #FF1B8D">
+        <div class="shadow-name" style="color:var(--pink-dark)">pink</div>
+        <div class="shadow-val" style="color:var(--pink)">5px 5px 0px #FF1B8D</div>
+        <div class="shadow-val" style="color:#aaa; font-size:9.5px; margin-top:2px">--sh-pink</div>
+        <div class="motion-desc">Black buttons on dark bg, special CTA</div>
+      </div>
+      <div class="shadow-card" style="box-shadow:5px 5px 0px #0041C2">
+        <div class="shadow-name" style="color:var(--blue)">blue</div>
+        <div class="shadow-val" style="color:var(--blue)">5px 5px 0px #0041C2</div>
+        <div class="shadow-val" style="color:#aaa; font-size:9.5px; margin-top:2px">--sh-blue</div>
+        <div class="motion-desc">Cream/white buttons on blue bg</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ MOTION ═══════════════ -->
+  <section class="section" id="motion">
+    <div class="section-header">
+      <div class="section-tag">01 — Foundations</div>
+      <h2 class="section-title">MOTION</h2>
+      <p class="section-desc">Motion is punchy and mechanical — matching the brutalist aesthetic. The signature interaction is the 2px translate + shadow grow on hover. Nothing floats or fades softly.</p>
+    </div>
+    <div class="motion-grid">
+      <div class="motion-card">
+        <div class="motion-label">Button hover</div>
+        <div class="motion-val">translate(-2px, -2px)</div>
+        <div class="motion-val">shadow: +2px offset</div>
+        <div class="motion-desc">All bordered buttons shift up-left on hover; shadow expands. Duration: 120ms.</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Destination circle</div>
+        <div class="motion-val">translate(-2px, -2px)</div>
+        <div class="motion-val">shadow: sm → md</div>
+        <div class="motion-desc">Circles use the same lift pattern. Creates a "popping off the page" feel.</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Stamp card hover</div>
+        <div class="motion-val">translateY(-4px)</div>
+        <div class="motion-val">shadow grows</div>
+        <div class="motion-desc">Cards lift slightly more than buttons to signal deeper content.</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Transition timing</div>
+        <div class="motion-val">120–150ms</div>
+        <div class="motion-val">ease: ease-out</div>
+        <div class="motion-desc">Fast, decisive. Never smooth or floaty — this is a brutalist UI.</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Section entrance</div>
+        <div class="motion-val">fadeIn + Y: 20px → 0</div>
+        <div class="motion-val">duration: 400ms</div>
+        <div class="motion-desc">Sections animate in on scroll. Staggered by 80ms between items.</div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-label">Nav search</div>
+        <div class="motion-val">background fill</div>
+        <div class="motion-val">shadow: none → sm</div>
+        <div class="motion-desc">Nav items get a cream background fill + border on hover — no colour change.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ BUTTONS ═══════════════ -->
+  <section class="section" id="buttons">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">BUTTONS</h2>
+      <p class="section-desc">All buttons are fully rectangular — no border-radius whatsoever. Text is uppercase. All carry a solid 3px black border and an offset shadow that grows on hover.</p>
+    </div>
+
+    <div class="comp-label">Primary CTAs</div>
+    <div class="comp-row">
+      <button class="btn btn-primary">Plan My Trip</button>
+      <button class="btn btn-blue">Explore More</button>
+      <button class="btn btn-yellow">Watch Review</button>
+      <button class="btn btn-black">Get Started →</button>
+    </div>
+
+    <div class="comp-label">Secondary</div>
+    <div class="comp-row">
+      <button class="btn btn-outline">See All</button>
+      <button class="btn btn-cream">Learn More</button>
+      <button class="btn btn-ghost">Cancel</button>
+    </div>
+
+    <div class="comp-label">Sizes</div>
+    <div class="comp-row" style="align-items:center">
+      <button class="btn btn-primary btn-sm">Book · SM</button>
+      <button class="btn btn-primary">Book Now · MD</button>
+      <button class="btn btn-primary btn-lg">Start Adventure · LG</button>
+    </div>
+
+    <div class="note"><strong>Rule:</strong> border-radius is always 0 on all button variants. Rounded buttons break the visual language. Use btn-primary (pink) as the single primary action per section.</div>
+  </section>
+
+  <!-- ═══════════════ CHIPS & BADGES ═══════════════ -->
+  <section class="section" id="chips">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">CHIPS & BADGES</h2>
+      <p class="section-desc">Filter chips are square-cornered, bold, uppercase — consistent with the button language. Badges communicate status and content type.</p>
+    </div>
+
+    <div class="comp-label">Filter chips</div>
+    <div class="chip-row">
+      <span class="chip chip-pink">All</span>
+      <span class="chip chip-cream">Packages</span>
+      <span class="chip chip-cream">Flights</span>
+      <span class="chip chip-cream">Hotels</span>
+      <span class="chip chip-cream">Trains</span>
+    </div>
+
+    <div class="comp-label">Colour chips</div>
+    <div class="chip-row">
+      <span class="chip chip-blue">Adventure</span>
+      <span class="chip chip-yellow">Featured</span>
+      <span class="chip chip-white">Cultural</span>
+      <span class="chip chip-pink">Top Rated</span>
+    </div>
+
+    <div class="comp-label">Status badges</div>
+    <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center">
+      <span class="badge badge-pink">Event</span>
+      <span class="badge badge-blue">Tour</span>
+      <span class="badge badge-yell">Featured</span>
+      <span class="badge badge-black">24/7 Support</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════ STAMP CARD ═══════════════ -->
+  <section class="section" id="stamp-card">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">STAMP CARD</h2>
+      <p class="section-desc">The signature destination card. Styled as a postage stamp with perforated edges (CSS radial-gradient), a postmark number "84" on the thumbnail, a country code label, and a destination name in Anton. Used in hero sliders and horizontal scrolls.</p>
+    </div>
+
+    <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start">
+      <div class="stamp-card">
+        <div class="stamp-img" style="background:linear-gradient(135deg,#0041C2,#FF1B8D)">
+          <div class="stamp-img-inner">🗼</div>
+          <div class="stamp-postmark">84</div>
+        </div>
+        <div class="stamp-body">
+          <div class="stamp-country">France</div>
+          <div class="stamp-city">Paris</div>
+          <div class="stamp-price">From $480</div>
+        </div>
+      </div>
+
+      <div class="stamp-card">
+        <div class="stamp-img" style="background:linear-gradient(135deg,#FF1B8D,#FFD93D)">
+          <div class="stamp-img-inner">⛩️</div>
+          <div class="stamp-postmark">84</div>
+        </div>
+        <div class="stamp-body">
+          <div class="stamp-country">Japan</div>
+          <div class="stamp-city">Tokyo</div>
+          <div class="stamp-price">From $820</div>
+        </div>
+      </div>
+
+      <div class="stamp-card">
+        <div class="stamp-img" style="background:linear-gradient(135deg,#00288A,#2A9A74)">
+          <div class="stamp-img-inner">🦁</div>
+          <div class="stamp-postmark">84</div>
+        </div>
+        <div class="stamp-body">
+          <div class="stamp-country">Singapore</div>
+          <div class="stamp-city">Sg City</div>
+          <div class="stamp-price">From $620</div>
+        </div>
+      </div>
+
+      <div class="stamp-card">
+        <div class="stamp-img" style="background:linear-gradient(135deg,#FFD93D,#FF1B8D)">
+          <div class="stamp-img-inner">🌴</div>
+          <div class="stamp-postmark">84</div>
+        </div>
+        <div class="stamp-body">
+          <div class="stamp-country">Thailand</div>
+          <div class="stamp-city">Phuket</div>
+          <div class="stamp-price">From $390</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note"><strong>Perforated edge:</strong> Achieved with <code style="font-family:var(--font-mono); background:var(--yellow); padding:1px 5px">radial-gradient</code> repeated on top, bottom, left, and right sides at −3px inset. The "84" postmark references traditional first-class postage. Always show it rotated ~15° in the top-right corner of the thumbnail.</div>
+  </section>
+
+  <!-- ═══════════════ DEST CIRCLES ═══════════════ -->
+  <section class="section" id="dest-circles">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">DESTINATION CIRCLES</h2>
+      <p class="section-desc">Circular destination thumbnails used in the Popular Destinations section. They sit on a flat hot-pink background and use varied sizes to create visual hierarchy. Each circle has a 3px black border and the same offset shadow as buttons.</p>
+    </div>
+
+    <div class="dest-circles-wrap">
+      <div class="dest-circle dest-circle-lg" style="background:linear-gradient(135deg,#0041C2,#FF1B8D)">
+        <span style="font-size:48px">🗼</span>
+        <div class="circle-label">Paris</div>
+      </div>
+      <div class="dest-circle" style="background:linear-gradient(135deg,#FF1B8D,#FFD93D)">
+        <span>⛩️</span>
+        <div class="circle-label">Tokyo</div>
+      </div>
+      <div class="dest-circle dest-circle-lg" style="background:linear-gradient(135deg,#00288A,#0041C2)">
+        <span style="font-size:48px">🗽</span>
+        <div class="circle-label">NYC</div>
+      </div>
+      <div class="dest-circle" style="background:linear-gradient(135deg,#2A9A74,#0041C2)">
+        <span>🦁</span>
+        <div class="circle-label">Singapore</div>
+      </div>
+      <div class="dest-circle" style="background:linear-gradient(135deg,#C4521F,#FFD93D)">
+        <span>🌴</span>
+        <div class="circle-label">Phuket</div>
+      </div>
+      <div class="dest-circle dest-circle-lg" style="background:linear-gradient(135deg,#FF1B8D,#0041C2)">
+        <span style="font-size:48px">🏛️</span>
+        <div class="circle-label">Rome</div>
+      </div>
+      <div class="dest-circle" style="background:linear-gradient(135deg,#FFD93D,#FF1B8D)">
+        <span>🌅</span>
+        <div class="circle-label">Bali</div>
+      </div>
+      <div class="dest-circle" style="background:linear-gradient(135deg,#0041C2,#2A9A74)">
+        <span>🎡</span>
+        <div class="circle-label">London</div>
+      </div>
+    </div>
+    <div class="note"><strong>Layout rule:</strong> Mix 2 sizes — 90px and 120px — in the same row without a rigid grid. The intentional unevenness is part of the aesthetic. The hot-pink background makes every circle pop regardless of gradient content.</div>
+  </section>
+
+  <!-- ═══════════════ STATS ═══════════════ -->
+  <section class="section" id="stats">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">STAT BAR</h2>
+      <p class="section-desc">A single-row bordered grid of milestone numbers. Used directly below hero areas. Numbers use Anton at large scale; "+" suffix is coloured pink.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num">10K<span class="stat-plus">+</span></div>
+        <div class="stat-label">Trips Planned</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">5K<span class="stat-plus">+</span></div>
+        <div class="stat-label">Happy Travelers</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">50<span class="stat-plus">+</span></div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:var(--pink)">24/7</div>
+        <div class="stat-label">Travel Assistance</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+  <section class="section" id="steps">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">HOW IT WORKS</h2>
+      <p class="section-desc">3-column step card row on a blue background. Each step has a pink numbered box, a title in Anton, and body in Space Grotesk. A large ghost number fills the background of each card.</p>
+    </div>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-bg-num">01</div>
+        <div class="step-title">Discover Destinations</div>
+        <div class="step-desc">Browse curated travel ideas filtered by season, interests, or budget. AI matches destinations to your travel style.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-bg-num">02</div>
+        <div class="step-title">Plan It Easily</div>
+        <div class="step-desc">Build your full itinerary, choose flights and activities, and book everything in one place.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-bg-num">03</div>
+        <div class="step-title">Explore Stress-Free</div>
+        <div class="step-desc">Travel with confidence. With 24/7 support, insider tips, and organised updates you focus on enjoying.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TESTIMONIALS ═══════════════ -->
+  <section class="section" id="testimonials">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">TESTIMONIALS</h2>
+      <p class="section-desc">3-column bordered card grid. A large Anton quotation mark in pink anchors the visual. Author name in Space Mono uppercase, origin in smaller mono.</p>
+    </div>
+    <div class="testimonial-row">
+      <div class="testimonial-card">
+        <span class="testimonial-quote">"</span>
+        <div class="testimonial-text">GlobeTrail turned my honeymoon into a dream. They handled every detail perfectly, and all we had to do was enjoy the adventure. Truly a stress-free experience!</div>
+        <div class="testimonial-author">Sarah & Michael</div>
+        <div class="testimonial-origin">Australia</div>
+      </div>
+      <div class="testimonial-card" style="background:var(--cream)">
+        <span class="testimonial-quote">"</span>
+        <div class="testimonial-text">Planning our family vacation used to be stressful, but GlobeTrail made it easy. Everything from flights to hotel bookings was seamless — and the local tips made our trip unforgettable!</div>
+        <div class="testimonial-author">Emily R.</div>
+        <div class="testimonial-origin">USA</div>
+      </div>
+      <div class="testimonial-card">
+        <span class="testimonial-quote">"</span>
+        <div class="testimonial-text">I used GlobeTrail to plan a solo trip to Japan. The curated lists saved me hours of research and helped me discover places I never would have found on my own.</div>
+        <div class="testimonial-author">Daniel K.</div>
+        <div class="testimonial-origin">UK</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ SEARCH & INPUTS ═══════════════ -->
+  <section class="section" id="search">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">SEARCH & INPUTS</h2>
+      <p class="section-desc">The main search bar is a multi-field bordered row with a blue search button. All input fields are rectangular with 3px borders and an offset shadow on focus.</p>
+    </div>
+
+    <div class="comp-label">Main search bar</div>
+    <div class="search-bar">
+      <div class="search-field">
+        <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" strokeWidth="1.5"/></svg>
+        <input class="search-input" type="text" placeholder="From — Kingstown">
+      </div>
+      <div class="search-field">
+        <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" strokeWidth="1.5"/></svg>
+        <input class="search-input" type="text" placeholder="To — Thailand">
+      </div>
+      <button class="search-btn">Search →</button>
+    </div>
+
+    <div class="comp-label">Standalone inputs</div>
+    <div class="two-col">
+      <div>
+        <label class="input-label">Destination</label>
+        <input class="input-field" type="text" placeholder="Where are you going?">
+      </div>
+      <div>
+        <label class="input-label">Travel dates</label>
+        <input class="input-field" type="text" placeholder="MM/DD/YYYY — MM/DD/YYYY">
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CTA BANNER ═══════════════ -->
+  <section class="section" id="cta">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">CTA BANNER</h2>
+      <p class="section-desc">The full-width blue band before the footer. Large Anton headline with yellow accent word, a supporting line, and two side-by-side buttons. Stamp cards float in the right half.</p>
+    </div>
+    <div class="cta-banner">
+      <div>
+        <div class="cta-banner-title">YOUR JOURNEY AWAITS.<br><span class="accent">START TODAY!</span></div>
+        <div class="cta-banner-sub">Join thousands of travelers already exploring with GlobeTrail.</div>
+        <div class="cta-banner-btns" style="margin-top:22px">
+          <button class="btn btn-yellow">Plan My Trip</button>
+          <button class="btn btn-ghost" style="border-color:rgba(255,255,255,.3); color:white">Explore More</button>
+        </div>
+      </div>
+      <div style="display:flex; gap:14px; align-items:flex-end; flex-shrink:0">
+        <div class="stamp-card" style="transform:rotate(-5deg); width:130px">
+          <div class="stamp-img" style="height:80px; background:linear-gradient(135deg,#0041C2,#FF1B8D)">
+            <div class="stamp-img-inner" style="font-size:32px">🗼</div>
+            <div class="stamp-postmark" style="width:28px; height:28px; font-size:11px">84</div>
+          </div>
+          <div class="stamp-body" style="padding:7px 10px">
+            <div class="stamp-country">France</div>
+            <div class="stamp-city" style="font-size:14px">Paris</div>
+          </div>
+        </div>
+        <div class="stamp-card" style="transform:rotate(3deg); width:130px">
+          <div class="stamp-img" style="height:80px; background:linear-gradient(135deg,#FF1B8D,#FFD93D)">
+            <div class="stamp-img-inner" style="font-size:32px">🏛️</div>
+            <div class="stamp-postmark" style="width:28px; height:28px; font-size:11px">84</div>
+          </div>
+          <div class="stamp-body" style="padding:7px 10px">
+            <div class="stamp-country">Italy</div>
+            <div class="stamp-city" style="font-size:14px">Rome</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ NAVBAR ═══════════════ -->
+  <section class="section" id="navbar">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">NAVIGATION BAR</h2>
+      <p class="section-desc">A white bar with a 3px bottom border. The logo uses the circular "O" motif in pink. Navigation items are Space Mono uppercase; hovering applies a cream fill + border box. Search sits as a bordered button on the right.</p>
+    </div>
+    <div class="navbar-demo">
+      <div class="nav-logo">
+        GL<span class="orb"></span>BETRAIL
+      </div>
+      <ul class="nav-links">
+        <li><a href="#">Packages</a></li>
+        <li><a href="#">Plane</a></li>
+        <li><a href="#">Train</a></li>
+        <li><a href="#">Hotel</a></li>
+      </ul>
+      <div class="nav-search">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16 16l4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+        Search
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ICONS ═══════════════ -->
+  <section class="section" id="icons">
+    <div class="section-header">
+      <div class="section-tag">02 — Components</div>
+      <h2 class="section-title">ICONS</h2>
+      <p class="section-desc">2px stroke, square container, 3px border, offset shadow. Consistent with all other bordered elements. Never use emoji as icons — use SVG from Lucide or similar.</p>
+    </div>
+    <div class="icon-grid">
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="9" r="2.5" stroke-width="2"/></svg></div>
+        <span class="icon-name">Location</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke-width="2"/><path d="M16 16l4 4" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <span class="icon-name">Search</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <span class="icon-name">Home</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <span class="icon-name">Calendar</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/><path d="M12 7v5l3 3" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <span class="icon-name">Clock</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke-width="2" stroke-linejoin="round"/></svg></div>
+        <span class="icon-name">Save</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="icon-name">Arrow</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke-width="2"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <span class="icon-name">User</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <span class="icon-name">Menu</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box" style="background:var(--pink); border-color:var(--black)"><svg fill="none" viewBox="0 0 24 24" style="stroke:white"><path d="M20 7l-8 8-4-4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="icon-name">Check</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box" style="background:var(--blue); border-color:var(--black)"><svg fill="none" viewBox="0 0 24 24" style="stroke:white"><path d="M3 12h18M12 3l9 9-9 9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="icon-name">Next</span>
+      </div>
+      <div class="icon-item">
+        <div class="icon-box"><svg fill="none" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke-width="2"/><circle cx="12" cy="10" r="3" stroke-width="2"/></svg></div>
+        <span class="icon-name">Map</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CSS TOKENS ═══════════════ -->
+  <section class="section" id="tokens" style="border-bottom:none">
+    <div class="section-header">
+      <div class="section-tag">04 — Reference</div>
+      <h2 class="section-title">CSS TOKENS</h2>
+      <p class="section-desc">Paste this into <code style="font-family:var(--font-mono); background:var(--cream-2); padding:1px 6px; border:2px solid var(--black); font-size:12px">tokens.css</code> as the design system foundation.</p>
+    </div>
+    <div class="code-block">
+<span class="c-comment">/* ── GlobeTrail Design Tokens v1.0 ── */</span>
+<span class="c-key">:root</span> {
+
+  <span class="c-comment">/* Primary Palette */</span>
+  <span class="c-key">--pink</span>:        <span class="c-val">#FF1B8D</span>;
+  <span class="c-key">--pink-dark</span>:   <span class="c-val">#D4007A</span>;
+  <span class="c-key">--pink-light</span>:  <span class="c-val">#FFD6EE</span>;
+  <span class="c-key">--blue</span>:        <span class="c-val">#0041C2</span>;
+  <span class="c-key">--blue-dark</span>:   <span class="c-val">#00288A</span>;
+  <span class="c-key">--blue-light</span>:  <span class="c-val">#C9D8FF</span>;
+  <span class="c-key">--cream</span>:       <span class="c-val">#F5F0E4</span>;
+  <span class="c-key">--cream-2</span>:     <span class="c-val">#EDE7D3</span>;
+  <span class="c-key">--cream-3</span>:     <span class="c-val">#DDD5BF</span>;
+  <span class="c-key">--black</span>:       <span class="c-val">#0A0A0A</span>;
+  <span class="c-key">--white</span>:       <span class="c-val">#FFFFFF</span>;
+  <span class="c-key">--yellow</span>:      <span class="c-val">#FFD93D</span>;
+  <span class="c-key">--yellow-dark</span>: <span class="c-val">#E5C000</span>;
+
+  <span class="c-comment">/* Typography */</span>
+  <span class="c-key">--font-display</span>: <span class="c-str">'Anton', Impact, sans-serif</span>;
+  <span class="c-key">--font-body</span>:    <span class="c-str">'Space Grotesk', sans-serif</span>;
+  <span class="c-key">--font-mono</span>:    <span class="c-str">'Space Mono', monospace</span>;
+
+  <span class="c-comment">/* Borders */</span>
+  <span class="c-key">--border</span>:       <span class="c-val">3px solid #0A0A0A</span>;
+  <span class="c-key">--border-2</span>:     <span class="c-val">2px solid #0A0A0A</span>;
+  <span class="c-key">--border-thin</span>:  <span class="c-val">1.5px solid #0A0A0A</span>;
+
+  <span class="c-comment">/* Radius — always 0 for brutalist surfaces */</span>
+  <span class="c-key">--r-none</span>:  <span class="c-val">0px</span>;
+  <span class="c-key">--r-sm</span>:    <span class="c-val">4px</span>;   <span class="c-comment">/* only for nested inner elements */</span>
+  <span class="c-key">--r-full</span>:  <span class="c-val">50%</span>;   <span class="c-comment">/* destination circles only */</span>
+
+  <span class="c-comment">/* Hard offset shadows */</span>
+  <span class="c-key">--sh-sm</span>:   <span class="c-str">3px 3px 0px #0A0A0A</span>;
+  <span class="c-key">--sh-md</span>:   <span class="c-str">5px 5px 0px #0A0A0A</span>;
+  <span class="c-key">--sh-lg</span>:   <span class="c-str">8px 8px 0px #0A0A0A</span>;
+  <span class="c-key">--sh-pink</span>: <span class="c-str">5px 5px 0px #FF1B8D</span>;
+  <span class="c-key">--sh-blue</span>: <span class="c-str">5px 5px 0px #0041C2</span>;
+
+  <span class="c-comment">/* Spacing */</span>
+  <span class="c-key">--sp-1</span>: <span class="c-val">4px</span>;   <span class="c-key">--sp-2</span>: <span class="c-val">8px</span>;   <span class="c-key">--sp-3</span>: <span class="c-val">12px</span>;
+  <span class="c-key">--sp-4</span>: <span class="c-val">16px</span>;  <span class="c-key">--sp-5</span>: <span class="c-val">20px</span>;  <span class="c-key">--sp-6</span>: <span class="c-val">24px</span>;
+  <span class="c-key">--sp-8</span>: <span class="c-val">32px</span>;  <span class="c-key">--sp-10</span>: <span class="c-val">40px</span>; <span class="c-key">--sp-12</span>: <span class="c-val">48px</span>;
+  <span class="c-key">--sp-16</span>: <span class="c-val">64px</span>;
+
+  <span class="c-comment">/* Breakpoints */</span>
+  <span class="c-key">--bp-sm</span>:  <span class="c-val">480px</span>;
+  <span class="c-key">--bp-md</span>:  <span class="c-val">768px</span>;
+  <span class="c-key">--bp-lg</span>:  <span class="c-val">1024px</span>;
+  <span class="c-key">--bp-xl</span>:  <span class="c-val">1280px</span>;
+}
+    </div>
+  </section>
+
+</main>
+
+<script>
+const links = document.querySelectorAll('.sidebar-link');
+links.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    links.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    const target = document.getElementById(link.getAttribute('href').replace('#',''));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+const sections = document.querySelectorAll('section[id], div[id]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.sidebar-link[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

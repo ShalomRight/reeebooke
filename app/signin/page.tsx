@@ -18,7 +18,7 @@ export default function SignInPage() {
 					<CardTitle className="text-3xl font-bold">
 						Welcome Back
 					</CardTitle>
-					<CardDescription>Sign in to your Reebooking account</CardDescription>
+					<CardDescription>Sign in to your Abby Hair Studio account</CardDescription>
 				</CardHeader>
 				<CardContent>
 

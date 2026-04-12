@@ -13,6 +13,7 @@ export function PopularServices() {
 	// Calculate service popularity
 	const serviceStats = bookings?.reduce(
 		(acc, booking) => {
+			if (!booking.service) return acc
 			const serviceId = booking.service.id
 			if (!acc[serviceId]) {
 				acc[serviceId] = {

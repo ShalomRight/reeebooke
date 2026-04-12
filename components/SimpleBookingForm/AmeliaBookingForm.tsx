@@ -142,7 +142,7 @@ function AmeliaBookingFormContent() {
                     />
                  </div>
                  
-                 <div className="w-full lg:w-64 bg-slate-50 p-4 rounded-xl border border-slate-100 h-[380px] overflow-y-auto">
+                 <div className="w-full lg:w-64 bg-[#FDFCFB] p-4 rounded-xl border border-[#E2E0D9] h-[380px] overflow-y-auto">
                     <h3 className="font-semibold mb-3 text-sm flex items-center gap-2">
                        {selectedDateObj ? selectedDateObj.toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' }) : "Pick a date first"}
                     </h3>
@@ -179,24 +179,24 @@ function AmeliaBookingFormContent() {
                <Button variant="ghost" size="icon" onClick={handleBack}><ArrowLeft className="w-4 h-4" /></Button>
                <h2 className="text-xl font-bold">Checkout Summary</h2>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-3 shadow-sm">
+            <div className="bg-[#FDFCFB] border border-[#E2E0D9] rounded-xl p-5 space-y-3 shadow-sm">
                 <div className="flex justify-between border-b pb-3">
-                   <span className="text-slate-500">Service</span>
-                   <span className="font-semibold text-slate-800">{selectedServiceData?.name ?? "—"}</span>
+                   <span className="text-[#1A2421]/60">Service</span>
+                   <span className="font-semibold text-[#1A2421]">{selectedServiceData?.name ?? "—"}</span>
                 </div>
                 <div className="flex justify-between border-b pb-3">
-                   <span className="text-slate-500">Date</span>
-                   <span className="font-semibold text-slate-800">
+                   <span className="text-[#1A2421]/60">Date</span>
+                   <span className="font-semibold text-[#1A2421]">
                       {selectedDateObj ? selectedDateObj.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" }) : "—"}
                    </span>
                 </div>
                 <div className="flex justify-between border-b pb-3">
-                   <span className="text-slate-500">Time</span>
-                   <span className="font-semibold text-slate-800">{selectedTime || "—"}</span>
+                   <span className="text-[#1A2421]/60">Time</span>
+                   <span className="font-semibold text-[#1A2421]">{selectedTime || "—"}</span>
                 </div>
                 <div className="flex justify-between pt-2">
-                   <span className="text-slate-700 font-bold">Total Price</span>
-                   <span className="font-bold text-blue-600 text-lg">${totalPrice.toLocaleString()}</span>
+                   <span className="text-[#1A2421] font-bold">Total Price</span>
+                   <span className="font-bold text-[#BD9354] text-lg">${totalPrice.toLocaleString()}</span>
                 </div>
             </div>
           </div>
@@ -209,7 +209,7 @@ function AmeliaBookingFormContent() {
     <div className="max-w-5xl mx-auto my-12 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col md:flex-row min-h-[600px]">
        
        {/* SIDEBAR (The Amelia UI style) */}
-       <div className="w-full md:w-[260px] bg-[#3B3A73] text-white p-6 md:p-8 flex flex-col shrink-0">
+       <div className="w-full md:w-[260px] bg-[#3E4D45] text-[#FDFCFB] p-6 md:p-8 flex flex-col shrink-0">
           <h2 className="text-lg font-bold mb-10 opacity-90 tracking-wide text-center md:text-left">Booking Config</h2>
           
           <div className="space-y-6 flex-1">
@@ -218,15 +218,15 @@ function AmeliaBookingFormContent() {
                 const isDone = currentStep > step.num
                 return (
                    <div key={step.num} className="flex items-center gap-4 cursor-default">
-                      <div className={`text-sm font-medium transition-colors ${isActive ? 'text-white' : isDone ? 'text-white/60' : 'text-white/40'} flex-1`}>
+                      <div className={`text-sm font-medium transition-colors ${isActive ? 'text-[#FDFCFB]' : isDone ? 'text-[#FDFCFB]/60' : 'text-[#FDFCFB]/40'} flex-1`}>
                          {step.label}
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                         isDone ? 'bg-green-500 border-green-500 text-white' :
-                         isActive ? 'border-indigo-300 ring-2 ring-indigo-400 ring-offset-2 ring-offset-[#3B3A73] bg-[#3B3A73]' :
-                         'border-white/20 text-transparent'
+                         isDone ? 'bg-[#5B7065] border-[#5B7065] text-[#FDFCFB]' :
+                         isActive ? 'border-[#C8B9A6] ring-2 ring-[#C8B9A6] ring-offset-2 ring-offset-[#3E4D45] bg-[#3E4D45]' :
+                         'border-[#FDFCFB]/20 text-transparent'
                       }`}>
-                         {isDone ? <Check className="w-3.5 h-3.5 stroke-3" /> : <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-indigo-300' : 'bg-transparent'}`} />}
+                         {isDone ? <Check className="w-3.5 h-3.5 stroke-3" /> : <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-[#C8B9A6]' : 'bg-transparent'}`} />}
                       </div>
                    </div>
                 )
@@ -247,11 +247,11 @@ function AmeliaBookingFormContent() {
           
           <div className="mt-8 flex justify-end">
              {currentStep < 4 ? (
-                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2 bg-[#3B3A73] hover:bg-[#2f2e5c] text-white rounded-lg px-8">
+                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2 bg-[#3E4D45] hover:bg-[#2D3930] text-white rounded-lg px-8">
                    Next Step <ArrowRight className="w-4 h-4" />
                 </Button>
              ) : (
-                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2 bg-green-500 hover:bg-green-600 text-white rounded-lg px-8 shadow-md">
+                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2 bg-[#BD9354] hover:bg-[#A67C45] text-white rounded-lg px-8 shadow-md">
                    <ShoppingCart className="w-4 h-4" />
                    Add to Cart
                 </Button>
@@ -281,7 +281,7 @@ function AmeliaBookingFormContent() {
        )}
 
        {/* Floating Cart Trigger */}
-       <Button onClick={() => setIsCartOpen(true)} className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl bg-indigo-600 hover:bg-indigo-700">
+       <Button onClick={() => setIsCartOpen(true)} className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl bg-[#3E4D45] hover:bg-[#2D3930]">
           <ShoppingCart className="w-6 h-6" />
           {cartCount > 0 && (
              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">

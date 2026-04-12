@@ -9,7 +9,7 @@ export function Footer() {
           
           <div className="md:col-span-1 space-y-4">
             <Link href="/" className="font-playfair text-3xl font-bold text-[#2D3A31]">
-              Botanical
+              Abby Hair Studio
             </Link>
             <p className="text-sm text-[#2D3A31]/70 leading-relaxed font-source max-w-xs">
               A serene oasis for wellness, beauty, and mindful care. Take a deep breath and let us handle the rest.
@@ -48,7 +48,7 @@ export function Footer() {
         </div>
         
         <div className="mt-16 pt-8 border-t border-[#E6E2DA]/50 flex flex-col md:flex-row items-center justify-between text-sm text-[#2D3A31]/50 font-source space-y-4 md:space-y-0">
-           <p>© {new Date().getFullYear()} Botanical Salon. All rights reserved.</p>
+           <p>© {new Date().getFullYear()} Abby Hair Studio. All rights reserved.</p>
            <div className="flex gap-6">
               <Link href="#" className="hover:text-[#8C9A84] transition-colors">Privacy Policy</Link>
               <Link href="#" className="hover:text-[#8C9A84] transition-colors">Terms of Service</Link>

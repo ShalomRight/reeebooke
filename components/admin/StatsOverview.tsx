@@ -23,7 +23,7 @@ export function StatsOverview() {
 			return bookingDate.getMonth() === today.getMonth() && bookingDate.getFullYear() === today.getFullYear()
 		}) || []
 
-	const monthlyRevenue = thisMonth.reduce((sum, b) => sum + b.service.price, 0)
+	const monthlyRevenue = thisMonth.reduce((sum, b) => sum + (b.service?.price || 0), 0)
 
 	const totalBookings = bookings?.length || 0
 	const pendingBookings = bookings?.filter((b) => b.status === "PENDING").length || 0

@@ -45,11 +45,8 @@ function createDb() {
  * creating multiple connections during HMR.
  */
 export function getDb() {
-  if (process.env.NODE_ENV === "production") {
-    return createDb();
-  }
-
-  // Singleton in dev — prevents HMR from opening many connections
+  // Singleton in all environments — avoids opening a new SQLite file handle per request
+  // (critical for serverless-style Node hosts and production stability).
   if (!globalForDb._db) {
     globalForDb._db = createDb();
   }

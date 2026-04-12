@@ -42,7 +42,7 @@ export function RevenueChart() {
 				);
 			}) || [];
 
-		const revenue = monthBookings.reduce((sum, b) => sum + b.service.price, 0);
+		const revenue = monthBookings.reduce((sum, b) => sum + (b.service?.price || 0), 0);
 		const count = monthBookings.length;
 
 		return {

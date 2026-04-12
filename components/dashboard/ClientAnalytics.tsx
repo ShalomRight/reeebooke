@@ -45,7 +45,7 @@ export function ClientAnalytics() {
 			)
 		}) || []
 
-		const spending = monthBookings.reduce((sum, b) => sum + b.service.price, 0)
+		const spending = monthBookings.reduce((sum, b) => sum + (b.service?.price || 0), 0)
 		const count = monthBookings.length
 
 		return {
@@ -58,6 +58,7 @@ export function ClientAnalytics() {
 	// Service preferences
 	const servicePreferences = bookings?.reduce(
 		(acc, booking) => {
+			if (!booking.service) return acc
 			const serviceName = booking.service.name
 			if (!acc[serviceName]) {
 				acc[serviceName] = { name: serviceName, count: 0, totalSpent: 0 }
@@ -98,7 +99,7 @@ export function ClientAnalytics() {
 	// Calculate stats
 	const totalSpent = bookings
 		?.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED")
-		.reduce((sum, b) => sum + b.service.price, 0) || 0
+		.reduce((sum, b) => sum + (b.service?.price || 0), 0) || 0
 	const totalBookings = bookings?.length || 0
 	const completedBookings = bookings?.filter((b) => b.status === "COMPLETED").length || 0
 	const avgBookingValue = completedBookings > 0 ? totalSpent / completedBookings : 0

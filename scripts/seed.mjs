@@ -24,37 +24,35 @@ function now() {
 }
 
 // Simple password hash (bcrypt would need a worker, use fixed hash for seeding)
-// Password: "admin123" — bcrypt hash pre-computed
-const ADMIN_PASSWORD_HASH = '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';
+import fs from 'fs';
 
 console.log('🌱 Seeding database...\n');
 
 // ── Clear existing seed data ──────────────────────────────────────────────────
 try {
-  db.prepare(`DELETE FROM services WHERE name LIKE 'Test%' OR name LIKE 'Gel%' OR name LIKE 'Manicure%' OR name LIKE 'Pedicure%' OR name LIKE 'Nail%' OR name LIKE 'Classic%' OR name LIKE 'Acrylic%' OR name LIKE 'Spa%'`).run();
+  db.prepare(`DELETE FROM services`).run();
+  console.log('🗑️  Cleared existing services');
 } catch(e) {}
 
 // ── Services ─────────────────────────────────────────────────────────────────
-const serviceData = [
-  { name: 'Classic Manicure', price: 2500 },
-  { name: 'Gel Manicure', price: 4500 },
-  { name: 'Acrylic Full Set', price: 7000 },
-  { name: 'Spa Pedicure', price: 5500 },
-  { name: 'Nail Art Design', price: 3500 },
-  { name: 'Classic Pedicure', price: 3000 },
-];
+const servicesJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'services.json'), 'utf8'));
 
 const insertService = db.prepare(`
-  INSERT OR IGNORE INTO services (id, name, price, created_at, updated_at)
-  VALUES (?, ?, ?, ?, ?)
+  INSERT INTO services (id, name, description, price, media_url, created_at, updated_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?)
 `);
 
 const serviceIds = [];
-for (const s of serviceData) {
+for (const s of servicesJson) {
   const id = uuid();
   serviceIds.push(id);
-  insertService.run(id, s.name, s.price, now(), now());
-  console.log(`✅ Service: ${s.name} — $${(s.price/100).toFixed(2)}`);
+  // Construct a consistent image path based on category and name
+  const categoryPath = s.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+  const fileName = s.name.toLowerCase().replace(/ /g, '-').replace(/\+/g, 'plus').replace(/\//g, '-').replace(/[()]/g, '') + '.webp';
+  const imageUrl = `/images/services/${categoryPath}/${fileName}`;
+  
+  insertService.run(id, s.name, s.description, s.priceMin, imageUrl, now(), now());
+  console.log(`✅ Service: ${s.name} — $${(s.priceMin/100).toFixed(2)}`);
 }
 
 // ── Admin User ────────────────────────────────────────────────────────────────

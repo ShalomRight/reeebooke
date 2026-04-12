@@ -51,7 +51,7 @@ export function ComprehensiveAnalytics() {
 			)
 		}) || []
 
-		const revenue = monthBookings.reduce((sum, b) => sum + b.service.price, 0)
+		const revenue = monthBookings.reduce((sum, b) => sum + (b.service?.price || 0), 0)
 		const count = monthBookings.length
 
 		return {
@@ -72,6 +72,7 @@ export function ComprehensiveAnalytics() {
 	// Service Performance (Top 10)
 	const servicePerformance = bookings?.reduce(
 		(acc, booking) => {
+			if (!booking.service) return acc
 			const serviceName = booking.service.name
 			if (!acc[serviceName]) {
 				acc[serviceName] = { name: serviceName, bookings: 0, revenue: 0 }

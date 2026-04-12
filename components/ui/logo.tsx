@@ -16,14 +16,12 @@ export function Logo({ variant = "default", className, href = "/" }: LogoProps) 
 			<div className="w-10 h-10 bg-gradient-to-br from-primary via-primary/90 to-primary/70 rounded-xl flex items-center justify-center">
 				<Calendar className="w-6 h-6 text-white" />
 			</div>
-			{variant === "default" && (
 				<span
 					className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"
-					style={{ fontFamily: "var(--font-space-grotesk)" }}
+					style={{ fontFamily: "var(--font-serif)" }}
 				>
-					Reebooking
+					Abby Hair Studio
 				</span>
-			)}
 		</div>
 	)
 

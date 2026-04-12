@@ -11,6 +11,7 @@ import { PhotoUpload } from "./PhotoUpload"
 import { ServiceSelection } from "./ServiceSelection"
 import { TimeSelection } from "./TimeSelection"
 import { useBookingForm } from "./useBookingForm"
+import { format24hTo12hLabel } from "@/lib/booking/time"
 
 // ─── Step config ────────────────────────────────────────────────────────────
 const STEPS = [
@@ -244,7 +245,10 @@ function SimpleBookingFormContent() {
 										? new Date(currentYear, currentMonth - 1, selectedDate).toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" })
 										: "—"}
 								/>
-								<Row label="Time" value={selectedTime || "—"} />
+								<Row
+									label="Time"
+									value={selectedTime ? format24hTo12hLabel(selectedTime) : "—"}
+								/>
 								<div className="mt-2 pt-2 border-t border-border flex justify-between font-bold text-card-foreground">
 									<span>Total</span>
 									<span className="text-primary">${totalPrice.toLocaleString()}</span>

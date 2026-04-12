@@ -4,16 +4,17 @@ import { useSession } from "next-auth/react"
 import { useCallback, useEffect, useState } from "react"
 import { useServices } from "@/lib/swr/hooks/services"
 import { useBookings } from "@/lib/swr/hooks/bookings"
+import { DEFAULT_LEGACY_SLOT_TIMES } from "@/lib/booking/time"
 
 type Service = { id: string; name: string; price: number; stripePriceId?: string; rating?: number; ratingsCount?: number }
-type TimeSlot = { time: string; available: boolean; isBooked?: boolean }
+type TimeSlot = { time: string; displayLabel?: string; available: boolean; isBooked?: boolean }
 type BookingCount = { [key: number]: number }
 
-const defaultTimeSlots: TimeSlot[] = [
-	{ time: "8:30 AM", available: true }, { time: "10:00 AM", available: true },
-	{ time: "11:30 AM", available: true }, { time: "1:30 PM", available: true },
-	{ time: "3:00 PM", available: true }, { time: "4:30 PM", available: true }
-]
+const defaultTimeSlots: TimeSlot[] = DEFAULT_LEGACY_SLOT_TIMES.map((s) => ({
+	time: s.time,
+	displayLabel: s.displayLabel,
+	available: true,
+}))
 
 const generateCalendarDays = (month: number, year: number) => {
 	const days: (number | null)[] = []
@@ -23,10 +24,10 @@ const generateCalendarDays = (month: number, year: number) => {
 	return days
 }
 
-const parseTimeToDate = (time: string, date: Date) => {
-	const [t, p] = time.split(" "), [h, m] = t.split(":").map(Number)
-	const hrs = p === "PM" && h !== 12 ? h + 12 : p === "AM" && h === 12 ? 0 : h
-	const d = new Date(date); d.setHours(hrs, m, 0, 0)
+const parseTimeToDate = (time24: string, date: Date) => {
+	const [h, m] = time24.split(":").map(Number)
+	const d = new Date(date)
+	d.setHours(h, m, 0, 0)
 	return d
 }
 
@@ -52,7 +53,7 @@ export const useBookingForm = (initialServiceId?: string) => {
 
 	const { data: bookingsData } = useBookings({ startDate, endDate, limit: 1000 })
 	const bookingCounts = (bookingsData?.bookings || []).reduce((acc: BookingCount, b) => {
-		const d = new Date(b.date).getDate()
+		const d = new Date(b.date.includes("T") ? b.date : `${b.date}T12:00:00`).getDate()
 		acc[d] = (acc[d] || 0) + 1
 		return acc
 	}, {})
@@ -149,14 +150,39 @@ export const useBookingForm = (initialServiceId?: string) => {
 		setError(null)
 		try {
 			const dateStr = `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`
-			const bookingData = { serviceIds: [selectedService], date: dateStr, time: selectedTime, photoUrls: photos }
+			const digits = session?.user?.phone?.replace(/\D/g, "") ?? ""
+			const phone =
+				digits.length >= 7 && digits.length <= 15
+					? `+${digits}`
+					: ""
+			if (!session?.user?.name?.trim() || !phone) {
+				toast.error("Please sign in and add your name and phone on your profile before booking.")
+				return
+			}
+			const bookingData = {
+				serviceIds: [selectedService],
+				date: dateStr,
+				time: selectedTime,
+				paymentMethod: "cash" as const,
+				userName: session.user.name.trim(),
+				phone,
+				email: session.user.email ?? undefined,
+				photoUrls: photos,
+			}
 			const res = await fetch("/api/v1/bookings", {
 				method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bookingData)
 			})
-			if (!res.ok) throw new Error((await res.json()).error || "Failed to create booking")
+			const body = await res.json().catch(() => ({}))
+			if (!res.ok) {
+				throw new Error(typeof body?.error === "string" ? body.error : "Failed to create booking")
+			}
 			await sendWhatsAppConfirmation({
-				userName: "", phone: "", serviceName: selectedServiceData?.name || "",
-				date: dateStr, time: selectedTime, totalPrice
+				userName: session.user.name.trim(),
+				phone,
+				serviceName: selectedServiceData?.name || "",
+				date: dateStr,
+				time: selectedTime,
+				totalPrice,
 			})
 			toast.success("Booking confirmed! Check your WhatsApp for details.")
 			setSelectedService(""); setSelectedDate(null); setSelectedTime(""); setPhotos([]); setError(null)

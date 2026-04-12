@@ -66,7 +66,7 @@ export function RecentActivity() {
 											{booking.status}
 										</Badge>
 									</div>
-									<p className="text-sm text-muted-foreground mb-2">{booking.service.name}</p>
+									<p className="text-sm text-muted-foreground mb-2">{booking.service?.name || "Unknown Service"}</p>
 									<div className="flex items-center gap-3 text-xs text-muted-foreground">
 										<div className="flex items-center gap-1">
 											<Calendar className="w-3 h-3" />

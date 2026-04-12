@@ -26,7 +26,7 @@ export function StaffDashboard() {
 		}) || []
 
 	const completedBookings = bookings?.filter((b) => b.status === "COMPLETED") || []
-	const totalRevenue = bookings?.reduce((sum, b) => sum + b.service.price, 0) || 0
+	const totalRevenue = bookings?.reduce((sum, b) => sum + (b.service?.price || 0), 0) || 0
 
 	const navItems = [
 		{ key: "today", label: "Today's Bookings", icon: Clock },

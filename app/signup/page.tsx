@@ -20,7 +20,7 @@ export default function SignUpPage() {
 					<CardTitle className="text-3xl font-bold" style={{ fontFamily: "var(--font-space-grotesk)" }}>
 						Create Account
 					</CardTitle>
-					<CardDescription>Sign up for your Reebooking account</CardDescription>
+					<CardDescription>Sign up for your Abby Hair Studio account</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<Suspense fallback={<div className="text-center py-4">Loading...</div>}>

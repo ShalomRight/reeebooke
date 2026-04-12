@@ -72,7 +72,11 @@ export function AddBookingSheet({ children, initialDate, initialTime, title = "A
       setStep(1)
       setSelectedService("")
       setSelectedDate(initialDate ? initialDate.getDate() : null)
-      setSelectedTime(initialTime ? `${initialTime.hour%12||12}:${String(initialTime.minute).padStart(2,'0')} ${initialTime.hour>=12?'PM':'AM'}` : "")
+      setSelectedTime(
+        initialTime
+          ? `${String(initialTime.hour).padStart(2, "0")}:${String(initialTime.minute).padStart(2, "0")}`
+          : ""
+      )
       detailsForm.reset()
     }
   }, [isOpen, initialDate, initialTime, detailsForm])

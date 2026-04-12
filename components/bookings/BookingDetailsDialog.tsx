@@ -86,11 +86,11 @@ export function BookingDetailsDialog({ booking, open, onOpenChange, userRole }: 
 					{/* Service Info */}
 					<div className="border-b pb-4">
 						<h3 className="font-semibold text-lg mb-2" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-							{booking.service.name}
+							{booking.service?.name || "Unknown Service"}
 						</h3>
 						<div className="flex items-center gap-2">
 							<DollarSign className="w-4 h-4 text-muted-foreground" />
-							<span className="text-lg font-bold text-primary">${booking.service.price.toLocaleString()}</span>
+							<span className="text-lg font-bold text-primary">${(booking.service?.price || 0).toLocaleString()}</span>
 						</div>
 					</div>
 

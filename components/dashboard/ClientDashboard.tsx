@@ -88,7 +88,7 @@ export function ClientDashboard() {
 	// Only show past bookings that are completed (users can only rate completed services)
 	const pastBookings = bookings?.filter((b) => new Date(b.date) < new Date() && b.status === "COMPLETED") || []
 	const completedBookings = bookings?.filter((b) => b.status === "COMPLETED") || []
-	const totalSpent = bookings?.reduce((sum, b) => sum + b.service.price, 0) || 0
+	const totalSpent = bookings?.reduce((sum, b) => sum + (b.service?.price || 0), 0) || 0
 
 	const navItems = [
 		{ key: "overview", label: "Overview", icon: Calendar },
@@ -233,7 +233,7 @@ export function ClientDashboard() {
 										<CardContent>
 											<div className="flex items-center justify-between mb-3">
 												<div className="flex items-center gap-2 text-lg font-semibold">
-													<DollarSign className="w-5 h-5" />${booking.service.price.toLocaleString()}
+													<DollarSign className="w-5 h-5" />${(booking.service?.price || 0).toLocaleString()}
 												</div>
 											</div>
 											<div className="flex gap-2">
@@ -313,7 +313,7 @@ export function ClientDashboard() {
 										<CardContent>
 											<div className="flex items-center justify-between mb-3">
 												<div className="flex items-center gap-2 text-lg font-semibold">
-													<DollarSign className="w-5 h-5" />${booking.service.price.toLocaleString()}
+													<DollarSign className="w-5 h-5" />${(booking.service?.price || 0).toLocaleString()}
 												</div>
 											</div>
 											<div className="flex gap-2">

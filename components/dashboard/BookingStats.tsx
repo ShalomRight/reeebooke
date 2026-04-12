@@ -20,7 +20,7 @@ export function BookingStats({ bookings }: BookingStatsProps) {
   const totalBookings = bookings.length
   const completedBookings = bookings.filter((b) => b.status === "COMPLETED").length
   const upcomingBookings = bookings.filter((b) => new Date(b.date) >= new Date() && b.status !== "CANCELLED").length
-  const totalSpent = bookings.filter((b) => b.status === "COMPLETED").reduce((sum, b) => sum + b.service.price, 0)
+  const totalSpent = bookings.filter((b) => b.status === "COMPLETED").reduce((sum, b) => sum + (b.service?.price || 0), 0)
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
