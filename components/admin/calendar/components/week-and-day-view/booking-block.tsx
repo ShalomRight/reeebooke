@@ -58,9 +58,9 @@ export function BookingBlock({ booking, className }: IProps) {
 
   const calendarWeekBookingCardClasses = cn(calendarWeekBookingCardVariants({ color, className }), durationInMinutes < 35 && "py-0 justify-center");
 
-  const handleKeyDown = (e: React.KeyboardBooking) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
-      e.prbookingDefault();
+      e.preventDefault();
       if (e.currentTarget instanceof HTMLElement) e.currentTarget.click();
     }
   };

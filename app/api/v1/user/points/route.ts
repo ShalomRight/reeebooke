@@ -17,7 +17,7 @@ export async function GET() {
 			where: eq(users.email, session.user.email),
 			with: {
 				bookings: {
-					where: (fields, { eq }) => eq(fields.status, "COMPLETED"),
+					where: (fields: any, { eq }: any) => eq(fields.status, "COMPLETED"),
 					columns: {
 						id: true,
 					},

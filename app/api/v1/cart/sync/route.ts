@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 		const sessionUserEmail = session.user.email as string;
 		// Get user
 		const user = await db.query.users.findFirst({
-			where: (fields, { eq }) => eq(fields.email, sessionUserEmail),
+			where: (fields: any, { eq }: any) => eq(fields.email, sessionUserEmail),
 		})
 
 		if (!user) {
@@ -46,23 +46,23 @@ export async function POST(req: NextRequest) {
 
 		// Get existing cart items
 		const existingCartItems = await db.query.carts.findMany({
-			where: (fields, { eq }) => eq(fields.userId, user.id),
+			where: (fields: any, { eq }: any) => eq(fields.userId, user.id),
 		})
 
 		const existingItemsSet = new Set(
-			existingCartItems.map(item => `${item.serviceId}-${normalizeDate(item.date)}-${item.time}`)
+			existingCartItems.map((item: any) => `${item.serviceId}-${normalizeDate(item.date)}-${item.time}`)
 		)
 
 		// Deduplicate guest cart items
 		const uniqueGuestItems = new Map<string, SyncCartItem>()
-		guestCartItems.forEach(item => {
+		guestCartItems.forEach((item: any) => {
 			const key = `${item.serviceId}-${normalizeDate(item.date)}-${item.time}`
 			if (!uniqueGuestItems.has(key)) uniqueGuestItems.set(key, item)
 		})
 
 		// Filter items that are not in DB yet
 		let itemsToAdd = Array.from(uniqueGuestItems.values()).filter(
-			item => !existingItemsSet.has(`${item.serviceId}-${normalizeDate(item.date)}-${item.time}`)
+			(item: any) => !existingItemsSet.has(`${item.serviceId}-${normalizeDate(item.date)}-${item.time}`)
 		)
 
 		let itemsAddedCount = 0
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 				endOfDay.setHours(23, 59, 59, 999)
 
 				const exists = await db.query.carts.findFirst({
-					where: (fields, { and, eq, gte, lte }) => and(
+					where: (fields: any, { and, eq, gte, lte }: any) => and(
 						eq(fields.userId, user.id),
 						eq(fields.serviceId, item.serviceId),
 						gte(fields.date, startOfDay.toISOString()),
@@ -102,16 +102,16 @@ export async function POST(req: NextRequest) {
 
 		// Fetch updated cart
 		const updatedCart = await db.query.carts.findMany({
-			where: (fields, { eq }) => eq(fields.userId, user.id),
+			where: (fields: any, { eq }: any) => eq(fields.userId, user.id),
 			with: { service: true },
-			orderBy: (fields, { desc }) => [desc(fields.createdAt)],
+			orderBy: (fields: any, { desc }: any) => [desc(fields.createdAt)],
 		})
 
 		// Remove duplicates (keep latest createdAt)
 		const uniqueCartMap = new Map<string, typeof updatedCart[0]>()
 		const itemsToDelete: string[] = []
 
-		updatedCart.forEach(item => {
+		updatedCart.forEach((item: any) => {
 			const key = `${item.serviceId}-${normalizeDate(item.date)}-${item.time}`
 			if (!uniqueCartMap.has(key)) {
 				uniqueCartMap.set(key, item)
@@ -131,9 +131,9 @@ export async function POST(req: NextRequest) {
 		}
 
 		const finalCart = await db.query.carts.findMany({
-			where: (fields, { eq }) => eq(fields.userId, user.id),
+			where: (fields: any, { eq }: any) => eq(fields.userId, user.id),
 			with: { service: true },
-			orderBy: (fields, { desc }) => [desc(fields.createdAt)],
+			orderBy: (fields: any, { desc }: any) => [desc(fields.createdAt)],
 		})
 
 		return NextResponse.json({

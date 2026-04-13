@@ -7,7 +7,7 @@
  * Import: import { zap } from "@/lib/zap";
  */
 
-import { zap, type Resource } from "@/lib/zap";
+import { zap, type Resource } from "./zap";
 
 // ─── Example resources ────────────────────────────────────────────────────────
 

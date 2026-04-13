@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
 		const sessionUserEmail = session.user.email as string;
 		const user = await db.query.users.findFirst({
-			where: (fields, { eq }) => eq(fields.email, sessionUserEmail),
+			where: (fields: any, { eq }: any) => eq(fields.email, sessionUserEmail),
 		})
 
 		if (!user) {

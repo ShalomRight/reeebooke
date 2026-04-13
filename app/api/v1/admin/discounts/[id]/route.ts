@@ -43,6 +43,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
+		const db = getDb()
 		const { id } = await params
 		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role

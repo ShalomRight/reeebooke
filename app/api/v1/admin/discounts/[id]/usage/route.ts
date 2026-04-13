@@ -44,16 +44,18 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 		// Calculate statistics
 		const totalUsages = discountCode.usages.length
 		const uniqueUsers = new Set(
-			discountCode.usages.filter((u) => u.userId || u.email).map((u) => u.userId || u.email)
+			discountCode.usages
+				.filter((u: any) => u.booking?.userId != null)
+				.map((u: any) => u.booking!.userId)
 		).size
 
-		const totalDiscountAmount = discountCode.usages.reduce((sum, u) => sum + u.discountAmount, 0)
-		const totalRevenue = discountCode.usages.reduce((sum, u) => sum + u.cartTotal, 0)
-		const totalFinalRevenue = discountCode.usages.reduce((sum, u) => sum + u.finalTotal, 0)
+		const totalDiscountAmount = discountCode.usages.reduce((sum: number, u: any) => sum + u.discountAmount, 0)
+		const totalRevenue = discountCode.usages.reduce((sum: number, u: any) => sum + u.cartTotal, 0)
+		const totalFinalRevenue = discountCode.usages.reduce((sum: number, u: any) => sum + u.finalTotal, 0)
 
 		// Group by user
 		const usageByUser = discountCode.usages.reduce(
-			(acc, usage) => {
+			(acc: any, usage: any) => {
 				const key = usage.userId || usage.email || "guest"
 				if (!acc[key]) {
 					acc[key] = {
@@ -90,7 +92,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 			>
 		)
 
-		const userStats = Object.values(usageByUser).sort((a, b) => b.count - a.count)
+		const userStats = Object.values(usageByUser).sort((a: any, b: any) => b.count - a.count)
 
 		return NextResponse.json({
 			discountCode: {
@@ -109,7 +111,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 				totalFinalRevenue,
 			},
 			usageByUser: userStats,
-			recentUsages: discountCode.usages.slice(0, 50).map((usage) => ({
+			recentUsages: discountCode.usages.slice(0, 50).map((usage: any) => ({
 				id: usage.id,
 				userName: usage.userName || usage.user?.name || "Guest",
 				email: usage.email || usage.user?.email,

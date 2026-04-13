@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
 		// Find user with valid reset token
 		const user = await db.query.users.findFirst({
-			where: (fields, { eq }) => eq(fields.email, email),
+			where: (fields: any, { eq }: any) => eq(fields.email, email),
 		})
 
 		if (!user || !user.resetToken || user.resetToken !== token) {

@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 		const favs = await db.query.favorites.findMany({
 			where: eq(favorites.userId, user.id),
 			with: { service: true },
-			orderBy: (favorites, { desc }) => [desc(favorites.createdAt)],
+			orderBy: (favorites: any, { desc }: any) => [desc(favorites.createdAt)],
 		})
 
 		return NextResponse.json(favs)

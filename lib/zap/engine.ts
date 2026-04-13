@@ -97,12 +97,12 @@ export async function getBookableSlots(
   })
 
   // 2. Filter schedules that apply to this date
-  const matchedSchedules = activeSchedules.filter(sch => doesScheduleMatchDate(sch, targetDate))
+  const matchedSchedules = activeSchedules.filter((sch: any) => doesScheduleMatchDate(sch, targetDate))
   
   // 3. Extract availability bounds (Type = availability) in minutes
   let availableIntervals: { start: number; end: number }[] = []
   
-  const availabilitySch = matchedSchedules.filter(s => s.type === "availability")
+  const availabilitySch = matchedSchedules.filter((s: any) => s.type === "availability")
   for (const sch of availabilitySch) {
     for (const p of sch.periods) {
       availableIntervals.push({
@@ -136,7 +136,7 @@ export async function getBookableSlots(
   // 5. Gather blockouts (Blocked schedules OR Appointment schedules OR Booking rows)
   const blockedIntervals: { start: number; end: number }[] = []
   
-  const blockedSch = matchedSchedules.filter(s => s.type === "blocked" || s.type === "appointment")
+  const blockedSch = matchedSchedules.filter((s: any) => s.type === "blocked" || s.type === "appointment")
   for (const sch of blockedSch) {
     for (const p of sch.periods) {
       blockedIntervals.push({

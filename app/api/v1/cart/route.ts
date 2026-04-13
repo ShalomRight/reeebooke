@@ -25,14 +25,14 @@ export async function GET(req: NextRequest) {
 		const cartItems = await db.query.carts.findMany({
 			where: eq(carts.userId, user.id),
 			with: { service: true },
-			orderBy: (carts, { desc }) => [desc(carts.createdAt)],
+			orderBy: (carts: any, { desc }: any) => [desc(carts.createdAt)],
 		})
 
 		// Deduplicate cart items by serviceId, date, and time
 		const uniqueCartMap = new Map<string, typeof cartItems[0]>()
 		const itemsToDelete: string[] = []
 
-		cartItems.forEach((item) => {
+		cartItems.forEach((item: any) => {
 			const key = `${item.serviceId}-${item.date}-${item.time}`
 			if (!uniqueCartMap.has(key)) {
 				uniqueCartMap.set(key, item)

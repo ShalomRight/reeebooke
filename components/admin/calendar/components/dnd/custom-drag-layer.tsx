@@ -30,7 +30,7 @@ export function CustomDragLayer() {
 
   const layerStyles: React.CSSProperties = {
     position: "fixed",
-    pointerBookings: "none",
+    pointerEvents: "none",
     zIndex: 100,
     left: currentOffset.x - offsetX,
     top: currentOffset.y - offsetY,

@@ -10,12 +10,20 @@ import { cn } from "@/lib/utils";
 
 import type { DayPickerSingleProps } from "react-day-picker";
 
-function SingleCalendar({ className, classNames, showOutsideDays = true, selected, ...props }: DayPickerSingleProps) {
-  const [currentMonth, setCurrentMonth] = React.useState<Date | undefined>(selected instanceof Date ? selected : undefined);
+function SingleCalendar({
+  className,
+  classNames,
+  showOutsideDays = true,
+  ...props
+}: React.ComponentProps<typeof DayPicker> & { 
+  className?: string
+  classNames?: Record<string, string>
+  showOutsideDays?: boolean 
+}) {
+  const [currentMonth, setCurrentMonth] = React.useState<Date | undefined>(props.selected instanceof Date ? props.selected : undefined);
 
   return (
     <DayPicker
-      selected={selected}
       showOutsideDays={showOutsideDays}
       month={currentMonth}
       onMonthChange={setCurrentMonth}
@@ -49,8 +57,10 @@ function SingleCalendar({ className, classNames, showOutsideDays = true, selecte
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => <ChevronLeft className={cn("h-4 w-4", className)} {...props} />,
-        IconRight: ({ className, ...props }) => <ChevronRight className={cn("h-4 w-4", className)} {...props} />,
+        Chevron: ({ orientation, ...props }: any) => 
+          orientation === "left" 
+            ? <ChevronLeft className="h-4 w-4" {...props} />
+            : <ChevronRight className="h-4 w-4" {...props} />
       }}
       {...props}
     />

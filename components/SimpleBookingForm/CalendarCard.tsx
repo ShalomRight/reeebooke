@@ -16,6 +16,7 @@ interface CalendarCardProps {
   dailyCapacities: DailyCapacityMap
   selectedService?: string
   disabledDates?: number[]
+  bookingCounts?: Record<number, number>
 }
 
 // ─── Availability tier ────────────────────────────────────────────────────────

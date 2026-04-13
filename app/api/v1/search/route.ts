@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 		let bookingsResult: any[] = []
 		if (userRole) {
 			bookingsResult = await db.query.bookings.findMany({
-				where: (fields, { or, like, and, eq }) => {
+				where: (fields: any, { or, like, and, eq }: any) => {
 					const searchCondition = or(
 						like(fields.userName, searchTerm),
 						like(fields.phone, searchTerm),
@@ -57,14 +57,14 @@ export async function GET(req: NextRequest) {
 						},
 					},
 				},
-				orderBy: (fields, { desc }) => [desc(fields.createdAt)],
+				orderBy: (fields: any, { desc }: any) => [desc(fields.createdAt)],
 				limit: 5,
 			})
 		}
 
 		// Search services (accessible to all)
 		const servicesResult = await db.query.services.findMany({
-			where: (fields, { like }) => like(fields.name, searchTerm),
+			where: (fields: any, { like }: any) => like(fields.name, searchTerm),
 			columns: {
 				id: true,
 				name: true,
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
 		let usersResult: any[] = []
 		if (userRole && (userRole.includes("ADMIN") || userRole === "SUPER_ADMIN")) {
 			usersResult = await db.query.users.findMany({
-				where: (fields, { or, and, like, inArray, eq }) => {
+				where: (fields: any, { or, and, like, inArray, eq }: any) => {
 					const searchCondition = or(
 						like(fields.name, searchTerm),
 						like(fields.email, searchTerm),
@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
 		let discountCodesResult: any[] = []
 		if (userRole && (userRole.includes("ADMIN") || userRole === "SUPER_ADMIN")) {
 			discountCodesResult = await db.query.discountCodes.findMany({
-				where: (fields, { like }) => like(fields.code, `%${query.toUpperCase()}%`),
+				where: (fields: any, { like }: any) => like(fields.code, `%${query.toUpperCase()}%`),
 				columns: {
 					id: true,
 					code: true,
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
 		let referralCodesResult: any[] = []
 		if (userRole === "SUPER_ADMIN") {
 			referralCodesResult = await db.query.referralCodes.findMany({
-				where: (fields, { or, like }) => or(
+				where: (fields: any, { or, like }: any) => or(
 					like(fields.code, `%${query.toUpperCase()}%`),
 					sql`userId IN (SELECT id FROM users WHERE name LIKE ${searchTerm} OR email LIKE ${searchTerm})`
 				),
@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
 		}
 
 		return NextResponse.json({
-			bookings: bookingsResult.map((b) => ({
+			bookings: bookingsResult.map((b: any) => ({
 				id: b.id,
 				type: "booking",
 				title: b.service?.name || "Unknown Service",
@@ -158,14 +158,14 @@ export async function GET(req: NextRequest) {
 					? `/admin/bookings`
 					: `/dashboard`,
 			})),
-			services: servicesResult.map((s) => ({
+			services: servicesResult.map((s: any) => ({
 				id: s.id,
 				type: "service",
 				title: s.name,
 				subtitle: `$${s.price.toLocaleString()}`,
 				url: "/",
 			})),
-			users: usersResult.map((u) => ({
+			users: usersResult.map((u: any) => ({
 				id: u.id,
 				type: "user",
 				title: u.name || "No name",
@@ -175,15 +175,15 @@ export async function GET(req: NextRequest) {
 				referralCode: u.referralCode,
 				url: userRole === "SUPER_ADMIN" ? `/admin/super?tab=users` : `/admin?tab=users`,
 			})),
-			discountCodes: discountCodesResult.map((d) => ({
+			discountCodes: discountCodesResult.map((d: any) => ({
 				id: d.id,
 				type: "discount",
 				title: d.code,
-				subtitle: `${d.type === "PERCENT" ? \`\${d.value}%\` : \`$\${d.value}\`} off • ${d.usedCount} uses`,
+				subtitle: `${d.type === "PERCENT" ? `${d.value}%` : `$${d.value}`} off • ${d.usedCount} uses`,
 				active: d.active,
 				url: userRole === "SUPER_ADMIN" ? `/admin/super?tab=discounts` : `/admin?tab=discounts`,
 			})),
-			referralCodes: referralCodesResult.map((r) => ({
+			referralCodes: referralCodesResult.map((r: any) => ({
 				id: r.id,
 				type: "referral",
 				title: r.code,

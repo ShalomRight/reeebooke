@@ -21,3 +21,4 @@ pnpm-debug.log*
 .idea
 .dev.vars
 .wrangler/
+d1-backup.sql

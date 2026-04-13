@@ -31,30 +31,30 @@ export async function GET() {
 		})
 
 		const totalBookings = allBookings.length
-		const todayBookings = allBookings.filter((b) => {
+		const todayBookings = allBookings.filter((b: any) => {
 			const bookingDate = new Date(b.date)
 			return bookingDate >= today && bookingDate < tomorrow
 		}).length
 
-		const pendingBookings = allBookings.filter((b) => b.status === "PENDING").length
-		const confirmedBookings = allBookings.filter((b) => b.status === "CONFIRMED").length
-		const completedBookings = allBookings.filter((b) => b.status === "COMPLETED").length
-		const cancelledBookings = allBookings.filter((b) => b.status === "CANCELLED").length
+		const pendingBookings = allBookings.filter((b: any) => b.status === "PENDING").length
+		const confirmedBookings = allBookings.filter((b: any) => b.status === "CONFIRMED").length
+		const completedBookings = allBookings.filter((b: any) => b.status === "COMPLETED").length
+		const cancelledBookings = allBookings.filter((b: any) => b.status === "CANCELLED").length
 
 		const yesterday = new Date()
 		yesterday.setDate(yesterday.getDate() - 1)
-		const newBookings = allBookings.filter((b) => new Date(b.createdAt) >= yesterday).length
+		const newBookings = allBookings.filter((b: any) => new Date(b.createdAt) >= yesterday).length
 
 		const totalRevenue = allBookings
-			.filter((b) => b.status === "COMPLETED" || b.status === "CONFIRMED")
-			.reduce((sum, b) => sum + b.service.price, 0)
+			.filter((b: any) => b.status === "COMPLETED" || b.status === "CONFIRMED")
+			.reduce((sum: number, b: any) => sum + (b.service?.price || 0), 0)
 
 		const todayRevenue = allBookings
-			.filter((b) => {
+			.filter((b: any) => {
 				const bookingDate = new Date(b.date)
 				return bookingDate >= today && bookingDate < tomorrow && (b.status === "COMPLETED" || b.status === "CONFIRMED")
 			})
-			.reduce((sum, b) => sum + b.service.price, 0)
+			.reduce((sum: number, b: any) => sum + (b.service?.price || 0), 0)
 
 		return NextResponse.json({
 			total: totalBookings,

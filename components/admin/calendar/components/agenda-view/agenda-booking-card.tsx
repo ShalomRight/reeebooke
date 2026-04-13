@@ -57,9 +57,9 @@ export function AgendaBookingCard({ booking, bookingCurrentDay, bookingTotalDays
 
   const agendaBookingCardClasses = agendaBookingCardVariants({ color });
 
-  const handleKeyDown = (e: React.KeyboardBooking) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
-      e.prbookingDefault();
+      e.preventDefault();
       if (e.currentTarget instanceof HTMLElement) e.currentTarget.click();
     }
   };

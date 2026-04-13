@@ -172,7 +172,7 @@ async function handleCheckout(req: NextRequest) {
 			}
 		}
 
-		const bookingIds = createdBookings.map((b) => b.id).join(",")
+		const bookingIds = createdBookings.map((b: any) => b.id).join(",")
 
 		const lineItems = cartItems.map((item: any) => ({
 			price_data: {

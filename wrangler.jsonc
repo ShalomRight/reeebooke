@@ -1,17 +1,16 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "your-booking-app",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-08-05",
-	// ── D1 Database Binding ──────────────────────────────────────────────────
-	// Replace the placeholder values with your actual database name and ID.
-	// Get these by running: npx wrangler d1 info YOUR_DB_NAME
-	"d1_databases": [
-		{
-			"binding": "reebooking_db",
-			"database_name": "reebooking-db",
-			"database_id": "c19a1c23-7895-4fb1-9740-c6126bfcad77",
-			"migrations_dir": "drizzle/migrations"
-		}
-	]
+  "name": "reebooking",
+  "compatibility_date": "2025-04-13",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "pages_build_output_dir": ".vercel/output/static",
+  "d1_databases": [
+    {
+      "binding": "reebooking_db",
+      "database_name": "reebooking-db",
+      "database_id": "c19a1c23-7895-4fb1-9740-c6126bfcad77",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ]
 }

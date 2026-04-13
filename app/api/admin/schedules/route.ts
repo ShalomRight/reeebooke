@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getDb } from "@/src/db"
 import { schedules, schedulePeriods } from "@/src/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, desc } from "drizzle-orm"
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,18 +17,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "serviceId is required" }, { status: 400 })
     }
 
-    // Fetch all schedules for this service
+    // Fetch all schedules for this service, newest first
     const allSchedules = await db.query.schedules.findMany({
       where: and(
         eq(schedules.resourceType, "service"),
         eq(schedules.resourceId, serviceId)
       ),
       with: { periods: true },
-      // newest first
+      orderBy: [desc(schedules.createdAt)],
     })
-
-    // Sort by created_at descending
-    allSchedules.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 
     return NextResponse.json({ schedules: allSchedules })
   } catch (error: any) {

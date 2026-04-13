@@ -9,6 +9,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog"
 import { CalendarCard } from "@/components/SimpleBookingForm/CalendarCard"
+import { DailyCapacityMap } from "@/components/SimpleBookingForm/useZapBookingForm"
 import { ServiceSelection } from "@/components/SimpleBookingForm/ServiceSelection"
 import { PhotoUpload } from "@/components/SimpleBookingForm/PhotoUpload"
 import { TimeSelection } from "@/components/SimpleBookingForm/TimeSelection"
@@ -285,7 +286,11 @@ export function EditCartItemDialog({ item, onUpdate }: EditCartItemDialogProps) 
 								weekDays={weekDays}
 								selectedDate={selectedDate}
 								setSelectedDate={setSelectedDate}
-								bookingCounts={bookingCounts}
+								dailyCapacities={Object.keys(bookingCounts).reduce((acc, day) => {
+									const dayNum = Number(day);
+									acc[dayNum] = { total: 6, available: Math.max(0, 6 - bookingCounts[dayNum]) };
+									return acc;
+								}, {} as DailyCapacityMap)}
 								selectedService={selectedService}
 								disabledDates={
 									selectedService

@@ -67,7 +67,7 @@ export function EditBookingDialog({ children, booking }: IProps) {
       user,
       title: values.title,
       color: values.color,
-      description: values.description,
+      description: values.description ?? "",
       startDate: startDateTime.toISOString(),
       endDate: endDateTime.toISOString(),
     });

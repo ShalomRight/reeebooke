@@ -5,7 +5,7 @@
 
 import * as schema from "./schema";
 import { drizzle as drizzleD1 } from "drizzle-orm/d1";
-import { getCloudflareContext } from "@cloudflare/next-on-pages";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 import { eq, sql, lt } from "drizzle-orm";
 
 import {
@@ -41,7 +41,7 @@ interface CloudflareEnv {
 export function getDb() {
   if (process.env.NEXT_RUNTIME === "edge") {
     // Production / Edge Simulation: Use D1 binding from Cloudflare context
-    const { env } = getCloudflareContext<CloudflareEnv>();
+    const { env } = getRequestContext<CloudflareEnv>();
     
     if (!env.reebooking_db) {
       throw new Error("D1 binding 'reebooking_db' not found in Cloudflare environment.");
@@ -105,7 +105,7 @@ export async function createBookingWithPhotos(
     .insert(bookings)
     .values({ ...booking, id: bookingId })
     .returning()
-    .then((res) => res[0]);
+    .then((res: typeof bookings.$inferSelect[]) => res[0]);
 
   const createdPhotos = await Promise.all(
     photoUrls.map((url) =>
@@ -117,7 +117,7 @@ export async function createBookingWithPhotos(
           url,
         })
         .returning()
-        .then((res) => res[0])
+        .then((res: typeof photos.$inferSelect[]) => res[0])
     )
   );
 

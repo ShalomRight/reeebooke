@@ -42,15 +42,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 			orderBy: [desc(referralRewards.createdAt)],
 		})
 
-		const referredIds = [...new Set(rewards.map(r => r.referredId))]
+		const referredIds = [...new Set(rewards.map((r: any) => r.referredId))]
 		const referredUsers = referredIds.length > 0 ? await db.query.users.findMany({
-			where: (users, { inArray }) => inArray(users.id, referredIds),
+			where: (users: any, { inArray }: any) => inArray(users.id, referredIds),
 			columns: { id: true, name: true, email: true, phone: true, createdAt: true }
 		}) : []
 		
-		const userMap = new Map(referredUsers.map(u => [u.id, u]))
+		const userMap = new Map(referredUsers.map((u: any) => [u.id, u]))
 		const referralsByUser = rewards.reduce(
-			(acc, reward) => {
+			(acc: any, reward: any) => {
 				const key = reward.referredId
 				if (!acc[key]) {
 					acc[key] = {
@@ -87,7 +87,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
 		const statistics = {
 			totalReferrals: Object.keys(referralsByUser).length,
-			totalPointsAwarded: rewards.reduce((sum, r) => sum + r.points, 0),
+			totalPointsAwarded: rewards.reduce((sum: number, r: any) => sum + r.points, 0),
 			totalRewards: rewards.length,
 		}
 

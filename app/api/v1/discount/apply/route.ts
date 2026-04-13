@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 		const { code, cartTotal } = validation.data
 
 		const discountCode = await db.query.discountCodes.findFirst({
-			where: (fields, { eq }) => eq(fields.code, code.toUpperCase()),
+			where: (fields: any, { eq }: any) => eq(fields.code, code.toUpperCase()),
 		})
 
 		if (!discountCode) {

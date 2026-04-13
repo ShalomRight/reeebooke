@@ -86,9 +86,9 @@ export function MonthBookingBadge({ booking, cellDate, bookingCurrentDay, bookin
 
   const bookingBadgeClasses = cn(bookingBadgeVariants({ color, multiDayPosition: position, className }));
 
-  const handleKeyDown = (e: React.KeyboardBooking) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
-      e.prbookingDefault();
+      e.preventDefault();
       if (e.currentTarget instanceof HTMLElement) e.currentTarget.click();
     }
   };

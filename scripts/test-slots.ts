@@ -1,5 +1,6 @@
 import { getBookableSlots } from "../lib/zap/engine";
-import { db } from "../src/db";
+import { getDb } from "../src/db";
+const db = getDb();
 
 async function main() {
   console.log("Testing...");

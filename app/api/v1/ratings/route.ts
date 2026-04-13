@@ -51,7 +51,7 @@ async function handleGetRatings(req: NextRequest) {
 					},
 				},
 			},
-			orderBy: (ratings, { desc }) => [desc(ratings.createdAt)],
+			orderBy: (ratings: any, { desc }: any) => [desc(ratings.createdAt)],
 		})
 
 	return NextResponse.json(allRatings)

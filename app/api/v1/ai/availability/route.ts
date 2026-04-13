@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     }
 
     const bookingsData = await db.query.bookings.findMany({
-      where: (fields, { and, gte, lt }) => and(
+      where: (fields: any, { and, gte, lt }: any) => and(
         gte(fields.date, new Date(date).toISOString()),
         lt(fields.date, new Date(new Date(date).setDate(new Date(date).getDate() + 1)).toISOString())
       ),

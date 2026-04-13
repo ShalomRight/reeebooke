@@ -42,12 +42,12 @@ export async function GET(req: NextRequest) {
 		])
 
 		// Calculate average rating and count for each service
-		const servicesWithRatings = allServices.map((service) => {
-			const approvedRatings = service.ratings.filter(r => r.status === "APPROVED")
+		const servicesWithRatings = allServices.map((service: any) => {
+			const approvedRatings = service.ratings.filter((r: any) => r.status === "APPROVED")
 			const ratingsCount = approvedRatings.length
 			const averageRating =
 				ratingsCount > 0
-					? approvedRatings.reduce((sum, r) => sum + r.rating, 0) / ratingsCount
+					? approvedRatings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratingsCount
 					: 0
 
 			return {

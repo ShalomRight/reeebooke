@@ -104,7 +104,7 @@ export const useZapBookingForm = (initialServiceId?: string) => {
 			setTimeSlots(slots)
             
             // Auto deselect if the current selectedTime is no longer in the list or is not available
-            const selectedSlotIsAvailable = slots.some(s => s.time === selectedTime && s.available)
+            const selectedSlotIsAvailable = slots.some((s: any) => s.time === selectedTime && s.available)
             if (selectedTime && !selectedSlotIsAvailable) {
                 setSelectedTime("")
             }

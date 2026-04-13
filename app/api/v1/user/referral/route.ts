@@ -7,8 +7,8 @@ import { getServerSession } from "next-auth"
 import { NextResponse } from "next/server"
 
 export async function GET() {
+	const db = getDb()
 	try {
-		const db = getDb()
 		const session = await getServerSession(getAuthOptions())
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -50,8 +50,8 @@ export async function GET() {
 			console.error("Error fetching referral rewards:", err)
 		}
 
-		const totalReferrals = new Set(rewards.map((r) => r.referredId)).size
-		const totalPointsAwarded = rewards.reduce((sum, r) => sum + r.points, 0)
+		const totalReferrals = new Set(rewards.map((r: any) => r.referredId)).size
+		const totalPointsAwarded = rewards.reduce((sum: number, r: any) => sum + r.points, 0)
 
 		// Generate referral link
 		const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"

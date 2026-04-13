@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
 		// Check if user already exists
 		const existingUser = await db.query.users.findFirst({
-			where: (fields, { eq }) => eq(fields.email, email),
+			where: (fields: any, { eq }: any) => eq(fields.email, email),
 		})
 
 		if (existingUser) {

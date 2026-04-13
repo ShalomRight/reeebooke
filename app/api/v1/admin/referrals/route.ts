@@ -41,12 +41,12 @@ export async function GET() {
 		})
 
 		// Calculate statistics for each referral code
-		const codesWithStats = referralCodesList.map((code) => {
+		const codesWithStats = referralCodesList.map((code: any) => {
 			// Find rewards where the referrer is the owner of this code
-			const rewards = rewardsList.filter((r) => r.referrerId === code.userId)
+			const rewards = rewardsList.filter((r: any) => r.referrerId === code.userId)
 
-			const totalPointsAwarded = rewards.reduce((sum, r) => sum + r.points, 0)
-			const uniqueReferrals = new Set(rewards.map((r) => r.referredId)).size
+			const totalPointsAwarded = rewards.reduce((sum: number, r: any) => sum + r.points, 0)
+			const uniqueReferrals = new Set(rewards.map((r: any) => r.referredId)).size
 
 			return {
 				id: code.id,

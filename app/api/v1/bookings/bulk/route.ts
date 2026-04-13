@@ -191,7 +191,7 @@ async function handleBulkBooking(req: NextRequest) {
 				)
 			}
 
-			const insertedBooking = await db.transaction(async (tx) => {
+			const insertedBooking = await db.transaction(async (tx: any) => {
 				const [booking] = await tx.insert(bookings).values({
 					serviceId: item.serviceId,
 					date: dateYmd,

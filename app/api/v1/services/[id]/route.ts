@@ -73,6 +73,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     }
 
     const { id } = await params
+    const db = getDb()
 
     const service = await db.query.services.findFirst({
       where: eq(services.id, id),
@@ -87,8 +88,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     if (!["ADMIN", "SUPER_ADMIN"].includes(userRole)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
-
-    const db = getDb()
 
     await db.delete(services).where(eq(services.id, id))
 

@@ -157,7 +157,7 @@ export function CalendarDayView({ singleDayBookings, multiDayBookings }: IProps)
       </div>
 
       <div className="hidden w-64 divide-y border-l md:block">
-        <SingleCalendar mode="single" selected={selectedDate} onSelect={setSelectedDate} initialFocus />
+        <SingleCalendar mode="single" selected={selectedDate} onSelect={setSelectedDate} autoFocus />
 
         <div className="flex-1 space-y-3">
           {currentBookings.length > 0 ? (

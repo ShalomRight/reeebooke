@@ -206,7 +206,7 @@ async function handleCreateBooking(req: NextRequest) {
 	const createdIds: string[] = []
 
 	try {
-		db.transaction((tx) => {
+		db.transaction((tx: any) => {
 			for (const serviceId of serviceIds) {
 				const bookingId = crypto.randomUUID()
 				createdIds.push(bookingId)
@@ -245,7 +245,7 @@ async function handleCreateBooking(req: NextRequest) {
 	}
 
 	const createdBookings = await Promise.all(
-		createdIds.map((id) =>
+		createdIds.map((id: any) =>
 			db.query.bookings.findFirst({
 				where: eq(bookings.id, id),
 				with: {
