@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { type NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { getDb } from "@/src/db"
@@ -10,7 +12,7 @@ import { getReferralRewardEmail } from "@/lib/email-templates/referrals"
 import { awardReferralPointsOnPayment } from "@/lib/referral-utils"
 import type Stripe from "stripe"
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ""
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,3 +1,5 @@
+export const runtime = 'edge'
+
 import { getDb } from "@/src/db"
 import { carts } from "@/src/db/schema"
 import { eq, gte, lte, lt } from "drizzle-orm"

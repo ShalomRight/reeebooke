@@ -1,10 +1,11 @@
+export const runtime = 'edge'
+
 import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
 import { getPasswordResetEmail } from "@/lib/email-templates/auth"
 import { NextRequest, NextResponse } from "next/server"
-import crypto from "crypto"
 
 export async function POST(req: NextRequest) {
 	try {
@@ -28,7 +29,11 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Generate reset token
-		const resetToken = crypto.randomBytes(32).toString("hex")
+		const tokenBytes = new Uint8Array(32)
+		globalThis.crypto.getRandomValues(tokenBytes)
+		const resetToken = Array.from(tokenBytes)
+			.map(b => b.toString(16).padStart(2, "0"))
+			.join("")
 		const resetTokenExpiry = new Date(Date.now() + 3600000) // 1 hour from now
 
 		// Store reset token in database
