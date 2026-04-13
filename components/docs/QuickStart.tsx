@@ -13,16 +13,18 @@ export function QuickStart() {
 			time: "1 minute",
 			title: "Set Up Database",
 			details: [
-				"Create PostgreSQL database: createdb reebooking",
+				"Configure Drizzle ORM and Cloudflare D1",
 				"Create .env file with minimum required variables",
-				"Run migrations: npx prisma migrate dev && npx prisma generate",
+				"Run migrations: pnpm db:generate",
+				"Initialize D1: pnpm wrangler d1 execute reebooking-db --local --file=drizzle/data-migration.sql",
+				"Run Studio: pnpm db:studio",
 			],
 		},
 		{
 			time: "1 minute",
 			title: "Create Admin User",
 			details: [
-				"Run: npx prisma studio",
+				"Run: pnpm db:studio",
 				"Go to User table → Add record",
 				"Add email, hashed password, role: SUPER_ADMIN, name",
 			],
@@ -47,6 +49,8 @@ export function QuickStart() {
 				</CardHeader>
 				<CardContent className="space-y-6">
 					<div className="flex items-center gap-2 mb-6">
+						<Badge variant="secondary">Drizzle ORM</Badge>
+						<Badge variant="secondary">Cloudflare D1</Badge>
 						<Badge variant="default" className="text-lg px-3 py-1">
 							⚡ Fast Setup (5 Minutes)
 						</Badge>

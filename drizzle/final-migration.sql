@@ -1,0 +1,430 @@
+CREATE TABLE `accounts` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`type` text NOT NULL,
+	`provider` text NOT NULL,
+	`provider_account_id` text NOT NULL,
+	`refresh_token` text,
+	`access_token` text,
+	`expires_at` integer,
+	`token_type` text,
+	`scope` text,
+	`id_token` text,
+	`session_state` text
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `accounts_provider_account_idx` ON `accounts` (`provider`,`provider_account_id`);--> statement-breakpoint
+CREATE INDEX `accounts_user_id_idx` ON `accounts` (`user_id`);--> statement-breakpoint
+CREATE TABLE `bookings` (
+	`id` text PRIMARY KEY NOT NULL,
+	`service_id` text NOT NULL,
+	`user_id` text,
+	`date` text NOT NULL,
+	`time` text NOT NULL,
+	`payment_method` text NOT NULL,
+	`mobile_provider` text,
+	`email` text,
+	`user_name` text NOT NULL,
+	`phone` text NOT NULL,
+	`status` text DEFAULT 'PENDING' NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `bookings_service_id_idx` ON `bookings` (`service_id`);--> statement-breakpoint
+CREATE INDEX `bookings_user_id_idx` ON `bookings` (`user_id`);--> statement-breakpoint
+CREATE INDEX `bookings_status_idx` ON `bookings` (`status`);--> statement-breakpoint
+CREATE INDEX `bookings_date_idx` ON `bookings` (`date`);--> statement-breakpoint
+CREATE INDEX `bookings_service_id_status_idx` ON `bookings` (`service_id`,`status`);--> statement-breakpoint
+CREATE TABLE `cart_emails` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text,
+	`email` text NOT NULL,
+	`cart_items` text NOT NULL,
+	`sent` integer DEFAULT false NOT NULL,
+	`sent_at` text,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`expires_at` text NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `cart_emails_user_id_idx` ON `cart_emails` (`user_id`);--> statement-breakpoint
+CREATE INDEX `cart_emails_email_idx` ON `cart_emails` (`email`);--> statement-breakpoint
+CREATE INDEX `cart_emails_sent_expires_idx` ON `cart_emails` (`sent`,`expires_at`);--> statement-breakpoint
+CREATE TABLE `carts` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text,
+	`service_id` text NOT NULL,
+	`date` text NOT NULL,
+	`time` text NOT NULL,
+	`quantity` integer DEFAULT 1 NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL,
+	`expires_at` text DEFAULT (datetime('now', '+24 hours')) NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `carts_user_id_idx` ON `carts` (`user_id`);--> statement-breakpoint
+CREATE INDEX `carts_service_id_idx` ON `carts` (`service_id`);--> statement-breakpoint
+CREATE INDEX `carts_expires_at_idx` ON `carts` (`expires_at`);--> statement-breakpoint
+CREATE TABLE `discount_codes` (
+	`id` text PRIMARY KEY NOT NULL,
+	`code` text NOT NULL,
+	`type` text NOT NULL,
+	`value` integer NOT NULL,
+	`min_amount` integer,
+	`max_uses` integer,
+	`used_count` integer DEFAULT 0 NOT NULL,
+	`expires_at` text,
+	`active` integer DEFAULT true NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `discount_codes_code_unique` ON `discount_codes` (`code`);--> statement-breakpoint
+CREATE INDEX `discount_codes_code_idx` ON `discount_codes` (`code`);--> statement-breakpoint
+CREATE INDEX `discount_codes_active_idx` ON `discount_codes` (`active`);--> statement-breakpoint
+CREATE TABLE `discount_usages` (
+	`id` text PRIMARY KEY NOT NULL,
+	`discount_code_id` text NOT NULL,
+	`user_id` text,
+	`email` text,
+	`user_name` text,
+	`phone` text,
+	`discount_amount` integer NOT NULL,
+	`cart_total` integer NOT NULL,
+	`final_total` integer NOT NULL,
+	`booking_id` text,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `discount_usages_discount_code_id_idx` ON `discount_usages` (`discount_code_id`);--> statement-breakpoint
+CREATE INDEX `discount_usages_user_id_idx` ON `discount_usages` (`user_id`);--> statement-breakpoint
+CREATE INDEX `discount_usages_email_idx` ON `discount_usages` (`email`);--> statement-breakpoint
+CREATE TABLE `favorites` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`service_id` text NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `favorites_user_id_service_id_idx` ON `favorites` (`user_id`,`service_id`);--> statement-breakpoint
+CREATE INDEX `favorites_user_id_idx` ON `favorites` (`user_id`);--> statement-breakpoint
+CREATE INDEX `favorites_service_id_idx` ON `favorites` (`service_id`);--> statement-breakpoint
+CREATE TABLE `photos` (
+	`id` text PRIMARY KEY NOT NULL,
+	`booking_id` text NOT NULL,
+	`url` text NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `photos_booking_id_idx` ON `photos` (`booking_id`);--> statement-breakpoint
+CREATE TABLE `points_redemptions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`points` integer NOT NULL,
+	`discount_amount` integer NOT NULL,
+	`booking_id` text,
+	`status` text DEFAULT 'PENDING' NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`expires_at` text NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `points_redemptions_user_id_idx` ON `points_redemptions` (`user_id`);--> statement-breakpoint
+CREATE INDEX `points_redemptions_status_expires_idx` ON `points_redemptions` (`status`,`expires_at`);--> statement-breakpoint
+CREATE TABLE `promotion_subscribers` (
+	`id` text PRIMARY KEY NOT NULL,
+	`email` text NOT NULL,
+	`name` text,
+	`phone` text,
+	`user_id` text,
+	`subscribed` integer DEFAULT true NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `promotion_subscribers_email_unique` ON `promotion_subscribers` (`email`);--> statement-breakpoint
+CREATE INDEX `promotion_subscribers_user_id_idx` ON `promotion_subscribers` (`user_id`);--> statement-breakpoint
+CREATE INDEX `promotion_subscribers_subscribed_idx` ON `promotion_subscribers` (`subscribed`);--> statement-breakpoint
+CREATE TABLE `ratings` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`service_id` text NOT NULL,
+	`rating` integer NOT NULL,
+	`comment` text,
+	`status` text DEFAULT 'PENDING' NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `ratings_user_id_service_id_idx` ON `ratings` (`user_id`,`service_id`);--> statement-breakpoint
+CREATE INDEX `ratings_service_id_idx` ON `ratings` (`service_id`);--> statement-breakpoint
+CREATE INDEX `ratings_user_id_idx` ON `ratings` (`user_id`);--> statement-breakpoint
+CREATE INDEX `ratings_status_idx` ON `ratings` (`status`);--> statement-breakpoint
+CREATE INDEX `ratings_service_id_status_idx` ON `ratings` (`service_id`,`status`);--> statement-breakpoint
+CREATE TABLE `referral_codes` (
+	`id` text PRIMARY KEY NOT NULL,
+	`code` text NOT NULL,
+	`user_id` text NOT NULL,
+	`points_per_referral` integer DEFAULT 100 NOT NULL,
+	`usage_count` integer DEFAULT 0 NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `referral_codes_code_unique` ON `referral_codes` (`code`);--> statement-breakpoint
+CREATE INDEX `referral_codes_user_id_idx` ON `referral_codes` (`user_id`);--> statement-breakpoint
+CREATE TABLE `referral_rewards` (
+	`id` text PRIMARY KEY NOT NULL,
+	`referrer_id` text NOT NULL,
+	`referred_id` text NOT NULL,
+	`user_id` text,
+	`points` integer NOT NULL,
+	`booking_id` text,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `referral_rewards_referrer_id_idx` ON `referral_rewards` (`referrer_id`);--> statement-breakpoint
+CREATE INDEX `referral_rewards_referred_id_idx` ON `referral_rewards` (`referred_id`);--> statement-breakpoint
+CREATE TABLE `services` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`price` integer NOT NULL,
+	`stripe_price_id` text,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `sessions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`session_token` text NOT NULL,
+	`user_id` text NOT NULL,
+	`expires` text NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `sessions_session_token_unique` ON `sessions` (`session_token`);--> statement-breakpoint
+CREATE INDEX `sessions_user_id_idx` ON `sessions` (`user_id`);--> statement-breakpoint
+CREATE TABLE `users` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text,
+	`email` text NOT NULL,
+	`email_verified` text,
+	`password` text,
+	`role` text DEFAULT 'CLIENT' NOT NULL,
+	`phone` text,
+	`image` text,
+	`reset_token` text,
+	`reset_token_expiry` text,
+	`referral_code` text,
+	`referred_by_id` text,
+	`referral_points` integer DEFAULT 0 NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
+CREATE UNIQUE INDEX `users_referral_code_unique` ON `users` (`referral_code`);--> statement-breakpoint
+CREATE INDEX `users_role_idx` ON `users` (`role`);--> statement-breakpoint
+CREATE INDEX `users_referred_by_id_idx` ON `users` (`referred_by_id`);--> statement-breakpoint
+CREATE TABLE `verification_tokens` (
+	`identifier` text NOT NULL,
+	`token` text NOT NULL,
+	`expires` text NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `verification_tokens_token_unique` ON `verification_tokens` (`token`);--> statement-breakpoint
+CREATE UNIQUE INDEX `verification_tokens_identifier_token_idx` ON `verification_tokens` (`identifier`,`token`);CREATE TABLE `schedule_periods` (
+	`id` text PRIMARY KEY NOT NULL,
+	`schedule_id` text NOT NULL,
+	`start_time` text NOT NULL,
+	`end_time` text NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `schedule_periods_schedule_id_idx` ON `schedule_periods` (`schedule_id`);--> statement-breakpoint
+CREATE TABLE `schedules` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`type` text NOT NULL,
+	`resource_type` text NOT NULL,
+	`resource_id` text NOT NULL,
+	`start_date` text,
+	`end_date` text,
+	`frequency` text,
+	`frequency_data` text,
+	`active` integer DEFAULT true NOT NULL,
+	`allow_overlap` integer DEFAULT false NOT NULL,
+	`no_weekends` integer DEFAULT false NOT NULL,
+	`max_duration_minutes` integer,
+	`working_hours_start` text,
+	`working_hours_end` text,
+	`metadata` text,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `schedules_resource_type_idx` ON `schedules` (`resource_type`);--> statement-breakpoint
+CREATE INDEX `schedules_resource_id_idx` ON `schedules` (`resource_id`);--> statement-breakpoint
+CREATE INDEX `schedules_active_idx` ON `schedules` (`active`);ALTER TABLE `services` ADD COLUMN `description` text;--> statement-breakpoint
+ALTER TABLE `services` ADD COLUMN `media_url` text;
+-- Prevent two non-cancelled bookings for the same service, calendar day, and start time.
+-- Apply with: pnpm db:migrate (drizzle-kit) or wrangler d1 execute for D1.
+CREATE UNIQUE INDEX IF NOT EXISTS `bookings_service_date_time_active_uidx`
+ON `bookings` (`service_id`, `date`, `time`)
+WHERE `status` != 'CANCELLED';
+PRAGMA foreign_keys=OFF;--> statement-breakpoint
+CREATE TABLE `__new_sessions` (
+	`session_token` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`expires` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+INSERT INTO `__new_sessions`("session_token", "user_id", "expires") SELECT "session_token", "user_id", "expires" FROM `sessions`;--> statement-breakpoint
+DROP TABLE `sessions`;--> statement-breakpoint
+ALTER TABLE `__new_sessions` RENAME TO `sessions`;--> statement-breakpoint
+PRAGMA foreign_keys=ON;--> statement-breakpoint
+CREATE INDEX `sessions_user_id_idx` ON `sessions` (`user_id`);--> statement-breakpoint
+CREATE TABLE `__new_users` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text,
+	`email` text NOT NULL,
+	`email_verified` integer,
+	`password` text,
+	`role` text DEFAULT 'CLIENT' NOT NULL,
+	`phone` text,
+	`image` text,
+	`reset_token` text,
+	`reset_token_expiry` text,
+	`referral_code` text,
+	`referred_by_id` text,
+	`referral_points` integer DEFAULT 0 NOT NULL,
+	`created_at` text DEFAULT (datetime('now')) NOT NULL,
+	`updated_at` text DEFAULT (datetime('now')) NOT NULL
+);
+--> statement-breakpoint
+INSERT INTO `__new_users`("id", "name", "email", "email_verified", "password", "role", "phone", "image", "reset_token", "reset_token_expiry", "referral_code", "referred_by_id", "referral_points", "created_at", "updated_at") SELECT "id", "name", "email", "email_verified", "password", "role", "phone", "image", "reset_token", "reset_token_expiry", "referral_code", "referred_by_id", "referral_points", "created_at", "updated_at" FROM `users`;--> statement-breakpoint
+DROP TABLE `users`;--> statement-breakpoint
+ALTER TABLE `__new_users` RENAME TO `users`;--> statement-breakpoint
+CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);--> statement-breakpoint
+CREATE UNIQUE INDEX `users_referral_code_unique` ON `users` (`referral_code`);--> statement-breakpoint
+CREATE INDEX `users_role_idx` ON `users` (`role`);--> statement-breakpoint
+CREATE INDEX `users_referred_by_id_idx` ON `users` (`referred_by_id`);--> statement-breakpoint
+CREATE TABLE `__new_verification_tokens` (
+	`identifier` text NOT NULL,
+	`token` text NOT NULL,
+	`expires` integer NOT NULL
+);
+--> statement-breakpoint
+INSERT INTO `__new_verification_tokens`("identifier", "token", "expires") SELECT "identifier", "token", "expires" FROM `verification_tokens`;--> statement-breakpoint
+DROP TABLE `verification_tokens`;--> statement-breakpoint
+ALTER TABLE `__new_verification_tokens` RENAME TO `verification_tokens`;--> statement-breakpoint
+CREATE UNIQUE INDEX `verification_tokens_token_unique` ON `verification_tokens` (`token`);--> statement-breakpoint
+CREATE UNIQUE INDEX `verification_tokens_identifier_token_idx` ON `verification_tokens` (`identifier`,`token`);--> statement-breakpoint
+ALTER TABLE `services` ADD `description` text;--> statement-breakpoint
+ALTER TABLE `services` ADD `category` text;--> statement-breakpoint
+ALTER TABLE `services` ADD `media_url` text;-- Reebooking Data Migration SQL
+-- Generated for Cloudflare D1
+
+PRAGMA foreign_keys = OFF;
+
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('d2c62784-f4ac-46e7-b520-936ce48e9eac', '7ba91ae0-0f21-4a55-902d-a1bc05610726', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-08', '10:00 AM', 'cash', NULL, 'super@demo.com', 'Shalom', '17845563421', 'PENDING', '2026-04-01 23:20:01', '2026-04-01 23:20:01');
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('a784cc1f-7282-441f-8bfb-978ff310af89', '6df611ef-3b0f-4bfa-9e85-56dd56c33b89', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-03', '11:00 AM', 'cash', NULL, 'super@demo.com', 'Shalom', '17845563421', 'CONFIRMED', '2026-04-01 23:20:01', '2026-04-01T23:20:42.405Z');
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('9ec8dbd5-4312-4f8a-be1b-7058ec6a23e1', '6df611ef-3b0f-4bfa-9e85-56dd56c33b89', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-22', '10:00 AM', 'cash', NULL, 'super@demo.com', 'Shalom', '17845563421', 'CONFIRMED', '2026-04-01 23:20:01', '2026-04-01T23:20:38.503Z');
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('8874296c-c0b2-4c6c-bd04-a2bdb46f645a', 'cf3b2ff6-8d0c-49a9-a73b-ca78ee696d16', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-15', '1:30 PM', 'cash', NULL, 'super@demo.com', 'Shalom', '17845563421', 'PENDING', '2026-04-01 23:20:01', '2026-04-01 23:20:01');
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('5c142105-ad20-4245-8fb7-b5468a2bd9c4', 'bfc8909e-590c-46c9-9bac-a48c08c55994', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-16', '8:30 AM', 'cash', NULL, 'super@demo.com', 'Shalom', '17845563421', 'CONFIRMED', '2026-04-01 23:20:01', '2026-04-01T23:20:38.844Z');
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('cb6fb866-4742-49fe-9a07-ac0d2dd60068', '6df611ef-3b0f-4bfa-9e85-56dd56c33b89', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-02', '10:00 AM', 'cash', NULL, 'super@demo.com', 'Shalom', '17845563421', 'PENDING', '2026-04-01 23:20:01', '2026-04-01 23:20:01');
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('83929f4f-5e74-4adf-9698-aea95767ff72', 'bc1e9b08-c253-42e7-9696-c74d3dea01b4', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-10', '10:00 AM', 'cash', NULL, 'super@demo.com', 'Jimmy', '17845563321', 'CONFIRMED', '2026-04-01 23:32:07', '2026-04-01T23:32:20.573Z');
+INSERT INTO bookings (id, service_id, user_id, date, time, payment_method, mobile_provider, email, user_name, phone, status, created_at, updated_at) VALUES ('e0dc4be3-e01f-48c0-a660-48bbb4becb60', 'a6a088db-5e2a-4250-bc52-e83917afaf60', 'f1b3fc00-9529-4437-b0c3-ee2f055c203b', '2026-04-02', '10:00 AM', 'cash', NULL, 'super@demo.com', 'Jimmy ', '17845563431', 'PENDING', '2026-04-02 10:35:08', '2026-04-02 10:35:08');
+
+INSERT INTO carts (id, user_id, service_id, date, time, quantity, created_at, updated_at, expires_at) VALUES ('fdf9c602-827f-48d4-b81a-b3adca466a91', '2d919135-3255-4123-ad36-d2e9783b7547', 'a6a088db-5e2a-4250-bc52-e83917afaf60', '2026-04-17', '11:00 AM', 1, '2026-04-03 09:51:00', '2026-04-03 09:51:00', '2026-04-04 09:51:00');
+
+INSERT INTO discount_codes (id, code, type, value, min_amount, max_uses, used_count, expires_at, active, created_at, updated_at) VALUES ('98d1dc10-9232-439b-9c89-77366afaa17f', 'WELOMY', 'PERCENT', 10, 2, 12, 0, '2026-04-08T23:15:19.130Z', 1, '2026-04-01 23:15:19', '2026-04-01 23:15:19');
+
+INSERT INTO favorites (id, user_id, service_id, created_at) VALUES ('b2be440b-92a7-47df-967d-56a068677f29', '1985cb6b-12a9-494d-91f5-96ef62018f4a', '6df611ef-3b0f-4bfa-9e85-56dd56c33b89', '2026-04-01 10:05:44');
+INSERT INTO favorites (id, user_id, service_id, created_at) VALUES ('19d8d7f8-91c5-4f91-b35c-0e6f0fbeb7c7', '1985cb6b-12a9-494d-91f5-96ef62018f4a', 'bfc8909e-590c-46c9-9bac-a48c08c55994', '2026-04-01 11:02:13');
+
+INSERT INTO referral_codes (id, code, user_id, points_per_referral, usage_count, created_at, updated_at) VALUES ('23892458-71df-4f10-8cf5-5389a70138d5', 'ADMIN982', 'b7d9103b-5814-4733-b9af-70db6bfca0ca', 100, 0, '2026-04-01 23:23:46', '2026-04-01 23:23:46');
+INSERT INTO referral_codes (id, code, user_id, points_per_referral, usage_count, created_at, updated_at) VALUES ('50d52354-ccf1-4f9e-ac3d-a66dc16aafe9', 'CLIENT516', '81976b28-aab7-47df-ab4f-a3a81d74809c', 100, 0, '2026-04-01 23:23:46', '2026-04-01 23:23:46');
+INSERT INTO referral_codes (id, code, user_id, points_per_referral, usage_count, created_at, updated_at) VALUES ('828aa551-23c4-4d58-a5ad-15000ce5e845', 'SUPER831', '1985cb6b-12a9-494d-91f5-96ef62018f4a', 100, 0, '2026-04-01 23:23:46', '2026-04-01 23:23:46');
+INSERT INTO referral_codes (id, code, user_id, points_per_referral, usage_count, created_at, updated_at) VALUES ('127e3575-daa6-4dcb-bc2d-3aa1761507c8', 'ADMIN882', '2d919135-3255-4123-ad36-d2e9783b7547', 100, 0, '2026-04-01 23:23:46', '2026-04-01 23:23:46');
+INSERT INTO referral_codes (id, code, user_id, points_per_referral, usage_count, created_at, updated_at) VALUES ('9f3cb00e-9a6c-4925-8f30-fdc8006a7349', 'STAFF547', 'bbe7fc3e-f4be-4a1e-8f60-e52431d79330', 100, 0, '2026-04-01 23:23:46', '2026-04-01 23:23:46');
+INSERT INTO referral_codes (id, code, user_id, points_per_referral, usage_count, created_at, updated_at) VALUES ('3c253149-e8ec-4069-95a7-36f5ad6cc35e', 'CLIENT342', '76445e37-1613-4e92-abae-9504c1c8b313', 100, 0, '2026-04-01 23:23:46', '2026-04-01 23:23:46');
+
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('e5a95672-15b3-4523-bcd4-a8addc1bc782', 'Wash & Treatment', 9000, NULL, '2026-04-12T22:53:19.895Z', '2026-04-12T22:53:19.896Z', 'Deep cleansing shampoo and conditioning treatment for natural hair', '/images/services/natural-hair/wash-&-treatment.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('484272bf-bbcc-431e-a269-c449325c1ab3', 'Hair Cut / Trim / Shaping', 4000, NULL, '2026-04-12T22:53:19.896Z', '2026-04-12T22:53:19.896Z', 'Precision cut, trim or shape to remove split ends and define style', '/images/services/natural-hair/hair-cut---trim---shaping.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('98672a23-e3cc-4577-a31e-ed710a8a6e3f', 'Flat Twists, Single Plaits or Twists', 9500, NULL, '2026-04-12T22:53:19.896Z', '2026-04-12T22:53:19.896Z', 'Protective styling with flat twists, individual plaits or two-strand twists', '/images/services/natural-hair/flat-twists,-single-plaits-or-twists.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('b6191f10-3c0a-409e-be9a-015c9a979fd4', 'Curl Defining Service (Wash & Go / Finger Curls)', 9500, NULL, '2026-04-12T22:53:19.896Z', '2026-04-12T22:53:19.896Z', 'Enhances and defines natural curl pattern after wash', '/images/services/natural-hair/curl-defining-service-wash-&-go---finger-curls.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('1407d176-7332-4ec9-8258-45e80fc04f4f', 'Twist-Out (Dried & Separated in Salon)', 11000, NULL, '2026-04-12T22:53:19.896Z', '2026-04-12T22:53:19.896Z', 'Two-strand twists dried and unravelled for a fluffy defined look', '/images/services/natural-hair/twist-out-dried-&-separated-in-salon.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('33cd3838-e01a-4b41-bdaf-c6cc65c104a8', 'Rod Set (Dried & Separated in Salon)', 11000, NULL, '2026-04-12T22:53:19.896Z', '2026-04-12T22:53:19.896Z', 'Perm rods used to create uniform bouncy curls, dried in salon', '/images/services/natural-hair/rod-set-dried-&-separated-in-salon.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('d161a275-27fc-44b3-a5a3-f8ce9294a882', 'Ponytail or Updo (Hair Provided by Client)', 12000, NULL, '2026-04-12T22:53:19.896Z', '2026-04-12T22:53:19.896Z', 'Elegant ponytail or updo style using client''s own hair', '/images/services/natural-hair/ponytail-or-updo-hair-provided-by-client.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('c2d21b14-91d4-4242-9dfb-2540693f6924', 'Silk Press (Includes Trim & Treatment)', 15000, NULL, '2026-04-12T22:53:19.896Z', '2026-04-12T22:53:19.896Z', 'Heat styling that straightens natural hair to a silky smooth finish', '/images/services/natural-hair/silk-press-includes-trim-&-treatment.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('13fed565-f58b-4178-9574-df6aa0c73c8e', 'Keratin Smoothing Treatment', 30000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Chemical smoothing treatment to reduce frizz and add shine long-term', '/images/services/natural-hair/keratin-smoothing-treatment.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('b08d7eaf-7e48-476c-bfab-e846f1650e84', 'Wash, Treat & Style Combo', 13000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Full service: wash, treatment and a finished style in one appointment', '/images/services/natural-hair/wash,-treat-&-style-combo.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('a631d79f-77d1-44c6-9809-dc98b6a377ef', '➕ Luxe Treatment Upgrade (Steam)', 2500, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Add steam to boost treatment absorption — includes Olaplex Repair, Ultra Hydration or Deep Restoration', '/images/services/natural-hair/➕-luxe-treatment-upgrade-steam.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('54ab8121-8efa-4f22-9bed-a572d99bfa59', '➕ Take Down & Detangling', 2000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Removal of natural protective styles and detangling service', '/images/services/natural-hair/➕-take-down-&-detangling.webp', 'Natural Hair');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('085ffc1d-acbf-4405-9d8f-c75976461936', 'Wash & Treat (Moisture / Protein / Hot Oil)', 9000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Cleansing and targeted treatment for locs', '/images/services/locs/wash-&-treat-moisture---protein---hot-oil.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('27bedc38-d606-4463-9626-c2452849c853', 'Cut / Trim', 4000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Trimming and shaping of locs', '/images/services/locs/cut---trim.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('d1a6e565-fe20-49ea-8cf3-1dd9602f2232', 'Starter Locs w/ Coils or Twists', 12000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Creating brand new locs using coils or two-strand twists', '/images/services/locs/starter-locs-w--coils-or-twists.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('ee1ce950-a9f0-433c-ad9e-aac7c442e3fb', 'Loc Wash, Retwist & Style', 12000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Full loc maintenance: wash, retwist new growth and finished styling', '/images/services/locs/loc-wash,-retwist-&-style.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('da00c61a-0769-4930-b5ed-26a1d82109bc', 'Loc Wash, Retwist & Style (w/ High Fade)', 10000, NULL, '2026-04-12T22:53:19.897Z', '2026-04-12T22:53:19.897Z', 'Same as above but includes a high fade haircut for the client', '/images/services/locs/loc-wash,-retwist-&-style-w--high-fade.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('ca016dc3-ab9b-4d45-86d5-3aafa4ed576a', 'Loc Retwist & Style (No Wash)', 9500, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Retwist of new growth and style, no wash included', '/images/services/locs/loc-retwist-&-style-no-wash.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('3a6598b6-ca83-495b-a129-a417ca44775b', 'Loc Detox', 9000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Deep cleansing treatment to remove buildup from locs', '/images/services/locs/loc-detox.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('5ec107a9-1a43-46ad-a4db-6e983433fae5', 'Loc Detox, Retwist & Style', 16000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Complete loc refresh: detox, retwist and finished style', '/images/services/locs/loc-detox,-retwist-&-style.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('3c1654a1-17e0-48e2-80d2-55a54e4977ab', '➕ Luxe Treatment Upgrade (Steam)', 2500, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Steam upgrade with Strengthening & Repair or Ultra Hydration options', '/images/services/locs/➕-luxe-treatment-upgrade-steam.webp', 'Locs');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('789ac68d-976c-4fe1-8e0f-8701f6f6d14d', 'Single Process Colour / Grey Retouch', 10000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'One color applied all over or to cover grey roots', '/images/services/color-chemical/single-process-colour---grey-retouch.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('21bc0712-dd5d-4d29-82c4-fca1a4da09d3', 'Double Process Colour (Bleach + Color)', 20000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Hair is lightened first then toned or colored for vibrant results', '/images/services/color-chemical/double-process-colour-bleach-plus-color.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('0781a49b-b5b9-488f-b03a-d690bb71eb70', 'Highlights', 20000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Partial or full highlights for dimension and brightness', '/images/services/color-chemical/highlights.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('fcc89073-c0af-47ce-b28e-6e8396ac1fb2', 'Color Consultation', 4000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Sit-down consultation to plan your color goals and process', '/images/services/color-chemical/color-consultation.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('3359d6d3-5dfe-48cb-b8c0-815abf1d5292', 'Virgin Relaxer', 20000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'First-time chemical relaxer applied to naturally curly hair', '/images/services/color-chemical/virgin-relaxer.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('04088bef-3d55-4d01-8679-9b7a088ce90d', 'Relaxer Retouch & Style', 14000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Relaxer applied to new growth only, finished with a style', '/images/services/color-chemical/relaxer-retouch-&-style.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('cc701d3e-6ea7-43ec-8e91-88e19aa632f2', 'Relaxer Retouch, Treatment & Style', 16000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Retouch plus a conditioning treatment and finished style', '/images/services/color-chemical/relaxer-retouch,-treatment-&-style.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('b65f3510-6c83-4aee-90f8-c818705e2bc0', 'Wash, Treat & Style (Previously Relaxed Hair)', 10000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'For already-relaxed clients needing a fresh wash, treat and style', '/images/services/color-chemical/wash,-treat-&-style-previously-relaxed-hair.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('b7edf782-7148-4ccb-839b-34c55e360888', 'Cut or Trim', 4000, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Precision cut or trim to complement color or chemical service', '/images/services/color-chemical/cut-or-trim.webp', 'Color & Chemical');
+INSERT INTO services (id, name, price, stripe_price_id, created_at, updated_at, description, media_url, category) VALUES ('ef53e423-1e19-4617-9486-fcd2ecf37c75', '➕ Luxe Treatment Upgrade (Steam)', 2500, NULL, '2026-04-12T22:53:19.898Z', '2026-04-12T22:53:19.898Z', 'Steam enhancement with Olaplex Repair, Ultra Hydration or Deep Restoration', '/images/services/color-chemical/➕-luxe-treatment-upgrade-steam.webp', 'Color & Chemical');
+
+INSERT INTO users (id, name, email, email_verified, password, role, phone, image, reset_token, reset_token_expiry, referral_code, referred_by_id, referral_points, created_at, updated_at) VALUES ('b7d9103b-5814-4733-b9af-70db6bfca0ca', 'Admin User', 'admin@reebooking.com', NULL, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', NULL, NULL, NULL, NULL, 'ADMIN982', NULL, 0, '2026-03-31T15:05:31.471Z', '2026-03-31T15:05:31.471Z');
+INSERT INTO users (id, name, email, email_verified, password, role, phone, image, reset_token, reset_token_expiry, referral_code, referred_by_id, referral_points, created_at, updated_at) VALUES ('81976b28-aab7-47df-ab4f-a3a81d74809c', 'Test Client', 'client@reebooking.com', NULL, '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'CLIENT', NULL, NULL, NULL, NULL, 'CLIENT516', NULL, 0, '2026-03-31T15:05:31.471Z', '2026-03-31T15:05:31.471Z');
+INSERT INTO users (id, name, email, email_verified, password, role, phone, image, reset_token, reset_token_expiry, referral_code, referred_by_id, referral_points, created_at, updated_at) VALUES ('1985cb6b-12a9-494d-91f5-96ef62018f4a', 'Super Admin Demo', 'super@demo.com', NULL, '$2a$10$MC.aznkwXV73gf38wEmeKe21QQTZajpwVkzeuMcdLoDn2p3aeVEHu', 'SUPER_ADMIN', NULL, NULL, NULL, NULL, 'SUPER831', NULL, 0, '2026-03-31T15:17:36.050Z', '2026-03-31T15:17:36.051Z');
+INSERT INTO users (id, name, email, email_verified, password, role, phone, image, reset_token, reset_token_expiry, referral_code, referred_by_id, referral_points, created_at, updated_at) VALUES ('2d919135-3255-4123-ad36-d2e9783b7547', 'Admin Demo', 'admin@demo.com', NULL, '$2a$10$MC.aznkwXV73gf38wEmeKe21QQTZajpwVkzeuMcdLoDn2p3aeVEHu', 'ADMIN', NULL, NULL, NULL, NULL, 'ADMIN882', NULL, 0, '2026-03-31T15:17:36.051Z', '2026-03-31T15:17:36.051Z');
+INSERT INTO users (id, name, email, email_verified, password, role, phone, image, reset_token, reset_token_expiry, referral_code, referred_by_id, referral_points, created_at, updated_at) VALUES ('bbe7fc3e-f4be-4a1e-8f60-e52431d79330', 'Staff Demo', 'staff@demo.com', NULL, '$2a$10$MC.aznkwXV73gf38wEmeKe21QQTZajpwVkzeuMcdLoDn2p3aeVEHu', 'STAFF', NULL, NULL, NULL, NULL, 'STAFF547', NULL, 0, '2026-03-31T15:17:36.051Z', '2026-03-31T15:17:36.051Z');
+INSERT INTO users (id, name, email, email_verified, password, role, phone, image, reset_token, reset_token_expiry, referral_code, referred_by_id, referral_points, created_at, updated_at) VALUES ('76445e37-1613-4e92-abae-9504c1c8b313', 'Client Demo', 'client@demo.com', NULL, '$2a$10$MC.aznkwXV73gf38wEmeKe21QQTZajpwVkzeuMcdLoDn2p3aeVEHu', 'CLIENT', NULL, NULL, NULL, NULL, 'CLIENT342', NULL, 0, '2026-03-31T15:17:36.051Z', '2026-03-31T15:17:36.051Z');
+
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('00f26a56-1471-48e5-bef9-303d9142316d', '33bf2861-86d8-4017-9299-563edd179bb1', '09:00', '13:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('06111af7-eaa1-4e00-b513-ddb89b33cdec', '9ede9e14-92e4-430d-bf27-298d65a23ef4', '14:00', '18:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('1f2875db-52e2-4189-9272-47972fdaf305', '73bb560d-b9ae-4c89-a6a1-982fafbc5787', '09:00', '14:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('d896d5dc-8dcb-4550-8b79-61a9adbbd6a0', '56303436-1b65-4e14-bcab-67ab6c4fc6a3', '09:00', '13:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('3dc97ecc-5b4d-4ee2-90b9-486ac53afcb3', '18e70766-8238-41b8-85f7-72b6cfae6c57', '14:00', '18:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('29285778-dae5-4605-aa43-764321514ac0', '4028e696-7a67-4e4b-bc15-7df026130e0b', '09:00', '14:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('648c3726-a211-45e5-9d8d-87cc671e6283', '9507dcde-a29d-487b-ab43-4ccbf9d8acfa', '09:00', '13:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('7013a691-10af-44d2-a146-ebd9f65ecb0e', '300fa05b-4a8e-41ac-8eb5-7db3cc83d8ec', '14:00', '18:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('e299adbe-dd93-4ccd-9148-bbbd83776b71', '8161dc56-5285-48b4-8dbf-04e51d7fa53d', '09:00', '14:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('e5cf2ce0-59fc-4716-a499-5069c3708303', '4872567f-61cf-4d87-ad70-bcbc1df15fdb', '09:00', '13:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('eed8f9aa-f652-4ab0-b2bd-bc0c58db5469', '2f44ab73-194a-4820-ac0b-f3eb7b9415f0', '14:00', '18:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('aa7ee92c-90f1-42df-8996-b3cedacd6731', '817c2e9d-81ab-4bcd-8dc6-e2896bec0388', '09:00', '14:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('17f5315f-0239-4700-98c6-21f5536f0a44', '561b7dd4-ecb8-493a-93c3-6bad4f151295', '09:00', '13:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('29268ed3-9003-4f6f-9cce-f0657e098443', 'c84384b1-9a7f-46c1-858a-040a6f6c1196', '14:00', '18:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('39b753d5-0c0f-4a46-b172-90bfd3de514b', 'c1da4458-5364-4f6b-ad60-be244d46047f', '09:00', '14:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('82ef3a0b-e8be-4868-b65c-59ed3417d4a6', '0e9d25fc-514b-43b8-bda7-56d4d3faac33', '09:00', '13:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('4793e780-1d2d-4498-a4e8-cddcc0b8cb97', 'f48e1032-502a-44ee-a7cc-c394cb4caaa0', '14:00', '18:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('f6d5aa59-4dfd-4b76-b68a-199e0324be25', '0976eb76-34bb-4c04-b7f2-6f4107028f7e', '09:00', '14:00');
+INSERT INTO schedule_periods (id, schedule_id, start_time, end_time) VALUES ('addeee35-1fe7-47b6-8d88-a67cc1353e67', 'b54edb17-61e2-47e1-8b0a-286b80cc3525', '09:00', '17:00');
+
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('33bf2861-86d8-4017-9299-563edd179bb1', 'Classic Manicure — Weekday Morning', 'availability', 'service', '6df611ef-3b0f-4bfa-9e85-56dd56c33b89', NULL, NULL, 'weekly', '{"days":["tuesday","wednesday","thursday","friday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('9ede9e14-92e4-430d-bf27-298d65a23ef4', 'Classic Manicure — Afternoon', 'availability', 'service', '6df611ef-3b0f-4bfa-9e85-56dd56c33b89', NULL, NULL, 'weekly', '{"days":["tuesday","thursday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('73bb560d-b9ae-4c89-a6a1-982fafbc5787', 'Classic Manicure — Saturday', 'availability', 'service', '6df611ef-3b0f-4bfa-9e85-56dd56c33b89', NULL, NULL, 'weekly', '{"days":["saturday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('56303436-1b65-4e14-bcab-67ab6c4fc6a3', 'Gel Manicure — Weekday Morning', 'availability', 'service', '7ba91ae0-0f21-4a55-902d-a1bc05610726', NULL, NULL, 'weekly', '{"days":["tuesday","wednesday","thursday","friday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('18e70766-8238-41b8-85f7-72b6cfae6c57', 'Gel Manicure — Afternoon', 'availability', 'service', '7ba91ae0-0f21-4a55-902d-a1bc05610726', NULL, NULL, 'weekly', '{"days":["tuesday","thursday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('4028e696-7a67-4e4b-bc15-7df026130e0b', 'Gel Manicure — Saturday', 'availability', 'service', '7ba91ae0-0f21-4a55-902d-a1bc05610726', NULL, NULL, 'weekly', '{"days":["saturday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('9507dcde-a29d-487b-ab43-4ccbf9d8acfa', 'Acrylic Full Set — Weekday Morning', 'availability', 'service', 'a6a088db-5e2a-4250-bc52-e83917afaf60', NULL, NULL, 'weekly', '{"days":["tuesday","wednesday","thursday","friday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('300fa05b-4a8e-41ac-8eb5-7db3cc83d8ec', 'Acrylic Full Set — Afternoon', 'availability', 'service', 'a6a088db-5e2a-4250-bc52-e83917afaf60', NULL, NULL, 'weekly', '{"days":["tuesday","thursday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('8161dc56-5285-48b4-8dbf-04e51d7fa53d', 'Acrylic Full Set — Saturday', 'availability', 'service', 'a6a088db-5e2a-4250-bc52-e83917afaf60', NULL, NULL, 'weekly', '{"days":["saturday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('4872567f-61cf-4d87-ad70-bcbc1df15fdb', 'Spa Pedicure — Weekday Morning', 'availability', 'service', 'bfc8909e-590c-46c9-9bac-a48c08c55994', NULL, NULL, 'weekly', '{"days":["tuesday","wednesday","thursday","friday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('2f44ab73-194a-4820-ac0b-f3eb7b9415f0', 'Spa Pedicure — Afternoon', 'availability', 'service', 'bfc8909e-590c-46c9-9bac-a48c08c55994', NULL, NULL, 'weekly', '{"days":["tuesday","thursday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('817c2e9d-81ab-4bcd-8dc6-e2896bec0388', 'Spa Pedicure — Saturday', 'availability', 'service', 'bfc8909e-590c-46c9-9bac-a48c08c55994', NULL, NULL, 'weekly', '{"days":["saturday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('561b7dd4-ecb8-493a-93c3-6bad4f151295', 'Nail Art Design — Weekday Morning', 'availability', 'service', '55b3330e-4a37-427d-b293-7570952f33ca', NULL, NULL, 'weekly', '{"days":["tuesday","wednesday","thursday","friday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('c84384b1-9a7f-46c1-858a-040a6f6c1196', 'Nail Art Design — Afternoon', 'availability', 'service', '55b3330e-4a37-427d-b293-7570952f33ca', NULL, NULL, 'weekly', '{"days":["tuesday","thursday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('c1da4458-5364-4f6b-ad60-be244d46047f', 'Nail Art Design — Saturday', 'availability', 'service', '55b3330e-4a37-427d-b293-7570952f33ca', NULL, NULL, 'weekly', '{"days":["saturday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('0e9d25fc-514b-43b8-bda7-56d4d3faac33', 'Classic Pedicure — Weekday Morning', 'availability', 'service', 'cf3b2ff6-8d0c-49a9-a73b-ca78ee696d16', NULL, NULL, 'weekly', '{"days":["tuesday","wednesday","thursday","friday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('f48e1032-502a-44ee-a7cc-c394cb4caaa0', 'Classic Pedicure — Afternoon', 'availability', 'service', 'cf3b2ff6-8d0c-49a9-a73b-ca78ee696d16', NULL, NULL, 'weekly', '{"days":["tuesday","thursday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('0976eb76-34bb-4c04-b7f2-6f4107028f7e', 'Classic Pedicure — Saturday', 'availability', 'service', 'cf3b2ff6-8d0c-49a9-a73b-ca78ee696d16', NULL, NULL, 'weekly', '{"days":["saturday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 13:25:12', '2026-04-01 13:25:12');
+INSERT INTO schedules (id, name, type, resource_type, resource_id, start_date, end_date, frequency, frequency_data, active, allow_overlap, no_weekends, max_duration_minutes, working_hours_start, working_hours_end, metadata, created_at, updated_at) VALUES ('b54edb17-61e2-47e1-8b0a-286b80cc3525', 'Hair Twist Weekend', 'availability', 'service', 'bc1e9b08-c253-42e7-9696-c74d3dea01b4', NULL, NULL, 'weekly', '{"days":["friday","saturday"]}', 1, 1, 0, NULL, NULL, NULL, NULL, '2026-04-01 23:31:21', '2026-04-01 23:31:21');
+
+PRAGMA foreign_keys = ON;

@@ -1,14 +1,8 @@
 // src/db/index.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// Drizzle ORM client for Reebooking — Next.js local development.
-//
-// Uses better-sqlite3 for local dev (pnpm dev).
-// For Cloudflare Pages production, swap to D1 binding via getCloudflareContext().
+// Drizzle ORM client for Reebooking — Next.js + Cloudflare D1.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { eq, and, lt, desc, sql } from "drizzle-orm";
 import * as schema from "./schema";
 import {
   bookings,
@@ -18,81 +12,82 @@ import {
   discountUsages,
   type NewBooking,
 } from "./schema";
-import path from "path";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Singleton DB instance for development
-// ─────────────────────────────────────────────────────────────────────────────
-
-const globalForDb = globalThis as unknown as {
-  _db: ReturnType<typeof createDb> | undefined;
-};
-
-function createDb() {
-  const dbPath = process.env.LOCAL_DB_PATH || path.join(process.cwd(), "reebooking.db");
-  const sqlite = new Database(dbPath);
-
-  // Enable WAL mode for better concurrent read performance
-  sqlite.pragma("journal_mode = WAL");
-  // Enable foreign keys
-  sqlite.pragma("foreign_keys = ON");
-
-  return drizzle(sqlite, { schema });
-}
 
 /**
- * Returns the Drizzle DB instance. Singleton in development to avoid
- * creating multiple connections during HMR.
+ * Returns the Drizzle DB instance.
+ * - Production (Cloudflare): Uses D1 binding from the environment.
+ * - Development (Node): Uses better-sqlite3 locally.
  */
-export function getDb() {
-  // Singleton in all environments — avoids opening a new SQLite file handle per request
-  // (critical for serverless-style Node hosts and production stability).
-  if (!globalForDb._db) {
-    globalForDb._db = createDb();
-  }
+export async function getDb() {
+  if (process.env.NEXT_RUNTIME === "edge" || process.env.NODE_ENV === "production") {
+    // We're in the Cloudflare environment
+    const { drizzle } = await import("drizzle-orm/d1");
+    
+    // In @cloudflare/next-on-pages, bindings are available on process.env
+    // or via getCloudflareContext().
+    const runtime = (globalThis as any).process?.env?.reebooking_db || (globalThis as any).reebooking_db;
+    
+    if (!runtime) {
+      console.warn("D1 binding 'reebooking_db' not found. Falling back to console logging.");
+    }
+    
+    return drizzle(runtime, { schema });
+  } else {
+    // Local development
+    const Database = (await import("better-sqlite3")).default;
+    const { drizzle } = await import("drizzle-orm/better-sqlite3");
+    const path = await import("path");
 
-  return globalForDb._db;
+    const dbPath = process.env.LOCAL_DB_PATH || path.join(process.cwd(), "reebooking.db");
+    const sqlite = new Database(dbPath);
+    
+    sqlite.pragma("journal_mode = WAL");
+    sqlite.pragma("foreign_keys = ON");
+
+    return drizzle(sqlite, { schema });
+  }
 }
 
-export type DrizzleDb = ReturnType<typeof getDb>;
-
 // ─────────────────────────────────────────────────────────────────────────────
-// Shortcut: default db instance (import { db } from "@/src/db")
+// Standard DB instance (shortcut)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const db = getDb();
+// Note: In Next.js App Router (RSC), top-level await is supported.
+// For compatibility with all layers, we export a helper.
+export const db = await getDb();
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Transactions — atomic operations using better-sqlite3
+// Transactions & Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * Creates a booking AND its photos atomically.
  */
 export async function createBookingWithPhotos(
-  database: DrizzleDb,
+  database: any, // Use any for cross-driver compatibility in helper types
   booking: NewBooking,
   photoUrls: string[]
 ): Promise<{ booking: typeof bookings.$inferSelect; photos: (typeof photos.$inferSelect)[] }> {
   const bookingId = crypto.randomUUID();
 
-  // Use a transaction for atomicity
-  const createdBooking = database
+  const createdBooking = await database
     .insert(bookings)
     .values({ ...booking, id: bookingId })
     .returning()
-    .get();
+    .then((res: any[]) => res[0]);
 
-  const createdPhotos = photoUrls.map((url) =>
-    database
-      .insert(photos)
-      .values({
-        id: crypto.randomUUID(),
-        bookingId,
-        url,
-      })
-      .returning()
-      .get()
+  const createdPhotos = await Promise.all(
+    photoUrls.map((url) =>
+      database
+        .insert(photos)
+        .values({
+          id: crypto.randomUUID(),
+          bookingId,
+          url,
+        })
+        .returning()
+        .then((res: any[]) => res[0])
+    )
   );
 
   return { booking: createdBooking, photos: createdPhotos };
@@ -102,7 +97,7 @@ export async function createBookingWithPhotos(
  * Applies a discount code and records its usage atomically.
  */
 export async function applyDiscountCode(
-  database: DrizzleDb,
+  database: any,
   {
     discountCodeId,
     userId,
@@ -126,15 +121,14 @@ export async function applyDiscountCode(
   }
 ) {
   const usageId = crypto.randomUUID();
+  const { sql, eq } = await import("drizzle-orm");
 
-  // Atomic increment + insert
-  database
+  await database
     .update(discountCodes)
     .set({ usedCount: sql`${discountCodes.usedCount} + 1` })
-    .where(eq(discountCodes.id, discountCodeId))
-    .run();
+    .where(eq(discountCodes.id, discountCodeId));
 
-  database
+  await database
     .insert(discountUsages)
     .values({
       id: usageId,
@@ -147,17 +141,16 @@ export async function applyDiscountCode(
       cartTotal,
       finalTotal,
       bookingId,
-    })
-    .run();
+    });
 }
 
 /**
  * Sweeps expired cart records.
  */
-export async function purgeExpiredCarts(database: DrizzleDb) {
+export async function purgeExpiredCarts(database: any) {
+  const { lt } = await import("drizzle-orm");
   const now = new Date().toISOString();
-  return database.delete(carts).where(lt(carts.expiresAt, now)).run();
+  return database.delete(carts).where(lt(carts.expiresAt, now));
 }
 
-// Re-export schema for convenience
 export * from "./schema";

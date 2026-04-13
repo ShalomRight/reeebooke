@@ -10,7 +10,7 @@ export function Introduction() {
 					<CardTitle className="text-3xl">Reebooking - Luxury Spa Booking System</CardTitle>
 					<CardDescription className="text-base">
 						A modern, full-featured booking system for spa and salon businesses built with Next.js 16, TypeScript,
-						Prisma, and PostgreSQL.
+						Drizzle ORM, and Cloudflare D1.
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
@@ -57,7 +57,8 @@ export function Introduction() {
 					<div className="flex flex-wrap gap-2 pt-4 border-t">
 						<Badge variant="secondary">Next.js 16</Badge>
 						<Badge variant="secondary">TypeScript</Badge>
-						<Badge variant="secondary">Prisma</Badge>
+						<Badge variant="secondary">Drizzle ORM</Badge>
+						<Badge variant="secondary">Cloudflare D1</Badge>
 						<Badge variant="secondary">PostgreSQL</Badge>
 						<Badge variant="secondary">Stripe</Badge>
 						<Badge variant="secondary">Cloudinary</Badge>

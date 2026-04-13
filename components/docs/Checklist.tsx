@@ -34,10 +34,10 @@ export function Checklist() {
 	const database = [
 		"PostgreSQL database created (reeooking)",
 		"Database connection tested",
-		"Prisma migrations run (npx prisma migrate dev)",
-		"Prisma client generated (npx prisma generate)",
-		"Database tables created successfully",
-		"Prisma Studio opens without errors (npx prisma studio)",
+		"Drizzle schema synced (pnpm db:generate)",
+		"D1 local database initialized",
+		"D1 production binding configured",
+		"Drizzle Studio opens without errors (pnpm db:studio)",
 	]
 
 	const admin = [

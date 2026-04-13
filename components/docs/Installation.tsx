@@ -91,19 +91,20 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."`}
 							<h4 className="font-semibold text-lg">Set Up Database</h4>
 							<div className="space-y-3">
 								<div>
-									<p className="text-sm font-medium mb-2">1. Create PostgreSQL Database</p>
+									<p className="text-sm font-medium mb-2">1. Run Database Migrations</p>
 									<div className="bg-muted p-4 rounded-lg">
-										<code className="text-sm">createdb reebooking</code>
-									</div>
-								</div>
-								<div>
-									<p className="text-sm font-medium mb-2">2. Run Database Migrations</p>
-									<div className="bg-muted p-4 rounded-lg">
-										<code className="text-sm">
-											npx prisma migrate dev
-											<br />
-											npx prisma generate
-										</code>
+										<ul className="space-y-2">
+											<li className="flex items-center gap-2">
+												<code className="text-xs bg-muted px-2 py-1 rounded">
+													pnpm db:generate
+												</code>
+											</li>
+											<li className="flex items-center gap-2">
+												<code className="text-xs bg-muted px-2 py-1 rounded">
+													pnpm wrangler d1 execute reebooking-db --local --file=drizzle/data-migration.sql
+												</code>
+											</li>
+										</ul>
 									</div>
 								</div>
 							</div>
