@@ -111,6 +111,7 @@ export const services = sqliteTable("services", {
   id:            text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name:          text("name").notNull(),
   description:   text("description"),           // short description (optional)
+  category:      text("category"),              // service category (e.g., 'Styling', 'Treatments')
   mediaUrl:      text("media_url"),              // optional image URL
   price:         integer("price").notNull(),
   stripePriceId: text("stripe_price_id"),

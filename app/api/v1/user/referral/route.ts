@@ -40,9 +40,9 @@ export async function GET() {
 			console.error("Error fetching referral code record:", err)
 		}
 
-		let referralRewards: Awaited<ReturnType<typeof prisma.referralReward.findMany>> = []
+		let rewards: (typeof referralRewards.$inferSelect)[] = []
 		try {
-			referralRewards = await db.query.referralRewards.findMany({
+			rewards = await db.query.referralRewards.findMany({
 				where: {
 					referrerId: user.id,
 				},
@@ -51,8 +51,8 @@ export async function GET() {
 			console.error("Error fetching referral rewards:", err)
 		}
 
-		const totalReferrals = new Set(referralRewards.map((r) => r.referredId)).size
-		const totalPointsAwarded = referralRewards.reduce((sum, r) => sum + r.points, 0)
+		const totalReferrals = new Set(rewards.map((r) => r.referredId)).size
+		const totalPointsAwarded = rewards.reduce((sum, r) => sum + r.points, 0)
 
 		// Generate referral link
 		const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
