@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users, bookings, carts, referralCodes, referralRewards, discountCodes, discountUsages, photos, promotionSubscribers } from "@/src/db/schema"
 import { eq, sql } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
@@ -17,8 +17,9 @@ import { createPostHandler } from "@/lib/api-wrapper"
 import { bookingRateLimit } from "@/lib/rate-limit"
 
 async function handleBulkBooking(req: NextRequest) {
+	const db = getDb()
 	const body = await req.json()
-	const session = await getServerSession(authOptions)
+	const session = await getServerSession(getAuthOptions())
 		
 		const validation = validateRequest(bulkBookingSchema, body)
 		if (!validation.success) {
@@ -190,9 +191,8 @@ async function handleBulkBooking(req: NextRequest) {
 				)
 			}
 
-			let insertedBooking: (typeof bookings.$inferSelect)
-			try {
-				const [row] = await db.insert(bookings).values({
+			const insertedBooking = await db.transaction(async (tx) => {
+				const [booking] = await tx.insert(bookings).values({
 					serviceId: item.serviceId,
 					date: dateYmd,
 					time: time24,
@@ -202,34 +202,19 @@ async function handleBulkBooking(req: NextRequest) {
 					email: finalEmail,
 					userId: finalUserId || null,
 				}).returning()
-				insertedBooking = row
-			} catch (e) {
-				if (isSqliteUniqueViolation(e)) {
-					return NextResponse.json(
-						{
-							error:
-								"A slot was taken while you were checking out. Please choose another time and try again.",
-						},
-						{ status: 409 },
+
+				if (item.photos && item.photos.length > 0) {
+					await Promise.all(
+						item.photos.map((photoUrl: string) =>
+							tx.insert(photos).values({
+								bookingId: booking.id,
+								url: photoUrl
+							})
+						)
 					)
 				}
-				throw e
-			}
-
-			if (!insertedBooking) {
-				return NextResponse.json({ error: "Failed to create booking" }, { status: 500 })
-			}
-
-			if (item.photos && item.photos.length > 0) {
-				await Promise.all(
-					item.photos.map((photoUrl: string) => 
-						db.insert(photos).values({
-							bookingId: insertedBooking.id,
-							url: photoUrl
-						})
-					)
-				)
-			}
+				return booking
+			})
 
 			const fullBooking = await db.query.bookings.findFirst({
 				where: eq(bookings.id, insertedBooking.id),

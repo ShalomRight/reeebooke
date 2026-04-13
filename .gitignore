@@ -19,3 +19,5 @@ pnpm-debug.log*
 *.tsbuildinfo
 .vscode
 .idea
+.dev.vars
+.wrangler/

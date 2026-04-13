@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { schedules, schedulePeriods } from "@/src/db/schema"
 
 import { NextRequest, NextResponse } from "next/server"
@@ -8,6 +8,7 @@ export async function POST(
   { params }: { params: Promise<{ resourceType: string; resourceId: string; type: string }> }
 ) {
   try {
+    const db = getDb()
     const { resourceType, resourceId, type: typeSegment } = await params
     
     // Reverse map from zap.ts typeSegment() to actual internal type if necessary

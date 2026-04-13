@@ -1,12 +1,13 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { sql, or, like, and, inArray, eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role || null
 		const userId = (session?.user as any)?.id || null
 

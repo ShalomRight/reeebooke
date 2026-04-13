@@ -1,6 +1,6 @@
-import { authOptions } from "@/lib/auth"
+import { getAuthOptions } from "@/lib/auth"
 import { stripe } from "@/lib/stripe"
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users, bookings, referralCodes, referralRewards, photos } from "@/src/db/schema"
 import { eq, sql } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
@@ -20,7 +20,9 @@ async function handleCheckout(req: NextRequest) {
 			)
 		}
 
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session || !session.user) {
 			return NextResponse.json({ error: "You must be logged in to proceed with payment" }, { status: 401 })

@@ -1,6 +1,6 @@
 // app/api/discount/apply/route.ts
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { discountCodes } from "@/src/db/schema"
 import { eq, sql } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
@@ -9,7 +9,8 @@ import { applyDiscountSchema, validateRequest, validationErrorResponse } from "@
 
 export async function POST(req: Request) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const body = await req.json()
 		
 		const validation = validateRequest(applyDiscountSchema, body)

@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users, referralCodes, referralRewards } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { ensureReferralCode } from "@/lib/referral-code-utils"
@@ -8,14 +8,15 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
 		const user = await db.query.users.findFirst({
-			where: { email: session.user.email },
-			select: {
+			where: eq(users.email, session.user.email),
+			columns: {
 				id: true,
 				email: true,
 				referralCode: true,
@@ -34,7 +35,7 @@ export async function GET() {
 		let referralCodeRecord
 		try {
 			referralCodeRecord = await db.query.referralCodes.findFirst({
-				where: { code: referralCode },
+				where: eq(referralCodes.code, referralCode),
 			})
 		} catch (err) {
 			console.error("Error fetching referral code record:", err)
@@ -43,9 +44,7 @@ export async function GET() {
 		let rewards: (typeof referralRewards.$inferSelect)[] = []
 		try {
 			rewards = await db.query.referralRewards.findMany({
-				where: {
-					referrerId: user.id,
-				},
+				where: eq(referralRewards.referrerId, user.id),
 			})
 		} catch (err) {
 			console.error("Error fetching referral rewards:", err)
@@ -70,11 +69,11 @@ export async function GET() {
 		console.error("Referral code error:", error)
 		// Try to get user and generate code even on error
 		try {
-			const session = await getServerSession(authOptions)
+			const session = await getServerSession(getAuthOptions())
 			if (session?.user?.email) {
 				const user = await db.query.users.findFirst({
-					where: { email: session.user.email },
-					select: { id: true, email: true },
+					where: eq(users.email, session.user.email),
+					columns: { id: true, email: true },
 				})
 				if (user) {
 					const code = await ensureReferralCode(user.id, user.email)

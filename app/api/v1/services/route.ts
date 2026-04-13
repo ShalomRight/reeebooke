@@ -1,7 +1,7 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { services, ratings } from "@/src/db/schema"
-import { eq, desc, asc } from "drizzle-orm"
+import { eq, desc, asc, count } from "drizzle-orm"
 import { stripe } from "@/lib/stripe"
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
@@ -9,6 +9,7 @@ import { getServicesQuerySchema, createServiceSchema, validateRequest, validatio
 
 export async function GET(req: NextRequest) {
 	try {
+		const db = getDb()
 		const { searchParams } = new URL(req.url)
 		const queryParams = Object.fromEntries(searchParams.entries())
 		
@@ -30,17 +31,15 @@ export async function GET(req: NextRequest) {
 			orderByClause = sortOrder === "asc" ? [asc(services.createdAt)] : [desc(services.createdAt)]
 		}
 
-		const allServices = await db.query.services.findMany({
-			with: {
-				ratings: true,
-			},
-			orderBy: orderByClause,
-			limit: limit,
-			offset: skip,
-		})
-
-		const allForCount = await db.query.services.findMany()
-		const total = allForCount.length
+		const [allServices, [{ total }]] = await Promise.all([
+			db.query.services.findMany({
+				with: { ratings: true },
+				orderBy: orderByClause,
+				limit,
+				offset: skip,
+			}),
+			db.select({ total: count() }).from(services),
+		])
 
 		// Calculate average rating and count for each service
 		const servicesWithRatings = allServices.map((service) => {
@@ -77,17 +76,17 @@ export async function GET(req: NextRequest) {
 			},
 			{ status: 200 },
 		)
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error("Services API error:", error)
 		
 		const errorMessage = process.env.NODE_ENV === "development" 
-			? `Failed to fetch services: ${error?.message || "Unknown error"}`
+			? `Failed to fetch services: ${error instanceof Error ? error.message : "Unknown error"}`
 			: "Failed to fetch services"
 		
 		return NextResponse.json(
 			{ 
 				error: errorMessage,
-				details: process.env.NODE_ENV === "development" ? error?.stack : undefined
+				details: process.env.NODE_ENV === "development" ? (error instanceof Error ? error.stack : undefined) : undefined
 			}, 
 			{ status: 500 }
 		)
@@ -96,15 +95,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const userRole = (session.user as any).role
+		const userRole = (session.user as { role?: string }).role
 
-		if (!["ADMIN", "SUPER_ADMIN"].includes(userRole)) {
+		if (!["ADMIN", "SUPER_ADMIN"].includes(userRole ?? "")) {
 			return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 		}
 
@@ -137,14 +137,14 @@ export async function POST(req: NextRequest) {
 		}
 
 		const serviceId = crypto.randomUUID()
-		db.insert(services).values({
+		await db.insert(services).values({
 			id: serviceId,
 			name,
 			price,
-			description: description || null,
-			mediaUrl: mediaUrl || null,
-			stripePriceId: stripePriceId || null,
-		}).run()
+			description: description ?? null,
+			mediaUrl: mediaUrl ?? null,
+			stripePriceId: stripePriceId ?? null,
+		})
 
 		const service = await db.query.services.findFirst({
 			where: eq(services.id, serviceId),

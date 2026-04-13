@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -7,20 +7,18 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
 	try {
-		const session = await getServerSession(authOptions)
+		const session = await getServerSession(getAuthOptions())
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
+		const db = getDb()
 		const user = await db.query.users.findFirst({
-			where: { email: session.user.email },
-			select: {
-				referralPoints: true,
+			where: eq(users.email, session.user.email),
+			with: {
 				bookings: {
-					where: {
-						status: "COMPLETED",
-					},
-					select: {
+					where: (fields, { eq }) => eq(fields.status, "COMPLETED"),
+					columns: {
 						id: true,
 					},
 				},

@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import type { JWT } from "next-auth/jwt"
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
 	const path = request.nextUrl.pathname
 	let token: JWT | null = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
 

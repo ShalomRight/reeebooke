@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { carts } from "@/src/db/schema"
 import { eq, gte, lte, lt } from "drizzle-orm"
 import { type NextRequest, NextResponse } from "next/server"
@@ -6,6 +6,7 @@ import { type NextRequest, NextResponse } from "next/server"
 // This route should be called by a cron job to clean up expired carts
 export async function POST(req: NextRequest) {
 	try {
+		const db = getDb()
 		// Verify the request is from a trusted source (e.g., Vercel Cron)
 		const authHeader = req.headers.get("authorization")
 		if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

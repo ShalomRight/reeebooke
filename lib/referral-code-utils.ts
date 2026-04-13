@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users, referralCodes } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 
@@ -24,6 +24,7 @@ export async function generateReferralCode(userId: string, email: string): Promi
 	let counter = 1
 
 	// Ensure uniqueness
+	const db = getDb()
 	while (true) {
 		const existing = await db.query.users.findFirst({
 			where: eq(users.referralCode, code),
@@ -61,6 +62,7 @@ export async function generateReferralCode(userId: string, email: string): Promi
  * This should be called whenever a user is created or accessed
  */
 export async function ensureReferralCode(userId: string, email: string): Promise<string> {
+	const db = getDb()
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
 		columns: {

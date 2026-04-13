@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users, bookings, carts, discountCodes, discountUsages } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
@@ -14,6 +14,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(req: NextRequest) {
   try {
+    const db = getDb()
     const body = await req.text()
     const signature = req.headers.get("stripe-signature")!
 

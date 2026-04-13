@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users, bookings, services, ratings } from "@/src/db/schema"
 import { eq, and, or } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -9,6 +9,7 @@ import { createGetHandler, createPostHandler } from "@/lib/api-wrapper"
 import { apiRateLimit, ratingRateLimit } from "@/lib/rate-limit"
 
 async function handleGetRatings(req: NextRequest) {
+		const db = getDb()
 		const { searchParams } = new URL(req.url)
 		const queryParams = Object.fromEntries(searchParams.entries())
 		
@@ -23,7 +24,7 @@ async function handleGetRatings(req: NextRequest) {
 			return NextResponse.json({ error: "Service ID required" }, { status: 400 })
 		}
 
-		const session = await getServerSession(authOptions)
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 
 		// Build where conditions
@@ -57,7 +58,8 @@ async function handleGetRatings(req: NextRequest) {
 }
 
 async function handleCreateRating(req: NextRequest) {
-	const session = await getServerSession(authOptions)
+	const db = getDb()
+	const session = await getServerSession(getAuthOptions())
 
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -118,7 +120,7 @@ async function handleCreateRating(req: NextRequest) {
 
 		if (existingRating) {
 			// Update existing rating
-			db.update(ratings)
+			await db.update(ratings)
 				.set({
 					rating,
 					comment: comment || null,
@@ -126,7 +128,6 @@ async function handleCreateRating(req: NextRequest) {
 					updatedAt: new Date().toISOString(),
 				})
 				.where(eq(ratings.id, existingRating.id))
-				.run()
 
 			const updatedRating = await db.query.ratings.findFirst({
 				where: eq(ratings.id, existingRating.id),
@@ -141,14 +142,14 @@ async function handleCreateRating(req: NextRequest) {
 
 		// Create new rating
 		const ratingId = crypto.randomUUID()
-		db.insert(ratings).values({
+		await db.insert(ratings).values({
 			id: ratingId,
 			userId: user.id,
 			serviceId,
 			rating,
 			comment: comment || null,
 			status: "PENDING",
-		}).run()
+		})
 
 		const newRating = await db.query.ratings.findFirst({
 			where: eq(ratings.id, ratingId),

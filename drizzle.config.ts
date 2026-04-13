@@ -9,7 +9,7 @@ import { defineConfig } from "drizzle-kit";
 
 config({ path: ".env" });
 
-const localDbPath = process.env.LOCAL_DB_PATH || "./reebooking.db";
+const localDbPath = process.env.LOCAL_DB_PATH || "./.wrangler/state/v3/d1/reebooking_db/local.sqlite";
 
 export default defineConfig({
   schema: "./src/db/schema.ts",

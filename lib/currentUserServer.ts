@@ -1,5 +1,5 @@
 import { getAuthSession } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { normalizeRole } from './rbac'
@@ -21,7 +21,7 @@ export interface CurrentUserServer {
 export default async function currentUserServer(): Promise<CurrentUserServer | null> {
 	const session = await getAuthSession()
 	if (!session?.user?.email) return null
-
+	const db = getDb()
 	const user = await db.query.users.findFirst({
 		where: eq(users.email, session.user.email),
 	})

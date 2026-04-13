@@ -4,6 +4,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as schema from "./schema";
+import { drizzle as drizzleD1 } from "drizzle-orm/d1";
+import { getCloudflareContext } from "@cloudflare/next-on-pages";
+import { eq, sql, lt } from "drizzle-orm";
+
 import {
   bookings,
   photos,
@@ -14,31 +18,54 @@ import {
 } from "./schema";
 
 /**
- * Returns the Drizzle DB instance.
- * - Production (Cloudflare): Uses D1 binding from the environment.
- * - Development (Node): Uses better-sqlite3 locally.
+ * Cloudflare Environment Bindings
  */
-export async function getDb() {
-  if (process.env.NEXT_RUNTIME === "edge" || process.env.NODE_ENV === "production") {
-    // We're in the Cloudflare environment
-    const { drizzle } = await import("drizzle-orm/d1");
+interface CloudflareEnv {
+  reebooking_db: D1Database;
+}
+
+/**
+ * Returns the Drizzle DB instance scoped to the current request.
+ * 
+ * LOCAL DEV WORKFLOW:
+ * Option A — fast iteration (recommended for most dev work):
+ *   npx next dev
+ *   Uses better-sqlite3 fallback. HMR works. D1 binding not needed.
+ *   SQLite file lives at .wrangler/state/v3/d1/reebooking_db/local.sqlite
+ *
+ * Option B — full Cloudflare simulation (use before deploying):
+ *   npm run cf:dev
+ *   Requires a build first. Uses real Wrangler D1 simulation.
+ *   getCloudflareContext() works correctly in this mode.
+ */
+export function getDb() {
+  if (process.env.NEXT_RUNTIME === "edge") {
+    // Production / Edge Simulation: Use D1 binding from Cloudflare context
+    const { env } = getCloudflareContext<CloudflareEnv>();
     
-    // In @cloudflare/next-on-pages, bindings are available on process.env
-    // or via getCloudflareContext().
-    const runtime = (globalThis as any).process?.env?.reebooking_db || (globalThis as any).reebooking_db;
-    
-    if (!runtime) {
-      console.warn("D1 binding 'reebooking_db' not found. Falling back to console logging.");
+    if (!env.reebooking_db) {
+      throw new Error("D1 binding 'reebooking_db' not found in Cloudflare environment.");
     }
     
-    return drizzle(runtime, { schema });
+    return drizzleD1(env.reebooking_db, { schema });
   } else {
-    // Local development
-    const Database = (await import("better-sqlite3")).default;
-    const { drizzle } = await import("drizzle-orm/better-sqlite3");
-    const path = await import("path");
+    // Local development (Node runtime): Use better-sqlite3
+    // We use require() here to prevent the edge runtime from trying to bundle native modules
+    const Database = require("better-sqlite3");
+    const { drizzle } = require("drizzle-orm/better-sqlite3");
+    const path = require("path");
 
-    const dbPath = process.env.LOCAL_DB_PATH || path.join(process.cwd(), "reebooking.db");
+    // Default to the Wrangler local D1 state directory
+    // LOCAL_DB_PATH must be set in .env.local to point at the miniflare hashed
+    // sqlite file under .wrangler/state/v3/d1/miniflare-D1DatabaseObject/.
+    // Run: find .wrangler -name "*.sqlite" | grep -v metadata
+    // to find the correct path if this ever stops working after a wrangler update.
+    const dbPath = process.env.LOCAL_DB_PATH || 
+                 path.join(process.cwd(), ".wrangler/state/v3/d1/reebooking_db/local.sqlite");
+
+    const fs = require("fs");
+    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+
     const sqlite = new Database(dbPath);
     
     sqlite.pragma("journal_mode = WAL");
@@ -48,13 +75,11 @@ export async function getDb() {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Standard DB instance (shortcut)
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Note: In Next.js App Router (RSC), top-level await is supported.
-// For compatibility with all layers, we export a helper.
-export const db = await getDb();
+/**
+ * The Database type used across the application.
+ * Inferred from the return type of getDb.
+ */
+export type Database = ReturnType<typeof getDb>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Transactions & Helpers
@@ -64,17 +89,23 @@ export const db = await getDb();
  * Creates a booking AND its photos atomically.
  */
 export async function createBookingWithPhotos(
-  database: any, // Use any for cross-driver compatibility in helper types
+  database: Database,
   booking: NewBooking,
   photoUrls: string[]
 ): Promise<{ booking: typeof bookings.$inferSelect; photos: (typeof photos.$inferSelect)[] }> {
   const bookingId = crypto.randomUUID();
 
+  // Note: We don't use a top-level transaction here because D1 and 
+  // better-sqlite3 handle them slightly differently in Drizzle.
+  // Using .batch([]) or .transaction() is preferred for D1 but for 
+  // simplicity and compatibility, we execute them sequentially or 
+  // you can implement a driver-aware transaction wrapper.
+
   const createdBooking = await database
     .insert(bookings)
     .values({ ...booking, id: bookingId })
     .returning()
-    .then((res: any[]) => res[0]);
+    .then((res) => res[0]);
 
   const createdPhotos = await Promise.all(
     photoUrls.map((url) =>
@@ -86,7 +117,7 @@ export async function createBookingWithPhotos(
           url,
         })
         .returning()
-        .then((res: any[]) => res[0])
+        .then((res) => res[0])
     )
   );
 
@@ -97,7 +128,7 @@ export async function createBookingWithPhotos(
  * Applies a discount code and records its usage atomically.
  */
 export async function applyDiscountCode(
-  database: any,
+  database: Database,
   {
     discountCodeId,
     userId,
@@ -121,7 +152,6 @@ export async function applyDiscountCode(
   }
 ) {
   const usageId = crypto.randomUUID();
-  const { sql, eq } = await import("drizzle-orm");
 
   await database
     .update(discountCodes)
@@ -147,10 +177,10 @@ export async function applyDiscountCode(
 /**
  * Sweeps expired cart records.
  */
-export async function purgeExpiredCarts(database: any) {
-  const { lt } = await import("drizzle-orm");
+export async function purgeExpiredCarts(database: Database) {
   const now = new Date().toISOString();
   return database.delete(carts).where(lt(carts.expiresAt, now));
 }
 
+// Re-export all schema definitions and types
 export * from "./schema";

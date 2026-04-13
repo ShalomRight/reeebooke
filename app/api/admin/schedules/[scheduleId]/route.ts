@@ -2,7 +2,7 @@
 // DELETE /api/admin/schedules/:scheduleId
 
 import { NextRequest, NextResponse } from "next/server"
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { schedules, schedulePeriods } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 
@@ -11,6 +11,7 @@ export async function DELETE(
   { params }: { params: Promise<{ scheduleId: string }> }
 ) {
   try {
+    const db = getDb()
     const { scheduleId } = await params
 
     // Delete periods first (FK constraint in SQLite without CASCADE)

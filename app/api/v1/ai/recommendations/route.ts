@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth"
 import { type NextRequest, NextResponse } from "next/server"
-import { authOptions } from "@/lib/auth"
+import { getAuthOptions } from "@/lib/auth"
 import { generateServiceRecommendations } from "@/lib/openai"
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(getAuthOptions())
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

@@ -3,12 +3,13 @@
 // Returns all schedules + their periods for a given service
 
 import { NextRequest, NextResponse } from "next/server"
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { schedules, schedulePeriods } from "@/src/db/schema"
 import { eq, and } from "drizzle-orm"
 
 export async function GET(req: NextRequest) {
   try {
+    const db = getDb()
     const { searchParams } = new URL(req.url)
     const serviceId = searchParams.get("serviceId")
 

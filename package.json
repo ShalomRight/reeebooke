@@ -16,11 +16,14 @@
     "db:push": "prisma db push",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate:local": "wrangler d1 migrations apply reebooking-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply reebooking-db --remote",
+    "cf:dev": "next build && wrangler pages dev .vercel/output/static"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",
     "@auth/drizzle-adapter": "^1.11.1",
+    "@cloudflare/next-on-pages": "^1.13.16",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.1",
@@ -52,6 +55,7 @@
     "@radix-ui/react-tooltip": "^1.1.3",
     "@reduxjs/toolkit": "^2.3.0",
     "@sparticuz/chromium": "^141.0.0",
+    "@types/better-sqlite3": "^7.6.13",
     "@vercel/analytics": "^1.3.1",
     "autoprefixer": "^10.4.22",
     "bcryptjs": "^2.4.3",
@@ -109,6 +113,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/ws": "^8.5.13",
+    "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "postcss": "^8.5.0",
     "tailwindcss": "^4.1.17",

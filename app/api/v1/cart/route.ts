@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users, carts, services } from "@/src/db/schema"
 import { eq, and, ne, inArray } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
@@ -7,7 +7,8 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -48,9 +49,7 @@ export async function GET(req: NextRequest) {
 
 		// Clean up duplicates
 		if (itemsToDelete.length > 0) {
-			for (const id of itemsToDelete) {
-				db.delete(carts).where(eq(carts.id, id)).run()
-			}
+			await db.delete(carts).where(inArray(carts.id, itemsToDelete))
 		}
 
 		return NextResponse.json(Array.from(uniqueCartMap.values()))
@@ -62,7 +61,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const body = await req.json()
 		const { serviceId, date, time } = body
 
@@ -99,13 +99,13 @@ export async function POST(req: NextRequest) {
 		}
 
 		const cartId = crypto.randomUUID()
-		db.insert(carts).values({
+		await db.insert(carts).values({
 			id: cartId,
 			userId: user.id,
 			serviceId,
 			date: normalizedDate,
 			time,
-		}).run()
+		})
 
 		const cartItem = await db.query.carts.findFirst({
 			where: eq(carts.id, cartId),
@@ -121,7 +121,8 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const { searchParams } = new URL(req.url)
 		const cartItemId = searchParams.get("id")
 		const body = await req.json()
@@ -177,10 +178,9 @@ export async function PUT(req: NextRequest) {
 		if (date) updateData.date = new Date(date).toISOString().split('T')[0]
 		if (time) updateData.time = time
 
-		db.update(carts)
+		await db.update(carts)
 			.set(updateData)
 			.where(eq(carts.id, cartItemId))
-			.run()
 
 		const updatedCartItem = await db.query.carts.findFirst({
 			where: eq(carts.id, cartItemId),
@@ -196,7 +196,8 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const { searchParams } = new URL(req.url)
 		const cartItemId = searchParams.get("id")
 
@@ -204,7 +205,7 @@ export async function DELETE(req: NextRequest) {
 			return NextResponse.json({ error: "Cart item ID required" }, { status: 400 })
 		}
 
-		db.delete(carts).where(eq(carts.id, cartItemId)).run()
+		await db.delete(carts).where(eq(carts.id, cartItemId))
 
 		return NextResponse.json({ success: true })
 	} catch (error) {

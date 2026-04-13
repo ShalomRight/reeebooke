@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
@@ -8,6 +8,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(req: NextRequest) {
 	try {
+		const db = getDb()
 		const { name, email, phone } = await req.json()
 
 		// Validate input

@@ -1,14 +1,15 @@
 // GET: List codes
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { discountCodes } from "@/src/db/schema"
 import { desc } from "drizzle-orm"
 import { NextResponse } from "next/server"
 import { createDiscountSchema, validateRequest, validationErrorResponse } from "@/lib/validations"
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
+  const db = getDb()
+  const session = await getServerSession(getAuthOptions())
   const userRole = (session?.user as any)?.role
   
   if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {
@@ -24,7 +25,8 @@ export async function GET() {
 
 // POST: Create code
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
+  const db = getDb()
+  const session = await getServerSession(getAuthOptions())
   const userRole = (session?.user as any)?.role
   
   if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {

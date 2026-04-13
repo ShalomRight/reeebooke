@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -7,13 +7,14 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const session = await getServerSession(getAuthOptions())
 		if (!session?.user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
+		const db = getDb()
 		const user = await db.query.users.findFirst({
-			where: { id: (session.user as any).id },
+			where: eq(users.id, (session.user as any).id),
 			select: {
 				id: true,
 				name: true,
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const session = await getServerSession(getAuthOptions())
 		if (!session?.user) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
@@ -41,21 +42,15 @@ export async function PUT(req: NextRequest) {
 		const body = await req.json()
 		const { name, phone, image } = body
 
-		const updatedUser = db.update(users).set({
-			where: { id: (session.user as any).id },
-			data: {
-				...(name && { name }),
-				...(phone && { phone }),
-				...(image && { image }),
-			},
-			select: {
-				id: true,
-				name: true,
-				email: true,
-				phone: true,
-				image: true,
-			},
+		const db = getDb()
+
+		const [updatedUser] = await db.update(users).set({
+			name: name || undefined,
+			phone: phone || undefined,
+			image: image || undefined,
 		})
+		.where(eq(users.id, (session.user as any).id))
+		.returning()
 
 		return NextResponse.json(updatedUser)
 	} catch (error) {

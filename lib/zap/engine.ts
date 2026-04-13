@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { schedules, schedulePeriods, bookings } from "@/src/db/schema"
 import { eq, and, gte, lt, ne } from "drizzle-orm"
 import { format, parseISO, getDay, getISOWeek, differenceInDays } from "date-fns"
@@ -85,6 +85,7 @@ export async function getBookableSlots(
 ): Promise<TimeSlot[]> {
   
   const targetDate = parseISO(dateStr)
+  const db = getDb()
 
   const activeSchedules = await db.query.schedules.findMany({
     where: and(

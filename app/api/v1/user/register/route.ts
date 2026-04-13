@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { ensureReferralCode } from "@/lib/referral-code-utils"
@@ -12,6 +12,7 @@ import { createPostHandler } from "@/lib/api-wrapper"
 import { authRateLimit } from "@/lib/rate-limit"
 
 async function handleRegister(req: NextRequest) {
+		const db = getDb()
 		const body = await req.json()
 		
 		const validation = validateRequest(registerUserSchema, body)
@@ -22,7 +23,7 @@ async function handleRegister(req: NextRequest) {
 		const { email, password, name, phone, role, referralCode } = validation.data
 
 		const existingUser = await db.query.users.findFirst({
-			where: { email },
+			where: eq(users.email, email),
 		})
 
 		if (existingUser) {
@@ -35,24 +36,23 @@ async function handleRegister(req: NextRequest) {
 		let referredById: string | null = null
 		if (referralCode) {
 			const referrer = await db.query.users.findFirst({
-				where: { referralCode: referralCode.toUpperCase() },
-				select: { id: true },
+				where: eq(users.referralCode, referralCode.toUpperCase()),
+				columns: { id: true },
 			})
 			if (referrer) {
 				referredById = referrer.id
 			}
 		}
 
-		const user = db.insert(users).values({
-			data: {
-				email,
-				password: hashedPassword,
-				name,
-				phone,
-				role: role || "CLIENT",
-				referredById,
-			},
-		})
+		const [user] = await db.insert(users).values({
+			id: crypto.randomUUID(),
+			email,
+			password: hashedPassword,
+			name,
+			phone,
+			role: role || "CLIENT",
+			referredById,
+		}).returning()
 
 		// Generate referral code for all users (admin, super admin, client)
 		try {
@@ -78,8 +78,8 @@ async function handleRegister(req: NextRequest) {
 		if (referredById) {
 			try {
 				const referrer = await db.query.users.findFirst({
-					where: { id: referredById },
-					select: { name: true, referralCode: true },
+					where: eq(users.id, referredById),
+					columns: { name: true, referralCode: true },
 				})
 				if (referrer && referrer.referralCode) {
 					await sendEmail({

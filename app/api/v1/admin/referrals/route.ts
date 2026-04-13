@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { referralCodes, referralRewards } from "@/src/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -7,7 +7,8 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {

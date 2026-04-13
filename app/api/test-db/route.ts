@@ -1,10 +1,11 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users, services } from "@/src/db/schema"
 import { count } from "drizzle-orm"
 import { NextResponse } from "next/server"
 
 export async function GET() {
 	try {
+		const db = getDb()
 		// Test database connection
 // Test query
 		const serviceCount = (await db.query.services.findMany()).length

@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users, favorites } from "@/src/db/schema"
 import { eq, and } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
@@ -7,7 +7,8 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -36,7 +37,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -74,11 +76,11 @@ export async function POST(req: NextRequest) {
 		}
 
 		const favId = crypto.randomUUID()
-		db.insert(favorites).values({
+		await db.insert(favorites).values({
 			id: favId,
 			userId: user.id,
 			serviceId,
-		}).run()
+		})
 
 		const favorite = await db.query.favorites.findFirst({
 			where: eq(favorites.id, favId),
@@ -94,7 +96,8 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session?.user?.email) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -115,12 +118,11 @@ export async function DELETE(req: NextRequest) {
 			return NextResponse.json({ error: "Service ID required" }, { status: 400 })
 		}
 
-		db.delete(favorites)
+		await db.delete(favorites)
 			.where(and(
 				eq(favorites.userId, user.id),
 				eq(favorites.serviceId, serviceId),
 			))
-			.run()
 
 		return NextResponse.json({ success: true })
 	} catch (error) {

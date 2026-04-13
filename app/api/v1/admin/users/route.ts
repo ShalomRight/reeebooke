@@ -1,6 +1,6 @@
 // TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq, count, desc, asc, or, ilike, and } from "drizzle-orm"
 import { canAccessResource } from "@/lib/rbac"
@@ -12,7 +12,8 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
@@ -89,7 +90,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
@@ -151,7 +153,8 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}

@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { ratings } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -8,7 +8,8 @@ import { type NextRequest, NextResponse } from "next/server"
 // PATCH: Approve or reject a rating
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {
@@ -65,7 +66,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 // DELETE: Delete a rating (admin only)
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {

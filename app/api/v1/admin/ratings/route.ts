@@ -1,6 +1,6 @@
 // TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { ratings } from "@/src/db/schema"
 import { eq, count, desc, and } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -9,7 +9,8 @@ import { type NextRequest, NextResponse } from "next/server"
 // GET: List all ratings for admin (with filters)
 export async function GET(req: NextRequest) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {

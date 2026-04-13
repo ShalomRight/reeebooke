@@ -1,6 +1,6 @@
 // TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq, or, isNull } from "drizzle-orm"
 import { ensureReferralCode } from "@/lib/referral-code-utils"
@@ -13,7 +13,8 @@ import { NextResponse } from "next/server"
  */
 export async function POST() {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {

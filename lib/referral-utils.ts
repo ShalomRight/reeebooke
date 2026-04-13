@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users, referralCodes, referralRewards } from "@/src/db/schema"
 import { eq, sql } from "drizzle-orm"
 
@@ -8,6 +8,7 @@ import { eq, sql } from "drizzle-orm"
  */
 export async function awardReferralPointsOnPayment(userId: string, bookingId?: string) {
 	try {
+		const db = getDb()
 		// Get the user who made the payment
 		const user = await db.query.users.findFirst({
 			where: eq(users.id, userId),
@@ -49,10 +50,9 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 		})
 
 		// Award points to the referrer
-		db.update(users)
+		await db.update(users)
 			.set({ referralPoints: sql`${users.referralPoints} + ${points}` })
 			.where(eq(users.id, user.referredById))
-			.run()
 
 		// Get updated referrer points
 		const updatedReferrer = await db.query.users.findFirst({
@@ -62,14 +62,13 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 
 		// Update referral code usage count
 		if (referralCode) {
-			db.update(referralCodes)
+			await db.update(referralCodes)
 				.set({ usageCount: sql`${referralCodes.usageCount} + 1` })
 				.where(eq(referralCodes.id, referralCode.id))
-				.run()
 		}
 
 		// Create referral reward record
-		db.insert(referralRewards)
+		await db.insert(referralRewards)
 			.values({
 				id: crypto.randomUUID(),
 				referrerId: user.referredById,
@@ -77,7 +76,6 @@ export async function awardReferralPointsOnPayment(userId: string, bookingId?: s
 				points,
 				bookingId: bookingId || null,
 			})
-			.run()
 
 		console.log(`Referral points awarded: ${points} points to user ${user.referredById} for referral ${user.id}`)
 

@@ -1,5 +1,5 @@
 import { getBookableSlots } from "@/lib/zap/engine"
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { schedules } from "@/src/db/schema"
 import { and, eq } from "drizzle-orm"
 
@@ -7,6 +7,7 @@ const DEFAULT_DURATION_MIN = 60
 const DEFAULT_BUFFER_MIN = 0
 
 async function serviceHasActiveSchedules(serviceId: string): Promise<boolean> {
+	const db = getDb()
 	const rows = await db.query.schedules.findMany({
 		where: and(eq(schedules.resourceType, "service"), eq(schedules.resourceId, serviceId), eq(schedules.active, true)),
 		columns: { id: true },

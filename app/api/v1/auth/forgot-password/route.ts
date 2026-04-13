@@ -1,4 +1,4 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
@@ -8,6 +8,7 @@ import crypto from "crypto"
 
 export async function POST(req: NextRequest) {
 	try {
+		const db = getDb()
 		const { email } = await req.json()
 
 		if (!email) {

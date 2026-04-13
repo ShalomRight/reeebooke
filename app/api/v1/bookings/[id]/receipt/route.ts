@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { bookings } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { generateReceiptHTML } from "@/lib/receipt-generator"
@@ -9,7 +9,8 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

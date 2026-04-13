@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { services } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -7,6 +7,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const db = getDb()
     const { id } = await params
     const service = await db.query.services.findFirst({
       where: eq(services.id, id),
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(getAuthOptions())
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -40,7 +41,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    db.update(services)
+    const db = getDb()
+
+    await db.update(services)
       .set({
         name,
         price,
@@ -49,7 +52,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         updatedAt: new Date().toISOString(),
       })
       .where(eq(services.id, id))
-      .run()
 
     const service = await db.query.services.findFirst({
       where: eq(services.id, id),
@@ -64,7 +66,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(getAuthOptions())
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -86,7 +88,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    db.delete(services).where(eq(services.id, id)).run()
+    const db = getDb()
+
+    await db.delete(services).where(eq(services.id, id))
 
     return NextResponse.json({ message: "Service deleted" }, { status: 200 })
   } catch (error) {

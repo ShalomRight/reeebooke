@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { bookings, photos, services } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { sendEmail } from "@/lib/email-service"
@@ -9,6 +9,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
+		const db = getDb()
 		const { id } = await params
 		const booking = await db.query.bookings.findFirst({
 			where: eq(bookings.id, id),
@@ -30,6 +31,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
+		const db = getDb()
 		const { id } = await params
 		const body = await req.json()
 		const { status } = body
@@ -46,10 +48,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 		const oldStatus = oldBooking.status
 
-		db.update(bookings)
+		await db.update(bookings)
 			.set({ status, updatedAt: new Date().toISOString() })
 			.where(eq(bookings.id, id))
-			.run()
 
 		const booking = await db.query.bookings.findFirst({
 			where: eq(bookings.id, id),
@@ -116,6 +117,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
+		const db = getDb()
 		const { id } = await params
 		const body = await req.json()
 		const { serviceId, date, time, paymentMethod, mobileProvider, photoUrls, userName, phone, status } = body
@@ -131,20 +133,19 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 		if (phone) updateData.phone = phone
 		if (status) updateData.status = status
 
-		db.update(bookings)
+		await db.update(bookings)
 			.set(updateData)
 			.where(eq(bookings.id, id))
-			.run()
 
 		// Handle photos: delete existing and create new ones
 		if (photoUrls) {
-			db.delete(photos).where(eq(photos.bookingId, id)).run()
+			await db.delete(photos).where(eq(photos.bookingId, id))
 			for (const url of photoUrls) {
-				db.insert(photos).values({
+				await db.insert(photos).values({
 					id: crypto.randomUUID(),
 					bookingId: id,
 					url,
-				}).run()
+				})
 			}
 		}
 
@@ -164,7 +165,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
-		const session = await getServerSession(authOptions)
+		const db = getDb()
+		const session = await getServerSession(getAuthOptions())
 
 		if (!session) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -183,13 +185,13 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 		const userRole = (session.user as any).role
 		const userId = (session.user as any).id
 
-		if (![" ADMIN", "SUPER_ADMIN"].includes(userRole) && booking.userId !== userId) {
+		if (!["ADMIN", "SUPER_ADMIN"].includes(userRole) && booking.userId !== userId) {
 			return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 		}
 
 		// Delete photos first, then booking
-		db.delete(photos).where(eq(photos.bookingId, id)).run()
-		db.delete(bookings).where(eq(bookings.id, id)).run()
+		await db.delete(photos).where(eq(photos.bookingId, id))
+		await db.delete(bookings).where(eq(bookings.id, id))
 
 		return NextResponse.json({ message: "Booking deleted" }, { status: 200 })
 	} catch (error) {

@@ -47,6 +47,4 @@ DROP TABLE `verification_tokens`;--> statement-breakpoint
 ALTER TABLE `__new_verification_tokens` RENAME TO `verification_tokens`;--> statement-breakpoint
 CREATE UNIQUE INDEX `verification_tokens_token_unique` ON `verification_tokens` (`token`);--> statement-breakpoint
 CREATE UNIQUE INDEX `verification_tokens_identifier_token_idx` ON `verification_tokens` (`identifier`,`token`);--> statement-breakpoint
-ALTER TABLE `services` ADD `description` text;--> statement-breakpoint
-ALTER TABLE `services` ADD `category` text;--> statement-breakpoint
-ALTER TABLE `services` ADD `media_url` text;
+ALTER TABLE `services` ADD `category` text;

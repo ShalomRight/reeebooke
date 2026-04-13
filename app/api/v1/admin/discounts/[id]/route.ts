@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { discountCodes } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import { getServerSession } from "next-auth"
@@ -7,8 +7,9 @@ import { NextResponse } from "next/server"
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
+		const db = getDb()
 		const { id } = await params
-		const session = await getServerSession(authOptions)
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 		
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {
@@ -43,7 +44,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params
-		const session = await getServerSession(authOptions)
+		const session = await getServerSession(getAuthOptions())
 		const userRole = (session?.user as any)?.role
 		
 		if (!userRole || (!userRole.includes("ADMIN") && userRole !== "SUPER_ADMIN")) {

@@ -1,14 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { db } from "@/src/db"
+import { getAuthOptions } from "@/lib/auth"
+import { getDb } from "@/src/db"
 import { users } from "@/src/db/schema"
 import { eq } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const db = getDb()
+    const session = await getServerSession(getAuthOptions())
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await db.query.users.findFirst({
-      where: { id: (session.user as any).id },
+      where: eq(users.id, (session.user as any).id),
     })
 
     if (!user || !user.password) {
@@ -34,10 +35,9 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10)
-    db.update(users).set({
-      where: { id: (session.user as any).id },
-      data: { password: hashedPassword },
-    })
+    await db.update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, (session.user as any).id))
 
     return NextResponse.json({ message: "Password updated successfully" })
   } catch (error) {

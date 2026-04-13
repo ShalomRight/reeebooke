@@ -1,9 +1,9 @@
-import { db } from "@/src/db"
+import { getDb } from "@/src/db"
 import { bookings, photos } from "@/src/db/schema"
 import { eq, and, gte, lt, desc, asc, ne, sql } from "drizzle-orm"
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getAuthOptions } from "@/lib/auth"
 import { getBookingsQuerySchema, createBookingSchema, validateRequest, validationErrorResponse } from "@/lib/validations"
 import { createGetHandler, createPostHandler } from "@/lib/api-wrapper"
 import { apiRateLimit } from "@/lib/rate-limit"
@@ -15,6 +15,7 @@ function isStaffRole(role: string | null | undefined) {
 }
 
 async function handleGetBookings(req: NextRequest) {
+	const db = getDb()
 	const { searchParams } = new URL(req.url)
 	const queryParams = Object.fromEntries(searchParams.entries())
 
@@ -27,7 +28,7 @@ async function handleGetBookings(req: NextRequest) {
 		validation.data
 	const skip = (page - 1) * limit
 
-	const session = await getServerSession(authOptions)
+	const session = await getServerSession(getAuthOptions())
 	const isStaff = isStaffRole(session?.user?.role)
 
 	// ── Public aggregate: month heatmap (date + time only) ───────────────────
@@ -173,6 +174,7 @@ async function handleGetBookings(req: NextRequest) {
 }
 
 async function handleCreateBooking(req: NextRequest) {
+	const db = getDb()
 	const body = await req.json()
 
 	const validation = validateRequest(createBookingSchema, body)
@@ -220,7 +222,6 @@ async function handleCreateBooking(req: NextRequest) {
 						phone,
 						email: email ?? null,
 					})
-					.run()
 
 				for (const url of photoUrls || []) {
 					tx.insert(photos)
@@ -229,7 +230,6 @@ async function handleCreateBooking(req: NextRequest) {
 							bookingId,
 							url,
 						})
-						.run()
 				}
 			}
 		})
