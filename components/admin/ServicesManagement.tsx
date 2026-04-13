@@ -51,7 +51,7 @@ export function ServicesManagement() {
         setServiceToDelete(null)
         toast.success("Service deleted successfully")
       } else {
-        const err = await res.json()
+        const err = await res.json() as any
         toast.error("Failed to delete service", { description: err.error || "An error occurred" })
       }
     } catch (error) {

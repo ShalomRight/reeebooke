@@ -17,7 +17,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 		}
 
 		const { id } = await params
-		const { status } = await req.json()
+		const { status } = await req.json() as { status: string }
 
 		if (!status || !["APPROVED", "REJECTED"].includes(status)) {
 			return NextResponse.json({ error: "Invalid status. Must be APPROVED or REJECTED" }, { status: 400 })

@@ -335,7 +335,7 @@ export function ServiceScheduleSection({ serviceId }: { serviceId: string | unde
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/schedules?serviceId=${serviceId}`)
-      const data = await res.json()
+      const data = await res.json() as any
       setSchedules(data.schedules || [])
     } catch {
       toast.error("Failed to load schedules")

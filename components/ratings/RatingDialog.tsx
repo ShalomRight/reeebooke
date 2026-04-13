@@ -53,7 +53,7 @@ export function RatingDialog({ serviceId, serviceName, onRatingSubmitted, childr
 				setComment("")
 				onRatingSubmitted?.()
 			} else {
-				const error = await response.json()
+				const error = await response.json() as any
 				toast.error(error.error || "Failed to submit rating")
 			}
 		} catch (error) {

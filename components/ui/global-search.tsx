@@ -76,7 +76,7 @@ export function GlobalSearch() {
 			try {
 				const response = await fetch(`/api/v1/search?q=${encodeURIComponent(query)}`)
 				if (response.ok) {
-					const data = await response.json()
+					const data = await response.json() as any
 					setResults(data)
 				}
 			} catch (error) {

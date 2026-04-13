@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const body = await req.json()
+		const body = await req.json() as { guestCartItems: any[] }
 		const { guestCartItems } = body
 
 		if (!Array.isArray(guestCartItems)) {

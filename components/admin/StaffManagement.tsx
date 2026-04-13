@@ -71,7 +71,7 @@ export function StaffManagement({ onStaffAdded }: StaffManagementProps) {
 				mutate()
 				onStaffAdded?.()
 			} else {
-				const error = await response.json()
+				const error = await response.json() as any
 				toast.error(error.error || "Failed to add staff member")
 			}
 		} catch (error) {

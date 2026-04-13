@@ -88,11 +88,11 @@ export function ServiceFormSheet({ isOpen, onOpenChange, existingService, onSave
       }
 
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
+        const err = await res.json().catch(() => ({})) as any
         throw new Error(err.error || "Failed to save service")
       }
 
-      const saved = await res.json()
+      const saved = await res.json() as any
       toast.success(isEditMode ? "Service updated" : "Service created")
       onSaved()
 

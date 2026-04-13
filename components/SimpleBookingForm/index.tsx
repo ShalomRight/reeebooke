@@ -78,7 +78,7 @@ function SimpleBookingFormContent() {
 		services, selectedService, setSelectedService, selectedDate, setSelectedDate,
 		selectedTime, setSelectedTime, photos, setPhotos, currentMonth, currentYear,
 		handlePreviousMonth, handleNextMonth, calendarDays, weekDays, timeSlots,
-		bookingCounts, totalPrice, selectedServiceData, isLoadingTimeSlots, isLoadingServices,
+		bookingCounts, dailyCapacities, totalPrice, selectedServiceData, isLoadingTimeSlots, isLoadingServices,
 	} = form
 
 	const { addToCart, cartCount } = useCart()
@@ -189,6 +189,7 @@ function SimpleBookingFormContent() {
 								weekDays={weekDays}
 								selectedDate={selectedDate}
 								setSelectedDate={setSelectedDate}
+								dailyCapacities={dailyCapacities}
 								bookingCounts={bookingCounts}
 								selectedService={selectedService}
 								disabledDates={

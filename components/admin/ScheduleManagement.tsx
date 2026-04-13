@@ -327,7 +327,7 @@ function ServiceSchedulePanel({ service }: { service: Service }) {
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/schedules?serviceId=${service.id}`)
-      const data = await res.json()
+      const data = await res.json() as any
       setSchedules(data.schedules || [])
     } catch {
       toast.error("Failed to load schedules")
@@ -404,7 +404,7 @@ export function ScheduleManagement() {
 
   useEffect(() => {
     fetch("/api/v1/services?limit=100")
-      .then(r => r.json())
+      .then(r => r.json() as any)
       .then(d => setServices(d.services || []))
       .catch(() => toast.error("Failed to load services"))
       .finally(() => setLoading(false))

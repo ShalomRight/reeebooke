@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 	try {
 		const db = getDb()
 		const { id } = await params
-		const body = await req.json()
+		const body = await req.json() as { status: string }
 		const { status } = body
 
 		// Get old status before update
@@ -119,7 +119,17 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 	try {
 		const db = getDb()
 		const { id } = await params
-		const body = await req.json()
+		const body = await req.json() as { 
+			serviceId?: string; 
+			date?: string; 
+			time?: string; 
+			paymentMethod?: string; 
+			mobileProvider?: any; 
+			photoUrls?: string[]; 
+			userName?: string; 
+			phone?: string; 
+			status?: string 
+		}
 		const { serviceId, date, time, paymentMethod, mobileProvider, photoUrls, userName, phone, status } = body
 
 		// Build update data

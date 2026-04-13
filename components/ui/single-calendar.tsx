@@ -20,7 +20,7 @@ function SingleCalendar({
   classNames?: Record<string, string>
   showOutsideDays?: boolean 
 }) {
-  const [currentMonth, setCurrentMonth] = React.useState<Date | undefined>(props.selected instanceof Date ? props.selected : undefined);
+  const [currentMonth, setCurrentMonth] = React.useState<Date | undefined>((props as any).selected instanceof Date ? (props as any).selected : undefined);
 
   return (
     <DayPicker

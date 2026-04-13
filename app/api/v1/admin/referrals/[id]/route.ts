@@ -121,7 +121,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 			return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 		}
 
-		const body = await req.json()
+		const body = await req.json() as { pointsPerReferral: any }
 		const { pointsPerReferral } = body
 
 		if (pointsPerReferral === undefined || pointsPerReferral < 0) {

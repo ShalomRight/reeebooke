@@ -41,7 +41,7 @@ interface CloudflareEnv {
 export function getDb() {
   if (process.env.NEXT_RUNTIME === "edge") {
     // Production / Edge Simulation: Use D1 binding from Cloudflare context
-    const { env } = getRequestContext<CloudflareEnv>();
+    const { env } = getRequestContext() as unknown as { env: CloudflareEnv };
     
     if (!env.reebooking_db) {
       throw new Error("D1 binding 'reebooking_db' not found in Cloudflare environment.");

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { bookings } = await req.json()
+    const { bookings } = await req.json() as { bookings: any[] }
 
     if (!bookings || bookings.length === 0) {
       return NextResponse.json({ recommendations: [] })

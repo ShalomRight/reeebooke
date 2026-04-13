@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 	try {
 		const db = getDb()
 		const session = await getServerSession(getAuthOptions())
-		const body = await req.json()
+		const body = await req.json() as { serviceId: string; date: string; time: string }
 		const { serviceId, date, time } = body
 
 		if (!serviceId || !date || !time) {
@@ -125,7 +125,7 @@ export async function PUT(req: NextRequest) {
 		const session = await getServerSession(getAuthOptions())
 		const { searchParams } = new URL(req.url)
 		const cartItemId = searchParams.get("id")
-		const body = await req.json()
+		const body = await req.json() as { serviceId?: string; date?: string; time?: string }
 		const { serviceId, date, time } = body
 
 		if (!cartItemId) {

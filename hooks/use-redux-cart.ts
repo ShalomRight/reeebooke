@@ -71,7 +71,7 @@ export function useCart() {
 							})
 
 							if (syncResponse.ok) {
-								const result = await syncResponse.json()
+								const result = await syncResponse.json() as any
 								clearGuestCart()
 								hasSyncedRef.current = true
 							} else {
@@ -86,7 +86,7 @@ export function useCart() {
 					// Load cart from database (includes synced items, already deduplicated by backend)
 					const response = await fetch("/api/v1/cart")
 					if (response.ok) {
-						const dbCart = await response.json()
+						const dbCart = await response.json() as any
 						const formattedCart = dbCart.map((item: any) => ({
 							id: item.id,
 							serviceId: item.serviceId,
@@ -167,7 +167,7 @@ export function useCart() {
 						}),
 					})
 					if (response.ok) {
-						const newItem = await response.json()
+						const newItem = await response.json() as any
 						dispatch(
 							addToCartAction({
 								id: newItem.id,
@@ -183,7 +183,7 @@ export function useCart() {
 						// Item already in cart - reload cart from database to get the latest state
 						const cartResponse = await fetch("/api/v1/cart")
 						if (cartResponse.ok) {
-							const dbCart = await cartResponse.json()
+							const dbCart = await cartResponse.json() as any
 							const formattedCart = dbCart.map((item: any) => ({
 								id: item.id,
 								serviceId: item.serviceId,
@@ -270,7 +270,7 @@ export function useCart() {
 						body: JSON.stringify(apiUpdates),
 					})
 					if (response.ok) {
-						const updatedItem = await response.json()
+						const updatedItem = await response.json() as any
 						// Format date to YYYY-MM-DD string
 						const formattedDate = typeof updatedItem.date === "string" 
 							? updatedItem.date.split("T")[0] 

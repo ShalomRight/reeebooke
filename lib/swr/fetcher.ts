@@ -2,7 +2,7 @@
  * Centralized SWR fetcher function
  * Handles all API requests with consistent error handling
  */
-export const fetcher = async (url: string) => {
+export const fetcher = async (url: string): Promise<any> => {
 	const response = await fetch(url)
 	
 	if (!response.ok) {

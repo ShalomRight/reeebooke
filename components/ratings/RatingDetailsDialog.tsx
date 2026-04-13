@@ -50,7 +50,7 @@ export function RatingDetailsDialog({
 		try {
 			const response = await fetch(`/api/v1/ratings?serviceId=${serviceId}`)
 			if (response.ok) {
-				const data = await response.json()
+				const data = await response.json() as any
 				setRatings(data)
 			}
 		} catch (error) {

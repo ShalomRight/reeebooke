@@ -50,7 +50,7 @@ export function ProfileForm() {
 		try {
 			const res = await fetch("/api/v1/user/profile")
 			if (!res.ok) throw new Error("Failed to fetch profile")
-			const data = await res.json()
+			const data = await res.json() as any
 			// Fallback to session role if role is not in response
 			if (!data.role && session?.user) {
 				data.role = (session.user as any).role || "CLIENT"
@@ -68,7 +68,7 @@ export function ProfileForm() {
 		try {
 			const res = await fetch("/api/v1/user/referral")
 			if (!res.ok) throw new Error("Failed to fetch referral data")
-			const data = await res.json()
+			const data = await res.json() as any
 			setReferralData(data)
 		} catch (error) {
 			// Silently fail - referral is optional

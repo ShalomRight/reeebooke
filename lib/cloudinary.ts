@@ -15,12 +15,12 @@ export async function uploadToCloudinary(file: File): Promise<string> {
 		})
 
 		if (!response.ok) {
-			const errorData = await response.json()
+			const errorData = await response.json() as any
 			console.error("Cloudinary error response:", errorData)
 			throw new Error(`Upload failed: ${errorData.error?.message || "Unknown error"}`)
 		}
 
-		const data = await response.json()
+		const data = await response.json() as any
 		return data.secure_url
 	} catch (error) {
 		console.error("Cloudinary upload error:", error)

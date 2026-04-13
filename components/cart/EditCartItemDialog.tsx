@@ -114,7 +114,7 @@ export function EditCartItemDialog({ item, onUpdate }: EditCartItemDialogProps) 
 			try {
 				const response = await fetch("/api/v1/services?limit=1000")
 				if (!response.ok) throw new Error("Failed to fetch services")
-				const data = await response.json()
+				const data = await response.json() as any
 				setServices(data.services || [])
 			} catch (err) {
 				toast.error("Failed to load services")
@@ -130,7 +130,7 @@ export function EditCartItemDialog({ item, onUpdate }: EditCartItemDialogProps) 
 				const endDate = `${currentYear}-${currentMonth.toString().padStart(2, "0")}-${new Date(currentYear, currentMonth, 0).getDate()}`
 				const response = await fetch(`/api/v1/bookings?startDate=${startDate}&endDate=${endDate}&limit=1000`)
 				if (!response.ok) throw new Error("Failed to fetch bookings")
-				const data = await response.json()
+				const data = await response.json() as any
 				const bookings = data.bookings ?? (Array.isArray(data) ? data : [])
 				const counts: BookingCount = {}
 				bookings.forEach((booking: { date: string }) => {
@@ -157,7 +157,7 @@ export function EditCartItemDialog({ item, onUpdate }: EditCartItemDialogProps) 
 				const date = `${currentYear}-${currentMonth.toString().padStart(2, "0")}-${selectedDate.toString().padStart(2, "0")}`
 				const response = await fetch(`/api/v1/bookings?date=${date}&serviceId=${selectedService}&limit=1000`)
 				if (!response.ok) throw new Error("Failed to fetch bookings")
-				const data = await response.json()
+				const data = await response.json() as any
 				const bookings = data.bookings || []
 				const bookedTimes = bookings.map((booking: { time: string }) => booking.time)
 

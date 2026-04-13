@@ -9,7 +9,7 @@ import { type NextRequest, NextResponse } from "next/server"
 export async function POST(req: NextRequest) {
 	try {
 		const db = getDb()
-		const { name, email, phone } = await req.json()
+		const { name, email, phone } = await req.json() as { name: string; email: string; phone: string }
 
 		// Validate input
 		if (!name || !email || !phone) {

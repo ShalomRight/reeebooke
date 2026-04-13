@@ -7,7 +7,7 @@ import useSWR from "swr"
 import { format24hTo12hLabel } from "@/lib/booking/time"
 
 // Standard SWR fetcher
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) => fetch(url).then((res) => res.json() as any);
 
 type Service = { id: string; name: string; price: number; stripePriceId?: string; rating?: number; ratingsCount?: number }
 type TimeSlot = { time: string; displayLabel?: string; available: boolean; isBooked?: boolean }
@@ -160,7 +160,7 @@ export const useZapBookingForm = (initialServiceId?: string) => {
 			const res = await fetch("/api/v1/bookings", {
 				method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bookingData)
 			})
-			const body = await res.json().catch(() => ({}))
+			const body = await res.json().catch(() => ({})) as any
 			if (!res.ok) {
 				const msg = typeof body?.error === "string" ? body.error : "Failed to create booking"
 				throw new Error(msg)

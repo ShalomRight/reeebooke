@@ -141,7 +141,7 @@ export default function CheckoutPage() {
 				body: JSON.stringify({ code: couponCode.trim(), cartTotal }),
 			})
 
-			const data = await res.json()
+			const data = await res.json() as any
 
 			if (!res.ok) {
 				toast.error("Invalid Coupon", { description: data.error })
@@ -207,11 +207,11 @@ export default function CheckoutPage() {
 				})
 
 				if (!res.ok) {
-					const { error } = await res.json()
+					const { error } = await res.json() as any
 					throw new Error(error ?? "Failed to create checkout session")
 				}
 
-				const { url } = await res.json()
+				const { url } = await res.json() as any
 				if (url) window.location.href = url
 			} else {
 				const res = await fetch("/api/v1/bookings/bulk", {
@@ -234,7 +234,7 @@ export default function CheckoutPage() {
 				})
 
 				if (!res.ok) {
-					const { error } = await res.json()
+					const { error } = await res.json() as any
 					throw new Error(error ?? "Failed to create bookings")
 				}
 

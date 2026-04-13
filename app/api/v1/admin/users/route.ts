@@ -101,7 +101,13 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 		}
 
-		const { name, email, phone, password, role } = await req.json()
+		const { name, email, phone, password, role } = await req.json() as { 
+			name: string; 
+			email: string; 
+			phone?: string; 
+			password: string; 
+			role?: string; 
+		}
 
 		// Check if user already exists
 		const existingUser = await db.query.users.findFirst({
@@ -164,7 +170,7 @@ export async function PUT(req: NextRequest) {
 			return NextResponse.json({ error: "Only Super Admin can manage roles" }, { status: 403 })
 		}
 
-		const { userId, role: newRole } = await req.json()
+		const { userId, role: newRole } = await req.json() as { userId: string; role: string }
 
 		if (userId === session.user.id) {
 			return NextResponse.json({ error: "Cannot change your own role" }, { status: 400 })

@@ -42,7 +42,7 @@ export function SettingsForm() {
 			})
 
 			if (!res.ok) {
-				const error = await res.json()
+				const error = await res.json() as any
 				throw new Error(error.error || "Failed to update password")
 			}
 

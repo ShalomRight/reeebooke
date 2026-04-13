@@ -15,7 +15,7 @@ export function useFavorites() {
 				try {
 					const response = await fetch("/api/v1/favorites")
 					if (response.ok) {
-						const data = await response.json()
+						const data = await response.json() as any
 						setFavorites(data.map((fav: any) => fav.serviceId))
 					}
 				} catch (error) {

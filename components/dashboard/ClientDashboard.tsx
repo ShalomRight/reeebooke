@@ -64,7 +64,7 @@ export function ClientDashboard() {
 		try {
 			const response = await fetch(`/api/v1/bookings/${bookingId}/receipt?format=pdf`)
 			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({ error: "Failed to download receipt" }))
+				const errorData = await response.json().catch(() => ({ error: "Failed to download receipt" })) as any
 				throw new Error(errorData.error || "Failed to download receipt")
 			}
 			

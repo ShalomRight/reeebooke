@@ -36,7 +36,7 @@ export function LoyaltyWidget({ bookings }: LoyaltyWidgetProps) {
       try {
         const res = await fetch("/api/v1/user/points")
         if (res.ok) {
-          const data = await res.json()
+          const data = await res.json() as any
           setUserPoints(data)
         }
       } catch (err) {

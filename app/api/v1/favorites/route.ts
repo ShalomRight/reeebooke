@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 })
 		}
 
-		const { serviceId } = await req.json()
+		const { serviceId } = await req.json() as { serviceId: string }
 
 		if (!serviceId) {
 			return NextResponse.json({ error: "Service ID required" }, { status: 400 })

@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
 				body: JSON.stringify({ email: data.email }),
 			})
 
-			const result = await response.json()
+			const result = await response.json() as any
 
 			if (!response.ok) {
 				throw new Error(result.error || "Failed to send reset email")

@@ -123,7 +123,7 @@ export function BookingsManagement({ filterByToday = false }: BookingsManagement
 				toast.success("Booking deleted successfully")
 				mutate()
 			} else {
-				const errorData = await response.json().catch(() => ({ error: "Failed to delete booking" }))
+				const errorData = await response.json().catch(() => ({ error: "Failed to delete booking" })) as any
 				toast.error(errorData.error || "Failed to delete booking")
 			}
 		} catch (error) {
@@ -136,7 +136,7 @@ export function BookingsManagement({ filterByToday = false }: BookingsManagement
 		try {
 			const response = await fetch(`/api/v1/bookings/${bookingId}/receipt?format=pdf`)
 			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({ error: "Failed to download receipt" }))
+				const errorData = await response.json().catch(() => ({ error: "Failed to download receipt" })) as any
 				throw new Error(errorData.error || "Failed to download receipt")
 			}
 

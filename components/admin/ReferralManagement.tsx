@@ -98,7 +98,7 @@ export function ReferralManagement() {
 		try {
 			const res = await fetch("/api/v1/admin/referrals")
 			if (!res.ok) throw new Error("Failed to load codes")
-			const data = await res.json()
+			const data = await res.json() as any
 			setCodes(data)
 		} catch (err) {
 			toast.error("Failed to load referral codes")
@@ -118,7 +118,7 @@ export function ReferralManagement() {
 		try {
 			const res = await fetch(`/api/v1/admin/referrals/${id}`)
 			if (!res.ok) throw new Error("Failed to load details")
-			const data = await res.json()
+			const data = await res.json() as any
 			setDetails(data)
 			setEditPoints(data.referralCode.pointsPerReferral.toString())
 		} catch (err) {
@@ -164,7 +164,7 @@ export function ReferralManagement() {
 			const res = await fetch("/api/v1/admin/referrals/generate-all", {
 				method: "POST",
 			})
-			const data = await res.json()
+			const data = await res.json() as any
 			if (res.ok) {
 				toast.success(data.message || "Referral codes generated successfully")
 				loadCodes() // Refresh the list
@@ -185,7 +185,7 @@ export function ReferralManagement() {
 			const res = await fetch("/api/v1/admin/referrals/generate", {
 				method: "POST",
 			})
-			const data = await res.json()
+			const data = await res.json() as any
 			if (res.ok) {
 				toast.success(data.message || "Referral code generated successfully")
 				loadCodes() // Refresh the list

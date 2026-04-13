@@ -68,7 +68,7 @@ export function DiscountManagement() {
 		try {
 			const res = await fetch("/api/v1/admin/discounts")
 			if (!res.ok) throw new Error("Failed to load codes")
-			const data = await res.json()
+			const data = await res.json() as any
 			setCodes(data)
 		} catch (err) {
 			toast.error("Failed to load discount codes")
@@ -106,7 +106,7 @@ export function DiscountManagement() {
 				}),
 			})
 
-			const data = await res.json()
+			const data = await res.json() as any
 			if (res.ok) {
 				toast.success("Discount code created!", {
 					description: `${data.code} – ${data.value}${data.type === "PERCENT" ? "%" : "$"} off`,
@@ -148,7 +148,7 @@ export function DiscountManagement() {
 				}),
 			})
 
-			const data = await res.json()
+			const data = await res.json() as any
 			if (res.ok) {
 				toast.success("Discount code updated successfully!")
 				setIsEditDialogOpen(false)
@@ -219,7 +219,7 @@ export function DiscountManagement() {
 		try {
 			const res = await fetch(`/api/v1/admin/discounts/${id}/usage`)
 			if (!res.ok) throw new Error("Failed to load usage data")
-			const data = await res.json()
+			const data = await res.json() as any
 			setUsageData({
 				statistics: data.statistics,
 				usageByUser: data.usageByUser,

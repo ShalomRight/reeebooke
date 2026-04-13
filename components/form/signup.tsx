@@ -63,7 +63,7 @@ export default function SignupForm() {
 					referralCode: referralCode || undefined,
 				}),
 			})
-			const result = await res.json()
+			const result = await res.json() as any
 
 			if (!res.ok) throw new Error(result.error || "Failed to create account")
 

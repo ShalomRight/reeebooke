@@ -9,6 +9,7 @@ import { DEFAULT_LEGACY_SLOT_TIMES } from "@/lib/booking/time"
 type Service = { id: string; name: string; price: number; stripePriceId?: string; rating?: number; ratingsCount?: number }
 type TimeSlot = { time: string; displayLabel?: string; available: boolean; isBooked?: boolean }
 type BookingCount = { [key: number]: number }
+export type DailyCapacityMap = Record<number, { total: number; available: number }>
 
 const defaultTimeSlots: TimeSlot[] = DEFAULT_LEGACY_SLOT_TIMES.map((s) => ({
 	time: s.time,
@@ -137,7 +138,7 @@ export const useBookingForm = (initialServiceId?: string) => {
 			const res = await fetch("/api/v1/send-whatsapp", {
 				method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
 			})
-			if (!res.ok) throw new Error((await res.json()).error || "Failed to send WhatsApp confirmation")
+			if (!res.ok) throw new Error((await res.json() as any).error || "Failed to send WhatsApp confirmation")
 		} catch (err: any) {
 			toast.error(err?.message || "Failed to send WhatsApp confirmation")
 		}
@@ -172,7 +173,7 @@ export const useBookingForm = (initialServiceId?: string) => {
 			const res = await fetch("/api/v1/bookings", {
 				method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(bookingData)
 			})
-			const body = await res.json().catch(() => ({}))
+			const body = await res.json().catch(() => ({})) as any
 			if (!res.ok) {
 				throw new Error(typeof body?.error === "string" ? body.error : "Failed to create booking")
 			}
@@ -198,7 +199,7 @@ export const useBookingForm = (initialServiceId?: string) => {
 	return {
 		services, selectedService, setSelectedService, selectedDate, setSelectedDate, selectedTime, setSelectedTime,
 		photos, setPhotos, currentMonth, currentYear, handlePreviousMonth, handleNextMonth,
-		calendarDays, weekDays, timeSlots, bookingCounts, error, isSubmitting,
+		calendarDays, weekDays, timeSlots, bookingCounts, dailyCapacities: {} as DailyCapacityMap, error, isSubmitting,
 		handleSubmit, totalPrice, selectedServiceData, removePhoto, isLoadingTimeSlots, isLoadingServices,
 	}
 }

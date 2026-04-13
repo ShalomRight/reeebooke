@@ -249,7 +249,7 @@ export async function getSchedulesByCustomer(
     `/api/schedules/${resourceType}/${resourceId}?metadata[customer_id]=${customerId}`
   );
   if (!res.ok) throw new Error(`Failed to fetch schedules (${res.status})`);
-  const data = await res.json();
+  const data = await res.json() as any;
   return data.data.schedules;
 }
 

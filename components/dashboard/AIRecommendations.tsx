@@ -38,7 +38,7 @@ export function AIRecommendations({ bookings }: { bookings: Booking[] }) {
         })
 
         if (response.ok) {
-          const data = await response.json()
+          const data = await response.json() as any
           setRecommendations(data.recommendations || [])
         } else {
           // Silently fail - recommendations are not critical

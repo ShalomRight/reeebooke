@@ -9,7 +9,7 @@ import crypto from "crypto"
 export async function POST(req: NextRequest) {
 	try {
 		const db = getDb()
-		const { email } = await req.json()
+		const { email } = await req.json() as { email: string }
 
 		if (!email) {
 			return NextResponse.json({ error: "Email is required" }, { status: 400 })

@@ -432,10 +432,10 @@ export class ScheduleBuilder {
       body: JSON.stringify(this.payload),
     });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
+      const err = await res.json().catch(() => ({ })) as any;
       throw new Error(err.message ?? `Failed to save schedule (${res.status})`);
     }
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.data.schedule as Schedule;
   }
 }
@@ -467,7 +467,7 @@ export class ResourceHandle {
     );
     const res = await fetch(`${this.base}?${qs}`);
     if (!res.ok) throw new Error(`Failed to fetch schedules (${res.status})`);
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.data.schedules as Schedule[];
   }
 
@@ -522,7 +522,7 @@ export class ResourceHandle {
     });
     const res = await fetch(`${this.base}/bookable?${qs}`);
     if (!res.ok) throw new Error(`Bookability check failed (${res.status})`);
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.data.is_bookable as boolean;
   }
 
@@ -531,7 +531,7 @@ export class ResourceHandle {
     const qs = new URLSearchParams({ date, start_time: startTime, end_time: endTime });
     const res = await fetch(`${this.base}/bookable/time?${qs}`);
     if (!res.ok) throw new Error(`Time bookability check failed (${res.status})`);
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.data.is_bookable as boolean;
   }
 
@@ -544,7 +544,7 @@ export class ResourceHandle {
     });
     const res = await fetch(`${this.base}/slots?${qs}`);
     if (!res.ok) throw new Error(`Failed to get bookable slots (${res.status})`);
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.data.slots as TimeSlot[];
   }
 
@@ -562,7 +562,7 @@ export class ResourceHandle {
     const res = await fetch(`${this.base}/slots/next?${qs}`);
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`Failed to get next bookable slot (${res.status})`);
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.data as NextSlot;
   }
 
@@ -580,7 +580,7 @@ export class ResourceHandle {
       body: JSON.stringify({ date, start_time: startTime, end_time: endTime, type }),
     });
     if (!res.ok) throw new Error(`Conflict detection failed (${res.status})`);
-    const data = await res.json();
+    const data = await res.json() as any;
     return (data.data as ConflictResult).conflicts;
   }
 
@@ -600,7 +600,7 @@ export class ResourceHandle {
     const qs = new URLSearchParams({ from, to });
     const res = await fetch(`${this.base}/total-time?${qs}`);
     if (!res.ok) throw new Error(`Failed to get total scheduled time (${res.status})`);
-    const data = await res.json();
+    const data = await res.json() as any;
     return data.data.total_minutes as number;
   }
 }

@@ -31,7 +31,7 @@ export function ReferralWidget() {
     try {
       const response = await fetch("/api/referral/stats")
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json() as any
         setStats(data)
       } else {
         // Silently fail - referral stats are not critical

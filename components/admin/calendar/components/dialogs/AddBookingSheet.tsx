@@ -142,7 +142,7 @@ export function AddBookingSheet({ children, initialDate, initialTime, title = "A
       if (!res.ok) {
         let errMsg = "Failed to create booking"
         try {
-          const bodyJSON = await res.json()
+          const bodyJSON = await res.json() as any
           if (bodyJSON.error) errMsg = bodyJSON.error
         } catch (e) {}
         throw new Error(errMsg)

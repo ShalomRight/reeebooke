@@ -54,7 +54,7 @@ export function UserManagement() {
 			})
 
 			if (!response.ok) {
-				const error = await response.json()
+				const error = await response.json() as any
 				throw new Error(error.error || "Failed to update role")
 			}
 

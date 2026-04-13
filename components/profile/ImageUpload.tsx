@@ -50,7 +50,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 		try {
 			const res = await fetch(`/api/v1/cloudinary${cursor ? `?next_cursor=${cursor}` : ""}`)
 			if (!res.ok) throw new Error("Failed to fetch images")
-			const { images = [], nextCursor } = await res.json()
+			const { images = [], nextCursor } = await res.json() as any
 			setPreviousImages(
 				images.sort((a: Image, b: Image) => new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime())
 			)

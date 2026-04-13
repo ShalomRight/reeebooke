@@ -93,7 +93,7 @@ export function BookingCalendar({ userId }: BookingCalendarProps) {
 
 			const response = await fetch(url)
 			if (response.ok) {
-				const data = await response.json()
+				const data = await response.json() as any
 				let fetchedBookings = data.bookings || []
 
 				// Filter by current month

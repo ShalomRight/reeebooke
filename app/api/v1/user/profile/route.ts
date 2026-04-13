@@ -39,7 +39,7 @@ export async function PUT(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const body = await req.json()
+		const body = await req.json() as { name?: string; phone?: string; image?: string }
 		const { name, phone, image } = body
 
 		const db = getDb()

@@ -13,7 +13,22 @@ export async function POST(
     
     // Reverse map from zap.ts typeSegment() to actual internal type if necessary
     // But Zap Payload actually includes payload.type, so we can just extract from the body!
-    const payload = await req.json()
+    const payload = await req.json() as {
+      name: string;
+      type: string;
+      start_date?: string;
+      end_date?: string;
+      frequency?: string;
+      frequency_data?: any;
+      active?: boolean;
+      allow_overlap?: boolean;
+      no_weekends?: boolean;
+      max_duration_minutes?: number;
+      working_hours_start?: string;
+      working_hours_end?: string;
+      metadata?: any;
+      periods?: { start_time: string; end_time: string }[];
+    }
 
     // 1. Insert into schedules
     const scheduleId = crypto.randomUUID()

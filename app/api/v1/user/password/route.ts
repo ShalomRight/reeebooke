@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const body = await req.json()
+    const body = await req.json() as { currentPassword?: string; newPassword?: string }
     const { currentPassword, newPassword } = body
 
     if (!currentPassword || !newPassword) {

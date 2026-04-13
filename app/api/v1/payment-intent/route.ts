@@ -6,7 +6,7 @@ import { getAuthOptions } from "@/lib/auth"
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(getAuthOptions())
-    const body = await req.json()
+    const body = await req.json() as { amount: number; currency?: string }
     const { amount, currency = "usd" } = body
 
     if (!amount) {

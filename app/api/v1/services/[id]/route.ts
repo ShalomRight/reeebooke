@@ -32,7 +32,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     const { id } = await params
-    const body = await req.json()
+    const body = await req.json() as { 
+      name?: string; 
+      price?: number; 
+      description?: string; 
+      mediaUrl?: string 
+    }
     const { name, price, description, mediaUrl } = body
 
     const userRole = (session.user as any).role
