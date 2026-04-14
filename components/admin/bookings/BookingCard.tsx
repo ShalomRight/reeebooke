@@ -99,7 +99,7 @@ export function BookingCard({
 			<CardHeader>
 				<div className="flex items-start justify-between">
 					<div className="space-y-1 flex-1">
-						<CardTitle className="text-xl">{booking.service.name}</CardTitle>
+						<CardTitle className="text-xl">{booking.service?.name ?? "Deleted Service"}</CardTitle>
 						<CardDescription>
 							<div className={viewMode === "grid" ? "space-y-2 mt-2" : "flex flex-wrap gap-4 mt-2"}>
 								<div className="space-y-1">
@@ -137,7 +137,7 @@ export function BookingCard({
 					<div className="flex flex-col items-end gap-2">
 						<div className="flex items-center gap-2">
 							<DollarSign className="w-5 h-5 text-slate-400" />
-							<span className="text-lg font-bold text-slate-900">${booking.service.price.toLocaleString()}</span>
+							<span className="text-lg font-bold text-slate-900">${booking.service?.price?.toLocaleString() ?? "—"}</span>
 						</div>
 						{getStatusBadge(booking.status)}
 					</div>
