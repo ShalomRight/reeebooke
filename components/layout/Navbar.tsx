@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
-
 import { Container } from "./Container"
 
 const navLinks = [
@@ -19,6 +18,16 @@ const navLinks = [
 export function Navbar() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+  const [scrolled, setScrolled] = React.useState(false)
+
+  // Track scroll for glass effect enhancement
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   // Close mobile menu on route change
   React.useEffect(() => {
@@ -26,92 +35,153 @@ export function Navbar() {
   }, [pathname])
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#FDFCFB]/80 backdrop-blur-md border-b border-[#E2E0D9]">
-      <Container>
-        <div className="flex items-center justify-between h-20">
-          
-          {/* Logo */}
-          <Link href="/" className="font-playfair text-2xl md:text-3xl font-bold tracking-tight text-[#1A2421]">
-            Botanical
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.href} 
-                href={link.href}
-                className={`text-sm tracking-wide transition-colors duration-300 ${
-                  pathname === link.href 
-                    ? "text-[#5B7065] font-medium" 
-                    : "text-[#1A2421]/70 hover:text-[#1A2421]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            
-            <Link 
-              href="/#booking"
-              className="px-6 py-2.5 rounded-full bg-[#3E4D45] text-white text-sm font-medium tracking-wide hover:bg-[#BD9354] transition-colors duration-300"
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolled
+            ? "glass shadow-lg shadow-forest-900/5"
+            : "bg-transparent"
+        }`}
+      >
+        <Container>
+          <div className="flex items-center justify-between h-16 md:h-20">
+            {/* Logo */}
+            <Link
+              href="/"
+              className="font-serif text-xl md:text-2xl font-medium tracking-tight text-foreground"
             >
-              Book Appointment
+              <span className="italic">Botanical</span>
             </Link>
-          </nav>
 
-          {/* Mobile Toggle */}
-          <button 
-            className="md:hidden p-2 text-[#1A2421]"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Open Menu"
-          >
-            <Menu className="w-6 h-6 stroke-[1.5]" />
-          </button>
-        </div>
-      </Container>
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`relative px-4 py-2 text-[11px] uppercase tracking-widest font-medium transition-colors duration-300 ${
+                      isActive
+                        ? "text-forest-700"
+                        : "text-forest-900/60 hover:text-forest-900"
+                    }`}
+                  >
+                    {link.label}
+                    {isActive && (
+                      <motion.span
+                        layoutId="navIndicator"
+                        className="absolute bottom-0 left-4 right-4 h-px bg-forest-700"
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                      />
+                    )}
+                  </Link>
+                )
+              })}
+
+              <Link
+                href="/booking"
+                className="ml-4 px-5 py-2.5 text-[11px] uppercase tracking-widest font-medium bg-forest-800 text-cream-50 rounded hover:bg-forest-700 transition-colors duration-300"
+              >
+                Book
+              </Link>
+            </nav>
+
+            {/* Mobile Toggle */}
+            <button
+              className="md:hidden p-2 text-forest-900"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
+        </Container>
+      </header>
+
+      {/* Spacer for fixed header */}
+      <div className="h-16 md:h-20" />
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed inset-0 z-50 bg-[#F9F8F4] flex flex-col"
-          >
-            <div className="flex items-center justify-between p-4 px-6 border-b border-[#E2E0D9]">
-               <span className="font-playfair text-2xl font-bold text-[#1A2421]">Botanical</span>
-               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-[#1A2421]" aria-label="Close Menu">
-                 <X className="w-6 h-6 stroke-[1.5]" />
-               </button>
-            </div>
-            
-            <nav className="flex flex-col p-6 gap-6">
-              {navLinks.map((link) => (
-                <Link 
-                  key={link.href} 
-                  href={link.href}
-                  className={`text-2xl font-playfair transition-colors ${
-                    pathname === link.href ? "text-[#5B7065]" : "text-[#1A2421]"
-                  }`}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 z-50 bg-forest-900/20 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+              className="fixed top-0 right-0 bottom-0 w-[280px] z-50 glass-card flex flex-col"
+            >
+              <div className="flex items-center justify-between p-4 border-b border-forest-900/10">
+                <span className="font-serif text-lg italic text-forest-900">
+                  Menu
+                </span>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-forest-900 hover:bg-forest-900/5 rounded transition-colors"
+                  aria-label="Close Menu"
                 >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="mt-8 pt-8 border-t border-[#E2E0D9]">
-                 <Link 
-                   href="/#booking"
-                   onClick={() => setIsMobileMenuOpen(false)}
-                   className="inline-block px-8 py-4 rounded-full bg-[#3E4D45] text-white text-lg font-medium hover:bg-[#BD9354] transition-colors w-full text-center"
-                 >
-                   Book Appointment
-                 </Link>
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-            </nav>
-          </motion.div>
+
+              <nav className="flex-1 flex flex-col p-4 gap-1">
+                {navLinks.map((link, index) => {
+                  const isActive = pathname === link.href
+                  return (
+                    <motion.div
+                      key={link.href}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 + 0.1 }}
+                    >
+                      <Link
+                        href={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`block px-4 py-3 text-sm tracking-wide transition-colors rounded ${
+                          isActive
+                            ? "bg-forest-100 text-forest-800 font-medium"
+                            : "text-forest-900/70 hover:bg-forest-50 hover:text-forest-900"
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    </motion.div>
+                  )
+                })}
+              </nav>
+
+              <div className="p-4 border-t border-forest-900/10">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Link
+                    href="/booking"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium bg-forest-800 text-cream-50 rounded hover:bg-forest-700 transition-colors"
+                  >
+                    Book Appointment
+                  </Link>
+                </motion.div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
-    </header>
+    </>
   )
 }

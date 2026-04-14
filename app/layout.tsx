@@ -1,30 +1,34 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import { Playfair_Display, Source_Sans_3, JetBrains_Mono } from "next/font/google"
+import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SessionProvider } from "@/components/providers/SessionProvider"
 import { ReduxProvider } from "@/components/providers/ReduxProvider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { ScrollProvider } from "@/components/providers/ScrollProvider"
 import { Toaster } from "sonner"
 import "./globals.css"
 
 const playfairDisplay = Playfair_Display({
 	subsets: ["latin"],
 	variable: "--font-serif",
-	weight: ["400", "500", "600", "700", "800", "900"],
-	style: ["normal", "italic"]
+	weight: ["400", "500", "600", "700"],
+	style: ["normal", "italic"],
+	display: "swap",
 })
 
-const sourceSans3 = Source_Sans_3({
+const inter = Inter({
 	subsets: ["latin"],
 	variable: "--font-sans",
-	weight: ["300", "400", "500", "600", "700"],
+	weight: ["200", "300", "400", "500", "600", "700"],
+	display: "swap",
 })
 
 const jetbrainsMono = JetBrains_Mono({
 	subsets: ["latin"],
 	variable: "--font-mono",
+	display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -39,16 +43,18 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body className={`${sourceSans3.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable} font-sans bg-background text-foreground antialiased`} suppressHydrationWarning>
+			<body className={`${inter.variable} ${playfairDisplay.variable} ${jetbrainsMono.variable} font-sans bg-background text-foreground antialiased`} suppressHydrationWarning>
 			    {/* Essential Botanical SVG Paint / Texture filter */}
 				<div className="noise-overlay" />
 			    
 				<ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-					<SessionProvider>
-						<ReduxProvider>
-							<Suspense fallback={null}>{children}</Suspense>
-						</ReduxProvider>
-					</SessionProvider>
+					<ScrollProvider>
+						<SessionProvider>
+							<ReduxProvider>
+								<Suspense fallback={null}>{children}</Suspense>
+							</ReduxProvider>
+						</SessionProvider>
+					</ScrollProvider>
 					<Toaster position="bottom-left" richColors />
 					<Analytics />
 				</ThemeProvider>
