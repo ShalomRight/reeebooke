@@ -4,14 +4,16 @@ import { RatingDetailsDialog } from "@/components/ratings/RatingDetailsDialog"
 import { RatingDisplay } from "@/components/ratings/RatingDisplay"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useFavorites } from "@/hooks/use-favorites"
-import { Scissors, Droplet, Sparkles, Wind, Leaf, Heart, Palette } from "lucide-react"
+import { Scissors, Droplet, Sparkles, Wind, Leaf, Heart } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 type Service = {
 	id: string
 	name: string
 	price: number
+	category?: string | null
+	description?: string | null
 	rating?: number
 	ratingsCount?: number
 }
@@ -23,140 +25,182 @@ interface ServiceSelectionProps {
 	isLoading?: boolean
 }
 
+const ALL_TAB = "All"
+
+function getIcon(name: string) {
+	const n = name.toLowerCase()
+	if (n.includes("cut") || n.includes("trim") || n.includes("shaping")) return Scissors
+	if (n.includes("wash") || n.includes("treatment")) return Droplet
+	if (n.includes("color") || n.includes("dye") || n.includes("highlight")) return Sparkles
+	if (n.includes("twist") || n.includes("braid") || n.includes("locs")) return Wind
+	if (n.includes("natural") || n.includes("organic")) return Leaf
+	return Scissors
+}
+
 export function ServiceSelection({ services, selectedService, setSelectedService, isLoading = false }: ServiceSelectionProps) {
 	const { isFavorite, addFavorite, removeFavorite } = useFavorites()
 	const { data: session } = useSession()
+	const [activeCategory, setActiveCategory] = useState<string>(ALL_TAB)
 	const [ratingDialogOpen, setRatingDialogOpen] = useState(false)
 	const [selectedServiceForRating, setSelectedServiceForRating] = useState<Service | null>(null)
 
-	const handleRatingClick = (service: Service, e?: React.MouseEvent) => {
-		if (e) {
-			e.stopPropagation()
-			e.preventDefault()
-		}
+	const categories = useMemo(() => {
+		const cats = Array.from(
+			new Set(services.map((s) => s.category?.trim()).filter(Boolean) as string[])
+		).sort()
+		return cats.length > 0 ? [ALL_TAB, ...cats] : []
+	}, [services])
+
+	const filtered = useMemo(() => {
+		if (activeCategory === ALL_TAB || categories.length === 0) return services
+		return services.filter((s) => s.category?.trim() === activeCategory)
+	}, [services, activeCategory, categories])
+
+	const handleRatingClick = (service: Service, e: React.MouseEvent) => {
+		e.stopPropagation()
+		e.preventDefault()
 		setSelectedServiceForRating(service)
 		setRatingDialogOpen(true)
 	}
 
+	const handleFavoriteClick = (serviceId: string, e: React.MouseEvent | React.KeyboardEvent) => {
+		e.stopPropagation()
+		e.preventDefault()
+		if (isFavorite(serviceId)) {
+			removeFavorite(serviceId)
+		} else {
+			addFavorite(serviceId)
+		}
+	}
+
+	if (isLoading) {
+		return (
+			<div className="space-y-3">
+				{[1, 2, 3, 4].map((i) => (
+					<div key={i} className="w-full p-4 rounded-lg border border-border bg-card flex items-center gap-3">
+						<Skeleton className="w-10 h-10 rounded-lg" />
+						<div className="flex-1 space-y-2">
+							<Skeleton className="h-5 w-2/3" />
+							<Skeleton className="h-4 w-1/2" />
+						</div>
+						<Skeleton className="w-16 h-6" />
+					</div>
+				))}
+			</div>
+		)
+	}
+
 	return (
 		<>
-			{isLoading ? (
-				<div className="space-y-3">
-					{[1, 2, 3, 4].map((i) => (
-						<div key={i} className="w-full p-4 rounded-lg border border-border bg-card flex items-center gap-3">
-							<Skeleton className="w-10 h-10 rounded-lg" />
-							<div className="flex-1 space-y-2">
-								<Skeleton className="h-5 w-2/3" />
-								<Skeleton className="h-4 w-1/2" />
-							</div>
-							<Skeleton className="w-16 h-6" />
-						</div>
-					))}
-				</div>
-			) : (
-				<div className="space-y-3">
-					{services.map((service) => {
-						// Map service names to icons (case-insensitive)
-						const serviceNameLower = service.name.toLowerCase()
-						const Icon =
-							serviceNameLower.includes("cut") || serviceNameLower.includes("trim") || serviceNameLower.includes("shaping")
-								? Scissors
-								: serviceNameLower.includes("wash") || serviceNameLower.includes("treatment")
-									? Droplet
-									: serviceNameLower.includes("color") || serviceNameLower.includes("dye") || serviceNameLower.includes("highlight")
-										? Sparkles
-										: serviceNameLower.includes("twist") || serviceNameLower.includes("braid") || serviceNameLower.includes("locs")
-											? Wind
-											: serviceNameLower.includes("natural") || serviceNameLower.includes("organic")
-												? Leaf
-												: Scissors
-						const isSelected = selectedService === service.id
+			{/* ── Category tabs ─────────────────────────────────────── */}
+			{categories.length > 1 && (
+				<div className="flex gap-2 flex-wrap mb-4">
+					{categories.map((cat) => {
+						const count = cat === ALL_TAB
+							? services.length
+							: services.filter((s) => s.category?.trim() === cat).length
+						const isActive = activeCategory === cat
 						return (
 							<button
-								key={service.id}
-								onClick={() => setSelectedService(service.id)}
-								className={`w-full p-4 bg-card rounded-lg border-1 transition-colors bg-gradient-to-r from-primary/5 to-muted/5 ${isSelected ? "border-primary bg-primary/10" : "border-border hover:border-primary/60"}`}
+								key={cat}
+								onClick={() => setActiveCategory(cat)}
+								className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border ${
+									isActive
+										? "bg-primary text-primary-foreground border-primary"
+										: "bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-card-foreground"
+								}`}
 							>
-								<div className="flex items-center gap-3">
-									<div
-										className={`p-2 rounded-lg ${isSelected ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}
-									>
-										<Icon className="w-6 h-6" />
-									</div>
-									<div className="flex-1 text-left">
-										<div className="flex items-center gap-2">
-											<h3
-												className="font-playfair text-[#1A2421] text-lg"
-											>
-												{service.name}
-											</h3>
-											{session?.user && (
-												<div
-													role="button"
-													tabIndex={0}
-													onClick={(e) => {
-														e.stopPropagation()
-														e.preventDefault()
-														if (isFavorite(service.id)) {
-															removeFavorite(service.id)
-														} else {
-															addFavorite(service.id)
-														}
-													}}
-													onKeyDown={(e) => {
-														if (e.key === "Enter" || e.key === " ") {
-															e.preventDefault()
-															e.stopPropagation()
-															if (isFavorite(service.id)) {
-																removeFavorite(service.id)
-															} else {
-																addFavorite(service.id)
-															}
-														}
-													}}
-													className="focus:outline-none focus:ring-2 focus:ring-primary rounded cursor-pointer"
-													aria-label={isFavorite(service.id) ? "Remove from favorites" : "Add to favorites"}
-												>
-													<Heart
-														className={`w-5 h-5 transition-colors ${isFavorite(service.id)
-															? "fill-red-500 text-red-500"
-															: "text-gray-400 hover:text-red-500"
-															}`}
-													/>
-												</div>
-											)}
-										</div>
-										<div
-											className="mt-1 cursor-pointer inline-block"
-											onClick={(e) => {
-												e.stopPropagation()
-												e.preventDefault()
-												if (service.ratingsCount && service.ratingsCount > 0) {
-													handleRatingClick(service, e)
-												}
-											}}
-										>
-											<RatingDisplay
-												rating={service.rating || 0}
-												ratingsCount={service.ratingsCount}
-												size="sm"
-												serviceId={service.id}
-												serviceName={service.name}
-												clickable={false}
-											/>
-										</div>
-									</div>
-									<div className="text-right">
-										<span className="font-source font-bold text-[#BD9354] text-lg">
-											${service.price.toLocaleString()}
-										</span>
-									</div>
-								</div>
+								{cat}
+								<span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+									isActive ? "bg-primary-foreground/20" : "bg-muted"
+								}`}>
+									{count}
+								</span>
 							</button>
 						)
 					})}
 				</div>
 			)}
+
+			{/* ── Service list ──────────────────────────────────────── */}
+			<div className="space-y-3">
+				{filtered.length === 0 && (
+					<p className="text-sm text-muted-foreground text-center py-6">
+						No services in this category.
+					</p>
+				)}
+				{filtered.map((service) => {
+					const Icon = getIcon(service.name)
+					const isSelected = selectedService === service.id
+					const favorited = isFavorite(service.id)
+					return (
+						<div key={service.id} className="relative">
+							<button
+								onClick={() => setSelectedService(service.id)}
+								className={`w-full p-4 bg-card rounded-lg border transition-colors bg-gradient-to-r from-primary/5 to-muted/5 text-left ${
+									isSelected
+										? "border-primary bg-primary/10"
+										: "border-border hover:border-primary/60"
+								}`}
+							>
+								<div className="flex items-center gap-3">
+									<div className={`p-2 rounded-lg flex-shrink-0 ${isSelected ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}>
+										<Icon className="w-6 h-6" />
+									</div>
+									<div className="flex-1 min-w-0 pr-8">
+										<h3 className="font-playfair text-card-foreground text-lg leading-snug truncate">
+											{service.name}
+										</h3>
+										{service.description && (
+											<p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+												{service.description}
+											</p>
+										)}
+										{(service.ratingsCount ?? 0) > 0 && (
+											<div
+												className="mt-1 cursor-pointer inline-block"
+												onClick={(e) => handleRatingClick(service, e)}
+											>
+												<RatingDisplay
+													rating={service.rating || 0}
+													ratingsCount={service.ratingsCount}
+													size="sm"
+													serviceId={service.id}
+													serviceName={service.name}
+													clickable={false}
+												/>
+											</div>
+										)}
+									</div>
+									<span className="font-source font-bold text-accent text-lg flex-shrink-0">
+										${service.price.toLocaleString()}
+									</span>
+								</div>
+							</button>
+
+							{/* ── Favorite button — outside the card button ── */}
+							{session?.user && (
+								<button
+									type="button"
+									onClick={(e) => handleFavoriteClick(service.id, e)}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") handleFavoriteClick(service.id, e as any)
+									}}
+									aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+									className="absolute top-3 right-12 p-1 rounded focus:outline-none focus:ring-2 focus:ring-primary z-10"
+								>
+									<Heart
+										className={`w-5 h-5 transition-all duration-200 ${
+											favorited ? "fill-red-500 text-red-500 scale-110" : "text-muted-foreground hover:text-red-400"
+										}`}
+									/>
+								</button>
+							)}
+						</div>
+					)
+				})}
+			</div>
+
 			{selectedServiceForRating && (
 				<RatingDetailsDialog
 					serviceId={selectedServiceForRating.id}

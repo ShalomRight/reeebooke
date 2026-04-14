@@ -54,6 +54,7 @@ export async function GET(req: NextRequest) {
 				id: service.id,
 				name: service.name,
 				description: service.description,
+				category: service.category,
 				mediaUrl: service.mediaUrl,
 				price: service.price,
 				stripePriceId: service.stripePriceId,
