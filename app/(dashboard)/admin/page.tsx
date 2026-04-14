@@ -2,7 +2,11 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard"
 import currentUserServer from "@/lib/currentUserServer"
 import { redirect } from "next/navigation"
 
-export default async function AdminPage() {
+interface Props {
+	searchParams: Promise<{ tab?: string }>
+}
+
+export default async function AdminPage({ searchParams }: Props) {
 	const currentUser = await currentUserServer()
 	const { isSuperAdmin, isAdmin } = currentUser || {}
 
@@ -10,10 +14,11 @@ export default async function AdminPage() {
 		redirect("/signin")
 	}
 
-
 	if (!isSuperAdmin && !isAdmin) {
 		redirect("/dashboard")
 	}
 
-	return <AdminDashboard />
+	const { tab } = await searchParams
+
+	return <AdminDashboard initialTab={tab || "overview"} />
 }

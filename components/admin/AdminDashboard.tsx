@@ -90,10 +90,10 @@ const SIDEBAR_NAV = [
 	},
 ]
 
-export function AdminDashboard() {
+export function AdminDashboard({ initialTab = "overview" }: { initialTab?: string }) {
 	const currentUser = currentUserClient()
 	const { isSuperAdmin } = currentUser || {}
-	const [activeTab, setActiveTab] = useState<string>("overview")
+	const [activeTab, setActiveTab] = useState<string>(initialTab)
 
 	const navItems = SIDEBAR_NAV.filter(
 		(item) => !item.forSuperAdmin || isSuperAdmin

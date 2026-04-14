@@ -1,4 +1,3 @@
-import LayoutAdmin from "@/components/layout/admin"
 import { ServiceDetailView } from "@/components/admin/services-v2/ServiceDetailView"
 import currentUserServer from "@/lib/currentUserServer"
 import { redirect } from "next/navigation"
@@ -16,9 +15,5 @@ export default async function AdminServiceDetailPage({ params }: Props) {
 
   const { id } = await params
 
-  return (
-    <LayoutAdmin>
-      <ServiceDetailView serviceId={id} />
-    </LayoutAdmin>
-  )
+  return <ServiceDetailView serviceId={id} />
 }

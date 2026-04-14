@@ -166,7 +166,7 @@ export function ServiceDetailView({ serviceId }: ServiceDetailViewProps) {
           <Link href="/admin/services">
             <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground shrink-0">
               <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Services</span>
+              <span className="hidden sm:inline">All Services</span>
             </Button>
           </Link>
           <span className="text-slate-300 hidden sm:inline">/</span>

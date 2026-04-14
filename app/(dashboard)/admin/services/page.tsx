@@ -1,4 +1,3 @@
-import LayoutAdmin from "@/components/layout/admin"
 import { ServicesPageV2 } from "@/components/admin/services-v2/ServicesPageV2"
 import currentUserServer from "@/lib/currentUserServer"
 import { redirect } from "next/navigation"
@@ -11,10 +10,8 @@ export default async function AdminServicesPage() {
   if (!isSuperAdmin && !isAdmin) redirect("/dashboard")
 
   return (
-    <LayoutAdmin>
-      <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-        <ServicesPageV2 />
-      </div>
-    </LayoutAdmin>
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+      <ServicesPageV2 />
+    </div>
   )
 }
