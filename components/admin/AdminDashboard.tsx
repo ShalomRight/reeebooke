@@ -16,7 +16,7 @@ import { ReferralManagement } from "./ReferralManagement"
 import { ScheduleManagement } from "./ScheduleManagement"
 import { AdminBookingCalendarWrapper } from "@/components/admin/calendar/AdminBookingCalendarWrapper"
 import { RevenueChart } from "./RevenueChart"
-import { ServicesManagement } from "./ServicesManagement"
+import { ServicesPageV2 } from "@/components/admin/services-v2/ServicesPageV2"
 import { StaffManagement } from "./StaffManagement"
 import { StatsOverview } from "./StatsOverview"
 import { UserManagement } from "./UserManagement"
@@ -116,7 +116,7 @@ export function AdminDashboard() {
 				{activeTab === "analytics" && <ComprehensiveAnalytics />}
 				{activeTab === "bookings" && <BookingsManagement />}
 				{activeTab === "calendar" && <AdminBookingCalendarWrapper mode="admin" />}
-				{activeTab === "services" && <ServicesManagement />}
+				{activeTab === "services" && <ServicesPageV2 />}
 				{activeTab === "schedules" && <ScheduleManagement />}
 				{activeTab === "discounts" && <DiscountManagement />}
 				{activeTab === "ratings" && <RatingsManagement />}
