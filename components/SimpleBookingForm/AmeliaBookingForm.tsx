@@ -1,10 +1,16 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useCart } from "@/hooks/use-redux-cart"
-import { Check, ShoppingCart, ArrowLeft, ArrowRight, X } from "lucide-react"
+import {
+  Check, ShoppingCart, ArrowLeft, ArrowRight, X,
+  Calendar, Camera, CreditCard, AlertCircle,
+  ImageIcon,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { useZapBookingForm } from "./useZapBookingForm"
@@ -14,13 +20,75 @@ import { PhotoUpload } from "./PhotoUpload"
 import { CartSummary } from "./CartSummary"
 import { AvailabilityCalendar } from "@/components/ui/availability-calendar"
 
+// ─── Step definitions ────────────────────────────────────────────────────────
 const STEPS = [
-  { num: 1, label: "Service" },
-  { num: 2, label: "Date & Time" },
-  { num: 3, label: "Photos" },
-  { num: 4, label: "Checkout" },
+  { num: 1, label: "Service",    icon: CreditCard },
+  { num: 2, label: "Date & Time", icon: Calendar },
+  { num: 3, label: "Photos",     icon: Camera },
+  { num: 4, label: "Review",     icon: Check },
 ]
 
+// ─── Availability map from Zap capacity data ─────────────────────────────────
+function buildAvailabilityMap(
+  dailyCapacities: Record<number, { total: number; available: number }>,
+  year: number,
+  month: number,
+): Record<string, "available" | "filling-up" | "almost-full" | "full"> {
+  const map: Record<string, "available" | "filling-up" | "almost-full" | "full"> = {}
+  Object.entries(dailyCapacities).forEach(([day, cap]) => {
+    const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+    if (cap.total === 0 || cap.available === 0) map[dateStr] = "full"
+    else if (cap.available <= 2) map[dateStr] = "almost-full"
+    else if (cap.available > cap.total * 0.6) map[dateStr] = "available"
+    else map[dateStr] = "filling-up"
+  })
+  return map
+}
+
+// ─── Step indicator ───────────────────────────────────────────────────────────
+function StepSidebar({ currentStep }: { currentStep: number }) {
+  return (
+    <aside className="w-full md:w-56 bg-[#3E4D45] text-white p-6 flex flex-row md:flex-col gap-4 md:gap-0 shrink-0">
+      <h2 className="hidden md:block text-sm font-semibold uppercase tracking-widest opacity-50 mb-8">
+        Your Booking
+      </h2>
+      <div className="flex md:flex-col flex-row gap-2 md:gap-5 flex-1 overflow-x-auto md:overflow-x-visible">
+        {STEPS.map((step) => {
+          const isActive = currentStep === step.num
+          const isDone = currentStep > step.num
+          const Icon = step.icon
+          return (
+            <div key={step.num} className="flex items-center gap-3 shrink-0">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
+                  isDone
+                    ? "bg-emerald-500 border-emerald-500 text-white"
+                    : isActive
+                    ? "border-[#C8B9A6] bg-white/10 text-white"
+                    : "border-white/20 text-white/30"
+                }`}
+              >
+                {isDone ? <Check className="w-4 h-4" /> : <Icon className="w-3.5 h-3.5" />}
+              </div>
+              <span
+                className={`text-sm font-medium hidden md:block transition-colors duration-200 ${
+                  isActive ? "text-white" : isDone ? "text-white/60" : "text-white/30"
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="hidden md:block text-[10px] text-white/30 mt-auto pt-8 leading-relaxed">
+        Need help?<br />support@reebooking.com
+      </p>
+    </aside>
+  )
+}
+
+// ─── Main form content ────────────────────────────────────────────────────────
 function AmeliaBookingFormContent() {
   const searchParams = useSearchParams()
   const serviceIdFromUrl = searchParams.get("serviceId") || undefined
@@ -28,276 +96,404 @@ function AmeliaBookingFormContent() {
   const form = useZapBookingForm(serviceIdFromUrl)
   const {
     services, selectedService, setSelectedService,
-    selectedDate, setSelectedDate,
-    selectedTime, setSelectedTime,
+    selectedDate, setSelectedDate, selectedTime, setSelectedTime,
     photos, setPhotos, currentMonth, currentYear,
+    setCurrentMonth, setCurrentYear,
     timeSlots, dailyCapacities, totalPrice, selectedServiceData,
     isLoadingTimeSlots, isLoadingServices,
-  } = form
+  } = form as any
 
   const { addToCart, cartCount } = useCart()
   const [currentStep, setCurrentStep] = useState(1)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [stepError, setStepError] = useState<string | null>(null)
   const [readyToAdd, setReadyToAdd] = useState(false)
 
-  // Auto-add to cart when ready
-  useEffect(() => {
-    if (readyToAdd && selectedService && selectedDate && selectedTime) {
-      addToCart({
-        id: `${selectedService}-${selectedDate}-${selectedTime}-${Date.now()}`,
-        serviceId: selectedService,
-        serviceName: selectedServiceData?.name || "",
-        price: totalPrice,
-        date: `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
-        time: selectedTime,
-        photos,
-      })
-      toast.success("Added to Cart", { description: `${selectedServiceData?.name} added successfully` })
-      setReadyToAdd(false)
-      setCurrentStep(1)
-      setSelectedService("")
-      setSelectedDate(null)
-      setSelectedTime("")
-      setPhotos([])
-    }
-  }, [readyToAdd, addToCart, currentMonth, currentYear, photos, selectedDate, selectedService, selectedServiceData?.name, selectedTime, setPhotos, setSelectedDate, setSelectedService, setSelectedTime, totalPrice])
-
-  const canProceed = () => {
-    if (currentStep === 1) return !!selectedService
-    if (currentStep === 2) return !!selectedDate && !!selectedTime
-    return true
-  }
-
-  const handleNext = () => {
-    if (currentStep === 4) setReadyToAdd(true)
-    else setCurrentStep(s => Math.min(s + 1, 4))
-  }
-
-  const handleBack = () => setCurrentStep(s => Math.max(s - 1, 1))
-
-  // Mapping availability metric for AvailabilityCalendar based on Zap dailyCapacities
-  const getAvailabilityMap = () => {
-    const map: Record<string, "available" | "filling-up" | "almost-full" | "full"> = {}
-    Object.entries(dailyCapacities).forEach(([day, cap]) => {
-       const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-       if (cap.total === 0) {
-          map[dateStr] = "full"
-       } else if (cap.available === 0) {
-          map[dateStr] = "full"
-       } else if (cap.available <= 2) {
-          map[dateStr] = "almost-full"
-       } else if (cap.available > cap.total * 0.6) {
-          map[dateStr] = "available"
-       } else {
-          map[dateStr] = "filling-up"
-       }
-    })
-    return map
-  }
-
-  const availabilityMap = getAvailabilityMap()
-
-  // Derive Date object for AvailabilityCalendar
-  const selectedDateObj = selectedDate 
+  const selectedDateObj = selectedDate
     ? new Date(currentYear, currentMonth - 1, selectedDate)
     : undefined
 
-  const renderContent = () => {
+  const availabilityMap = buildAvailabilityMap(dailyCapacities ?? {}, currentYear, currentMonth)
+
+  // Sync calendar month navigation back into form state so capacity API re-fetches
+  const handleMonthChange = useCallback(
+    (year: number, month: number) => {
+      setSelectedDate(null)
+      setSelectedTime?.("")
+      if (typeof setCurrentMonth === "function") setCurrentMonth(month)
+      if (typeof setCurrentYear === "function") setCurrentYear(year)
+    },
+    [setSelectedDate, setSelectedTime, setCurrentMonth, setCurrentYear],
+  )
+
+  // Auto-add to cart when readyToAdd flag is set
+  useEffect(() => {
+    if (!readyToAdd || !selectedService || !selectedDate || !selectedTime) return
+    addToCart({
+      id: `${selectedService}-${selectedDate}-${selectedTime}-${Date.now()}`,
+      serviceId: selectedService,
+      serviceName: selectedServiceData?.name || "",
+      price: totalPrice,
+      date: `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
+      time: selectedTime,
+      photos,
+    })
+    toast.success("Added to Cart", { description: `${selectedServiceData?.name} added successfully` })
+    setReadyToAdd(false)
+    setCurrentStep(1)
+    setSelectedService("")
+    setSelectedDate(null)
+    setSelectedTime("")
+    setPhotos([])
+    setStepError(null)
+  }, [readyToAdd]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const canProceed = (): { ok: boolean; message?: string } => {
+    if (currentStep === 1) {
+      if (!selectedService) return { ok: false, message: "Please select a service to continue." }
+    }
+    if (currentStep === 2) {
+      if (!selectedDate) return { ok: false, message: "Please choose a date." }
+      if (!selectedTime) return { ok: false, message: "Please select an available time slot." }
+    }
+    return { ok: true }
+  }
+
+  const handleNext = () => {
+    const { ok, message } = canProceed()
+    if (!ok) { setStepError(message || "Please complete this step."); return }
+    setStepError(null)
+    if (currentStep === 4) { setReadyToAdd(true); return }
+    setCurrentStep((s) => Math.min(s + 1, 4))
+  }
+
+  const handleBack = () => {
+    setStepError(null)
+    setCurrentStep((s) => Math.max(s - 1, 1))
+  }
+
+  // ─── Step renderers ─────────────────────────────────────────────────────────
+  const renderStep = () => {
     switch (currentStep) {
+      // ── Step 1: Service ──────────────────────────────────────────────────
       case 1:
         return (
-          <div className="animate-in fade-in space-y-4">
-            <div>
-               <h2 className="text-xl font-bold">Service</h2>
-               <p className="text-muted-foreground text-sm">Select a nail service.</p>
-            </div>
-            <ServiceSelection
-              services={services}
-              selectedService={selectedService}
-              setSelectedService={setSelectedService}
-              isLoading={isLoadingServices}
+          <div className="animate-in fade-in-0 duration-200 space-y-4">
+            <StepHeader
+              title="Choose a Service"
+              subtitle={`${services.length} services available`}
             />
+            {isLoadingServices ? (
+              <ServiceSkeleton />
+            ) : services.length === 0 ? (
+              <EmptyState message="No services available right now. Please check back later." />
+            ) : (
+              <div className="overflow-y-auto max-h-[55vh] pr-1 -mr-1">
+                <ServiceSelection
+                  services={services}
+                  selectedService={selectedService}
+                  setSelectedService={(id) => { setSelectedService(id); setStepError(null) }}
+                  isLoading={false}
+                />
+              </div>
+            )}
           </div>
         )
+
+      // ── Step 2: Date & Time ───────────────────────────────────────────────
       case 2:
         return (
-          <div className="animate-in fade-in space-y-6">
-             <div className="flex items-center gap-4 border-b pb-4">
-                <Button variant="ghost" size="icon" onClick={handleBack}><ArrowLeft className="w-4 h-4" /></Button>
-                <h2 className="text-xl font-bold">Date & Time</h2>
-             </div>
-             
-             {/* Left side calendar, right side time slots (or stacked on mobile) */}
-             <div className="flex flex-col lg:flex-row gap-6">
-                 <div className="flex-1">
-                    <AvailabilityCalendar 
-                        value={selectedDateObj}
-                        onChange={(d) => {
-                           // Set the form state date
-                           // Note: AvailabilityCalendar currently manages its own month internally, 
-                           // but emits real Date objects.
-                           form.setSelectedDate(d.getDate())
-                        }}
-                        availabilityMap={availabilityMap}
+          <div className="animate-in fade-in-0 duration-200 space-y-5">
+            <StepHeader
+              title="Pick a Date & Time"
+              subtitle={selectedServiceData?.name}
+            />
+            <div className="flex flex-col xl:flex-row gap-5">
+              {/* Calendar */}
+              <div className="flex-1 min-w-0">
+                <AvailabilityCalendar
+                  value={selectedDateObj}
+                  onChange={(d) => {
+                    setSelectedDate(d.getDate())
+                    setStepError(null)
+                  }}
+                  onMonthChange={handleMonthChange}
+                  availabilityMap={availabilityMap}
+                />
+                {/* Legend */}
+                <div className="flex gap-3 mt-3 flex-wrap text-[11px] text-muted-foreground">
+                  {(["available", "filling-up", "almost-full", "full"] as const).map((lvl) => (
+                    <span key={lvl} className="flex items-center gap-1.5 capitalize">
+                      <span className={`w-2.5 h-2.5 rounded-full inline-block ${
+                        lvl === "available" ? "bg-emerald-500" :
+                        lvl === "filling-up" ? "bg-amber-400" :
+                        lvl === "almost-full" ? "bg-orange-500" : "bg-rose-400"
+                      }`} />
+                      {lvl.replace("-", " ")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Time slots panel */}
+              <div className="w-full xl:w-60 shrink-0">
+                <div className="rounded-xl border border-border bg-muted/30 p-4 h-full min-h-[200px] xl:max-h-[380px] xl:overflow-y-auto">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                    {selectedDateObj
+                      ? selectedDateObj.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })
+                      : "Select a date"}
+                  </p>
+                  {!selectedDateObj ? (
+                    <p className="text-sm text-muted-foreground">
+                      Click a date on the calendar to see available time slots.
+                    </p>
+                  ) : (
+                    <TimeSelection
+                      timeSlots={timeSlots}
+                      selectedTime={selectedTime}
+                      setSelectedTime={(t) => { setSelectedTime(t); setStepError(null) }}
+                      isLoading={isLoadingTimeSlots}
+                      disabled={false}
                     />
-                 </div>
-                 
-                 <div className="w-full lg:w-64 bg-[#FDFCFB] p-4 rounded-xl border border-[#E2E0D9] h-[380px] overflow-y-auto">
-                    <h3 className="font-semibold mb-3 text-sm flex items-center gap-2">
-                       {selectedDateObj ? selectedDateObj.toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' }) : "Pick a date first"}
-                    </h3>
-                    
-                    {!selectedDateObj ? (
-                       <p className="text-sm text-slate-400">Select a date from the calendar to see available slots.</p>
-                    ) : (
-                       <TimeSelection
-                          timeSlots={timeSlots}
-                          selectedTime={selectedTime}
-                          setSelectedTime={setSelectedTime}
-                          isLoading={isLoadingTimeSlots}
-                          disabled={false}
-                       />
-                    )}
-                 </div>
-             </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )
+
+      // ── Step 3: Photos ───────────────────────────────────────────────────
       case 3:
         return (
-          <div className="animate-in fade-in space-y-4">
-            <div className="flex items-center gap-4 border-b pb-4">
-               <Button variant="ghost" size="icon" onClick={handleBack}><ArrowLeft className="w-4 h-4" /></Button>
-               <h2 className="text-xl font-bold">Inspiration Photos</h2>
-            </div>
+          <div className="animate-in fade-in-0 duration-200 space-y-4">
+            <StepHeader
+              title="Inspiration Photos"
+              subtitle="Optional — share reference photos for your stylist"
+            />
             <PhotoUpload photos={photos} setPhotos={setPhotos} />
           </div>
         )
+
+      // ── Step 4: Review & Add to Cart ─────────────────────────────────────
       case 4:
         return (
-          <div className="animate-in fade-in space-y-6">
-            <div className="flex items-center gap-4 border-b pb-4">
-               <Button variant="ghost" size="icon" onClick={handleBack}><ArrowLeft className="w-4 h-4" /></Button>
-               <h2 className="text-xl font-bold">Checkout Summary</h2>
+          <div className="animate-in fade-in-0 duration-200 space-y-5">
+            <StepHeader title="Review & Confirm" subtitle="Everything look right?" />
+
+            <div className="rounded-xl border border-border overflow-hidden">
+              <SummaryRow
+                label="Service"
+                value={selectedServiceData?.name ?? "—"}
+                valueClass="font-semibold"
+              />
+              <SummaryRow
+                label="Date"
+                value={
+                  selectedDateObj
+                    ? selectedDateObj.toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "—"
+                }
+              />
+              <SummaryRow label="Time" value={selectedTime || "—"} />
+              {photos.length > 0 && (
+                <SummaryRow
+                  label="Photos"
+                  value={
+                    <div className="flex items-center gap-1.5">
+                      <ImageIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span>{photos.length} photo{photos.length > 1 ? "s" : ""} attached</span>
+                    </div>
+                  }
+                />
+              )}
+              <div className="flex justify-between items-center px-4 py-4 bg-muted/40">
+                <span className="font-bold text-sm">Total</span>
+                <span className="text-xl font-bold text-primary">${totalPrice.toLocaleString()}</span>
+              </div>
             </div>
-            <div className="bg-[#FDFCFB] border border-[#E2E0D9] rounded-xl p-5 space-y-3 shadow-sm">
-                <div className="flex justify-between border-b pb-3">
-                   <span className="text-[#1A2421]/60">Service</span>
-                   <span className="font-semibold text-[#1A2421]">{selectedServiceData?.name ?? "—"}</span>
-                </div>
-                <div className="flex justify-between border-b pb-3">
-                   <span className="text-[#1A2421]/60">Date</span>
-                   <span className="font-semibold text-[#1A2421]">
-                      {selectedDateObj ? selectedDateObj.toLocaleDateString("en-US", { weekday: "short", month: "long", day: "numeric" }) : "—"}
-                   </span>
-                </div>
-                <div className="flex justify-between border-b pb-3">
-                   <span className="text-[#1A2421]/60">Time</span>
-                   <span className="font-semibold text-[#1A2421]">{selectedTime || "—"}</span>
-                </div>
-                <div className="flex justify-between pt-2">
-                   <span className="text-[#1A2421] font-bold">Total Price</span>
-                   <span className="font-bold text-[#BD9354] text-lg">${totalPrice.toLocaleString()}</span>
-                </div>
-            </div>
+
+            <p className="text-xs text-muted-foreground">
+              By adding to cart you agree to our booking terms. Payment is collected at checkout.
+            </p>
           </div>
         )
-      default: return null
+
+      default:
+        return null
     }
   }
 
+  const { ok: canGoNext } = canProceed()
+
   return (
-    <div className="max-w-5xl mx-auto my-12 bg-white rounded-2xl shadow-xl border overflow-hidden flex flex-col md:flex-row min-h-[600px]">
-       
-       {/* SIDEBAR (The Amelia UI style) */}
-       <div className="w-full md:w-[260px] bg-[#3E4D45] text-[#FDFCFB] p-6 md:p-8 flex flex-col shrink-0">
-          <h2 className="text-lg font-bold mb-10 opacity-90 tracking-wide text-center md:text-left">Booking Config</h2>
-          
-          <div className="space-y-6 flex-1">
-             {STEPS.map(step => {
-                const isActive = currentStep === step.num
-                const isDone = currentStep > step.num
-                return (
-                   <div key={step.num} className="flex items-center gap-4 cursor-default">
-                      <div className={`text-sm font-medium transition-colors ${isActive ? 'text-[#FDFCFB]' : isDone ? 'text-[#FDFCFB]/60' : 'text-[#FDFCFB]/40'} flex-1`}>
-                         {step.label}
-                      </div>
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                         isDone ? 'bg-[#5B7065] border-[#5B7065] text-[#FDFCFB]' :
-                         isActive ? 'border-[#C8B9A6] ring-2 ring-[#C8B9A6] ring-offset-2 ring-offset-[#3E4D45] bg-[#3E4D45]' :
-                         'border-[#FDFCFB]/20 text-transparent'
-                      }`}>
-                         {isDone ? <Check className="w-3.5 h-3.5 stroke-3" /> : <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-[#C8B9A6]' : 'bg-transparent'}`} />}
-                      </div>
-                   </div>
-                )
-             })}
-          </div>
+    <div className="max-w-5xl mx-auto my-8 sm:my-12 bg-white rounded-2xl shadow-lg border overflow-hidden flex flex-col md:flex-row min-h-[580px]">
+      {/* Sidebar */}
+      <StepSidebar currentStep={currentStep} />
 
-          <div className="mt-8 text-center md:text-left text-xs text-white/50 space-y-1">
-             <p>Need help?</p>
-             <p>support@reebooking.com</p>
-          </div>
-       </div>
+      {/* Main */}
+      <div className="flex-1 flex flex-col p-5 sm:p-8 overflow-hidden">
+        <div className="flex-1 overflow-y-auto min-h-0">
+          {renderStep()}
 
-       {/* MAIN CONTENT AREA */}
-       <div className="flex-1 p-6 md:p-10 flex flex-col bg-white overflow-x-hidden">
-          <div className="flex-1">
-             {renderContent()}
-          </div>
-          
-          <div className="mt-8 flex justify-end">
-             {currentStep < 4 ? (
-                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2 bg-[#3E4D45] hover:bg-[#2D3930] text-white rounded-lg px-8">
-                   Next Step <ArrowRight className="w-4 h-4" />
-                </Button>
-             ) : (
-                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2 bg-[#BD9354] hover:bg-[#A67C45] text-white rounded-lg px-8 shadow-md">
-                   <ShoppingCart className="w-4 h-4" />
-                   Add to Cart
-                </Button>
-             )}
-          </div>
-       </div>
-
-       {/* Cart Sidebar Modal (Reused from existing logic) */}
-       {isCartOpen && (
-          <div className="fixed inset-0 z-50 flex justify-end">
-             <div className="fixed inset-0 bg-black/50" onClick={() => setIsCartOpen(false)} />
-             <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right-full">
-                <div className="flex items-center justify-between p-4 border-b">
-                   <h2 className="font-bold flex items-center gap-2">
-                       <ShoppingCart className="w-5 h-5 text-indigo-600" />
-                       Cart ({cartCount})
-                   </h2>
-                   <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(false)}>
-                      <X className="w-5 h-5" />
-                   </Button>
-                </div>
-                <div className="flex-1 overflow-y-auto p-4">
-                   <CartSummary onClose={() => setIsCartOpen(false)} />
-                </div>
-             </div>
-          </div>
-       )}
-
-       {/* Floating Cart Trigger */}
-       <Button onClick={() => setIsCartOpen(true)} className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl bg-[#3E4D45] hover:bg-[#2D3930]">
-          <ShoppingCart className="w-6 h-6" />
-          {cartCount > 0 && (
-             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                {cartCount}
-             </span>
+          {/* Inline step error */}
+          {stepError && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{stepError}</AlertDescription>
+            </Alert>
           )}
-       </Button>
+        </div>
 
+        {/* Footer actions */}
+        <div className="flex items-center justify-between pt-5 mt-5 border-t border-border gap-3">
+          {currentStep > 1 ? (
+            <Button variant="ghost" onClick={handleBack} className="gap-2 text-muted-foreground">
+              <ArrowLeft className="w-4 h-4" /> Back
+            </Button>
+          ) : (
+            <div />
+          )}
+
+          <div className="flex items-center gap-2">
+            {/* Progress dots */}
+            <div className="hidden sm:flex gap-1.5 mr-2">
+              {STEPS.map((s) => (
+                <div
+                  key={s.num}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    s.num === currentStep ? "w-6 bg-[#3E4D45]" :
+                    s.num < currentStep ? "w-3 bg-[#3E4D45]/40" : "w-3 bg-border"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {currentStep < 4 ? (
+              <Button
+                onClick={handleNext}
+                disabled={!canGoNext}
+                className="gap-2 bg-[#3E4D45] hover:bg-[#2D3930] text-white rounded-lg px-7"
+              >
+                Next <ArrowRight className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleNext}
+                className="gap-2 bg-[#BD9354] hover:bg-[#A67C45] text-white rounded-lg px-7 shadow-sm"
+              >
+                <ShoppingCart className="w-4 h-4" /> Add to Cart
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Cart drawer */}
+      {isCartOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setIsCartOpen(false)} />
+          <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="font-bold flex items-center gap-2">
+                <ShoppingCart className="w-5 h-5 text-primary" /> Cart ({cartCount})
+              </h2>
+              <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(false)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <CartSummary onClose={() => setIsCartOpen(false)} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating cart button */}
+      <button
+        onClick={() => setIsCartOpen(true)}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl bg-[#3E4D45] hover:bg-[#2D3930] text-white flex items-center justify-center transition-colors z-40"
+        aria-label={`Open cart (${cartCount} items)`}
+      >
+        <ShoppingCart className="w-6 h-6" />
+        {cartCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center border-2 border-white px-1">
+            {cartCount > 99 ? "99+" : cartCount}
+          </span>
+        )}
+      </button>
     </div>
   )
 }
 
+// ─── Small shared components ──────────────────────────────────────────────────
+function StepHeader({ title, subtitle }: { title: string; subtitle?: string | null }) {
+  return (
+    <div className="mb-1">
+      <h2 className="text-xl font-bold text-foreground">{title}</h2>
+      {subtitle && <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>}
+    </div>
+  )
+}
+
+function SummaryRow({
+  label,
+  value,
+  valueClass,
+}: {
+  label: string
+  value: React.ReactNode
+  valueClass?: string
+}) {
+  return (
+    <div className="flex justify-between items-start gap-4 px-4 py-3 border-b border-border last:border-0">
+      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground shrink-0 pt-0.5">
+        {label}
+      </span>
+      <span className={`text-sm text-right ${valueClass ?? ""}`}>{value}</span>
+    </div>
+  )
+}
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+      <AlertCircle className="w-8 h-8 mb-3 opacity-30" />
+      <p className="text-sm max-w-xs">{message}</p>
+    </div>
+  )
+}
+
+function ServiceSkeleton() {
+  return (
+    <div className="space-y-3">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-center gap-3 p-4 rounded-lg border border-border">
+          <Skeleton className="w-10 h-10 rounded-lg" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+          <Skeleton className="w-14 h-5" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Public export with Suspense ──────────────────────────────────────────────
 export function AmeliaBookingForm() {
   return (
-    <Suspense fallback={<div className="h-[600px] w-full max-w-5xl mx-auto rounded-2xl bg-slate-100 animate-pulse my-12" />}>
-       <AmeliaBookingFormContent />
+    <Suspense
+      fallback={
+        <div className="max-w-5xl mx-auto my-12 rounded-2xl bg-slate-100 animate-pulse h-[600px]" />
+      }
+    >
+      <AmeliaBookingFormContent />
     </Suspense>
   )
 }

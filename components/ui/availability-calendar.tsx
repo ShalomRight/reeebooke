@@ -27,15 +27,25 @@ interface AvailabilityCalendarProps {
   onChange?: (date: Date) => void
   /** Mapping of YYYY-MM-DD date string to availability level */
   availabilityMap?: Record<string, AvailabilityLevel>
+  /** Called when the user navigates to a different month */
+  onMonthChange?: (year: number, month: number) => void
   className?: string
   disabled?: boolean
 }
 
-export function AvailabilityCalendar({ value, onChange, availabilityMap = {}, className, disabled }: AvailabilityCalendarProps) {
+export function AvailabilityCalendar({ value, onChange, availabilityMap = {}, onMonthChange, className, disabled }: AvailabilityCalendarProps) {
   const [currentMonth, setCurrentMonth] = React.useState(value || new Date())
 
-  const handlePrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1))
-  const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1))
+  const handlePrevMonth = () => {
+    const next = subMonths(currentMonth, 1)
+    setCurrentMonth(next)
+    onMonthChange?.(next.getFullYear(), next.getMonth() + 1)
+  }
+  const handleNextMonth = () => {
+    const next = addMonths(currentMonth, 1)
+    setCurrentMonth(next)
+    onMonthChange?.(next.getFullYear(), next.getMonth() + 1)
+  }
 
   // Calculate grid days
   const monthStart = startOfMonth(currentMonth)

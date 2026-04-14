@@ -11,6 +11,12 @@ dependencies:
   '@auth/drizzle-adapter':
     specifier: ^1.11.1
     version: 1.11.1
+  '@dayflow/core':
+    specifier: ^3.4.3
+    version: 3.4.3
+  '@dayflow/react':
+    specifier: ^3.4.3
+    version: 3.4.3(@dayflow/core@3.4.3)(react-dom@19.2.4)(react@19.2.4)
   '@gsap/react':
     specifier: ^2.1.2
     version: 2.1.2(gsap@3.14.2)(react@19.2.4)
@@ -486,6 +492,31 @@ packages:
 
   /@date-fns/tz@1.4.1:
     resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
+    dev: false
+
+  /@dayflow/blossom-color-picker@2.2.0:
+    resolution: {integrity: sha512-FkH5Ho6nk91F29TKvYRO/h6DKQbW+DE+tMo+/QZ6n+U8JFNt1ozbbCAJ1Kwm4w2i4owQ0JKqq+aZHmknEJBa1w==}
+    dev: false
+
+  /@dayflow/core@3.4.3:
+    resolution: {integrity: sha512-gd4AnPYO1Rx44gKEqjGNfXSmMlJ173ekAP4ug5Da7Agdl9ApC2WCorwRlnhvpHEVC3A0km5fdJ6kd7x41i+khQ==}
+    dependencies:
+      '@dayflow/blossom-color-picker': 2.2.0
+      preact: 10.29.0
+      temporal-polyfill: 0.3.2
+      tslib: 2.8.1
+    dev: false
+
+  /@dayflow/react@3.4.3(@dayflow/core@3.4.3)(react-dom@19.2.4)(react@19.2.4):
+    resolution: {integrity: sha512-tRCIlG8CxL6IgvrHZ1LGqwqAByohmuWSpL4SrwSymeeAtR28L/wG3hHjzZQ6XhQ5xPXdAFHqOCkQY4SJbT8WVg==}
+    peerDependencies:
+      '@dayflow/core': 3.4.3
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+    dependencies:
+      '@dayflow/core': 3.4.3
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
     dev: false
 
   /@drizzle-team/brocli@0.10.2:
@@ -10061,6 +10092,16 @@ packages:
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
+    dev: false
+
+  /temporal-polyfill@0.3.2:
+    resolution: {integrity: sha512-TzHthD/heRK947GNiSu3Y5gSPpeUDH34+LESnfsq8bqpFhsB79HFBX8+Z834IVX68P3EUyRPZK5bL/1fh437Eg==}
+    dependencies:
+      temporal-spec: 0.3.1
+    dev: false
+
+  /temporal-spec@0.3.1:
+    resolution: {integrity: sha512-B4TUhezh9knfSIMwt7RVggApDRJZo73uZdj8AacL2mZ8RP5KtLianh2MXxL06GN9ESYiIsiuoLQhgVfwe55Yhw==}
     dev: false
 
   /text-decoder@1.2.7:

@@ -20,6 +20,8 @@
   "dependencies": {
     "@auth/core": "^0.34.3",
     "@auth/drizzle-adapter": "^1.11.1",
+    "@dayflow/core": "^3.4.3",
+    "@dayflow/react": "^3.4.3",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.1",

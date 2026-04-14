@@ -179,7 +179,7 @@ export const useZapBookingForm = (initialServiceId?: string) => {
 
 	return {
 		services, selectedService, setSelectedService, selectedDate, setSelectedDate, selectedTime, setSelectedTime,
-		photos, setPhotos, currentMonth, currentYear, handlePreviousMonth, handleNextMonth,
+		photos, setPhotos, currentMonth, setCurrentMonth, currentYear, setCurrentYear, handlePreviousMonth, handleNextMonth,
 		calendarDays, weekDays, timeSlots, dailyCapacities, error, isSubmitting,
 		handleSubmit, totalPrice, selectedServiceData, removePhoto, isLoadingTimeSlots, isLoadingServices,
 	}
