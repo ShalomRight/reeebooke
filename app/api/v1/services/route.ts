@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
 			return validationErrorResponse(validation.error)
 		}
 		
-		const { name, price, description, mediaUrl } = validation.data
+		const { name, price, description, category, mediaUrl } = validation.data
 
 		let stripePriceId: string | undefined
 
@@ -143,6 +143,7 @@ export async function POST(req: NextRequest) {
 			name,
 			price,
 			description: description ?? null,
+			category: category ?? null,
 			mediaUrl: mediaUrl ?? null,
 			stripePriceId: stripePriceId ?? null,
 		})

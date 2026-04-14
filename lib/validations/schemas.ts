@@ -76,6 +76,7 @@ export const createServiceSchema = z.object({
 	name: z.string().min(1, "Name is required").max(255),
 	price: z.number().positive("Price must be positive"),
 	description: z.string().max(1000).optional(),
+	category: z.string().max(100).optional(),
 	mediaUrl: z.string().url("Invalid media URL").optional().or(z.literal("")),
 	duration: z.number().int().positive().optional(),
 })

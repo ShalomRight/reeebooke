@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 import {
   Save, Loader2, LayoutGrid, ImageIcon,
-  Clock, Calendar, DollarSign, Upload, X,
+  Clock, Calendar, DollarSign, Tag,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,15 +26,17 @@ interface ServiceFormSheetProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   existingService?: Service | null
+  existingCategories?: string[]
   onSaved: () => void
 }
 
-export function ServiceFormSheet({ isOpen, onOpenChange, existingService, onSaved }: ServiceFormSheetProps) {
+export function ServiceFormSheet({ isOpen, onOpenChange, existingService, existingCategories = [], onSaved }: ServiceFormSheetProps) {
   const isEditMode = Boolean(existingService)
 
   // Form state
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
+  const [category, setCategory] = useState("")
   const [mediaUrl, setMediaUrl] = useState("")
   const [price, setPrice] = useState("")
   const [duration, setDuration] = useState("")
@@ -50,6 +52,7 @@ export function ServiceFormSheet({ isOpen, onOpenChange, existingService, onSave
     if (isOpen) {
       setName(existingService?.name ?? "")
       setDescription(existingService?.description ?? "")
+      setCategory(existingService?.category ?? "")
       setMediaUrl(existingService?.mediaUrl ?? "")
       setPrice(existingService?.price?.toString() ?? "")
       setDuration("") // Need to fetch duration if needed, assume empty or handled elsewhere
@@ -67,6 +70,7 @@ export function ServiceFormSheet({ isOpen, onOpenChange, existingService, onSave
       const payload = {
         name: name.trim(),
         description: description.trim() || undefined,
+        category: category.trim() || undefined,
         mediaUrl: mediaUrl.trim() || undefined,
         price: Number(price),
         duration: duration ? Number(duration) : undefined,
@@ -149,6 +153,29 @@ export function ServiceFormSheet({ isOpen, onOpenChange, existingService, onSave
                     className="h-10 bg-white border-slate-200 text-sm focus:ring-blue-500/20 focus:border-blue-500"
                     required
                   />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="service-category" className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Category
+                    <span className="ml-2 text-[10px] font-normal text-muted-foreground normal-case">(optional — type or pick existing)</span>
+                  </Label>
+                  <div className="relative">
+                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="service-category"
+                      list="category-options"
+                      placeholder="e.g. Natural Hair, Locs, Color & Chemical"
+                      value={category}
+                      onChange={e => setCategory(e.target.value)}
+                      className="pl-9 h-10 bg-white border-slate-200 text-sm focus:ring-blue-500/20 focus:border-blue-500"
+                    />
+                    <datalist id="category-options">
+                      {existingCategories.map(cat => (
+                        <option key={cat} value={cat} />
+                      ))}
+                    </datalist>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">

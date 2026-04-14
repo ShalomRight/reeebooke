@@ -36,9 +36,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       name?: string; 
       price?: number; 
       description?: string; 
+      category?: string;
       mediaUrl?: string 
     }
-    const { name, price, description, mediaUrl } = body
+    const { name, price, description, category, mediaUrl } = body
 
     const userRole = (session.user as any).role
 
@@ -53,6 +54,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         name,
         price,
         description: description ?? null,
+        category: category ?? null,
         mediaUrl: mediaUrl ?? null,
         updatedAt: new Date().toISOString(),
       })

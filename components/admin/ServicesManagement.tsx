@@ -35,6 +35,9 @@ export function ServicesManagement() {
 
   const services = response?.services || []
   const pagination = response?.pagination
+  const existingCategories = Array.from(
+    new Set(services.map((s) => s.category?.trim()).filter(Boolean) as string[])
+  ).sort()
 
   const openDeleteDialog = (serviceId: string) => {
     setServiceToDelete(serviceId)
@@ -166,6 +169,7 @@ export function ServicesManagement() {
         isOpen={sheetOpen}
         onOpenChange={setSheetOpen}
         existingService={selectedService}
+        existingCategories={existingCategories}
         onSaved={mutate}
       />
     </div>
@@ -211,6 +215,11 @@ function ServiceCard({
             </Badge>
           )}
         </div>
+        {service.category && (
+          <Badge variant="outline" className="text-[10px] w-fit mt-1 text-muted-foreground border-slate-300">
+            {service.category}
+          </Badge>
+        )}
         {service.description && (
           <CardDescription className="text-xs line-clamp-2 mt-1">{service.description}</CardDescription>
         )}
