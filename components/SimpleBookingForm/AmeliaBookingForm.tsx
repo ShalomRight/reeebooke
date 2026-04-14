@@ -48,8 +48,8 @@ function buildAvailabilityMap(
 // ─── Step indicator ───────────────────────────────────────────────────────────
 function StepSidebar({ currentStep }: { currentStep: number }) {
   return (
-    <aside className="w-full md:w-56 bg-[#3E4D45] text-white p-6 flex flex-row md:flex-col gap-4 md:gap-0 shrink-0">
-      <h2 className="hidden md:block text-sm font-semibold uppercase tracking-widest opacity-50 mb-8">
+    <aside className="w-full md:w-56 bg-forest-800 text-cream-50 p-6 flex flex-row md:flex-col gap-4 md:gap-0 shrink-0 rounded-l-lg md:rounded-l-lg md:rounded-r-none">
+      <h2 className="hidden md:block font-serif text-lg italic opacity-60 mb-8">
         Your Booking
       </h2>
       <div className="flex md:flex-col flex-row gap-2 md:gap-5 flex-1 overflow-x-auto md:overflow-x-visible">
@@ -60,19 +60,19 @@ function StepSidebar({ currentStep }: { currentStep: number }) {
           return (
             <div key={step.num} className="flex items-center gap-3 shrink-0">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
+                className={`w-8 h-8 rounded flex items-center justify-center border transition-all duration-300 ${
                   isDone
-                    ? "bg-emerald-500 border-emerald-500 text-white"
+                    ? "bg-forest-500 border-forest-500 text-cream-50"
                     : isActive
-                    ? "border-[#C8B9A6] bg-white/10 text-white"
-                    : "border-white/20 text-white/30"
+                    ? "border-cream-200 bg-forest-700 text-cream-50"
+                    : "border-forest-600 text-forest-400"
                 }`}
               >
                 {isDone ? <Check className="w-4 h-4" /> : <Icon className="w-3.5 h-3.5" />}
               </div>
               <span
-                className={`text-sm font-medium hidden md:block transition-colors duration-200 ${
-                  isActive ? "text-white" : isDone ? "text-white/60" : "text-white/30"
+                className={`text-[11px] uppercase tracking-widest hidden md:block transition-colors duration-300 ${
+                  isActive ? "text-cream-50" : isDone ? "text-cream-50/60" : "text-forest-400"
                 }`}
               >
                 {step.label}
@@ -81,7 +81,7 @@ function StepSidebar({ currentStep }: { currentStep: number }) {
           )
         })}
       </div>
-      <p className="hidden md:block text-[10px] text-white/30 mt-auto pt-8 leading-relaxed">
+      <p className="hidden md:block text-[10px] text-forest-400 mt-auto pt-8 leading-relaxed">
         Need help?<br />support@reebooking.com
       </p>
     </aside>
@@ -331,18 +331,18 @@ function AmeliaBookingFormContent() {
   const { ok: canGoNext } = canProceed()
 
   return (
-    <div className="max-w-5xl mx-auto my-8 sm:my-12 bg-white rounded-2xl shadow-lg border overflow-hidden flex flex-col md:flex-row min-h-[580px]">
+    <div className="max-w-5xl mx-auto my-8 sm:my-12 glass-card rounded-lg overflow-hidden flex flex-col md:flex-row min-h-[580px]">
       {/* Sidebar */}
       <StepSidebar currentStep={currentStep} />
 
       {/* Main */}
-      <div className="flex-1 flex flex-col p-5 sm:p-8 overflow-hidden">
+      <div className="flex-1 flex flex-col p-5 sm:p-8 overflow-hidden bg-cream-50/50">
         <div className="flex-1 overflow-y-auto min-h-0">
           {renderStep()}
 
           {/* Inline step error */}
           {stepError && (
-            <Alert variant="destructive" className="mt-4">
+            <Alert variant="destructive" className="mt-4 border-red-200 bg-red-50">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{stepError}</AlertDescription>
             </Alert>
@@ -350,9 +350,9 @@ function AmeliaBookingFormContent() {
         </div>
 
         {/* Footer actions */}
-        <div className="flex items-center justify-between pt-5 mt-5 border-t border-border gap-3">
+        <div className="flex items-center justify-between pt-5 mt-5 border-t border-forest-900/10 gap-3">
           {currentStep > 1 ? (
-            <Button variant="ghost" onClick={handleBack} className="gap-2 text-muted-foreground">
+            <Button variant="ghost" onClick={handleBack} className="gap-2 text-forest-600 hover:text-forest-800 hover:bg-forest-50">
               <ArrowLeft className="w-4 h-4" /> Back
             </Button>
           ) : (
@@ -366,8 +366,8 @@ function AmeliaBookingFormContent() {
                 <div
                   key={s.num}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    s.num === currentStep ? "w-6 bg-[#3E4D45]" :
-                    s.num < currentStep ? "w-3 bg-[#3E4D45]/40" : "w-3 bg-border"
+                    s.num === currentStep ? "w-6 bg-forest-700" :
+                    s.num < currentStep ? "w-3 bg-forest-400" : "w-3 bg-forest-200"
                   }`}
                 />
               ))}
@@ -377,14 +377,14 @@ function AmeliaBookingFormContent() {
               <Button
                 onClick={handleNext}
                 disabled={!canGoNext}
-                className="gap-2 bg-[#3E4D45] hover:bg-[#2D3930] text-white rounded-lg px-7"
+                className="gap-2 bg-forest-800 hover:bg-forest-700 text-cream-50 rounded px-7"
               >
                 Next <ArrowRight className="w-4 h-4" />
               </Button>
             ) : (
               <Button
                 onClick={handleNext}
-                className="gap-2 bg-[#BD9354] hover:bg-[#A67C45] text-white rounded-lg px-7 shadow-sm"
+                className="gap-2 bg-forest-600 hover:bg-forest-500 text-cream-50 rounded px-7"
               >
                 <ShoppingCart className="w-4 h-4" /> Add to Cart
               </Button>
@@ -396,13 +396,13 @@ function AmeliaBookingFormContent() {
       {/* Cart drawer */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsCartOpen(false)} />
-          <div className="relative w-full max-w-sm bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="font-bold flex items-center gap-2">
-                <ShoppingCart className="w-5 h-5 text-primary" /> Cart ({cartCount})
+          <div className="fixed inset-0 bg-forest-900/30 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
+          <div className="relative w-full max-w-sm glass-card h-full flex flex-col animate-in slide-in-from-right">
+            <div className="flex items-center justify-between p-4 border-b border-forest-900/10">
+              <h2 className="font-bold flex items-center gap-2 text-forest-900">
+                <ShoppingCart className="w-5 h-5 text-forest-600" /> Cart ({cartCount})
               </h2>
-              <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(false)}>
+              <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(false)} className="text-forest-900 hover:bg-forest-50">
                 <X className="w-5 h-5" />
               </Button>
             </div>
@@ -416,7 +416,7 @@ function AmeliaBookingFormContent() {
       {/* Floating cart button */}
       <button
         onClick={() => setIsCartOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-xl bg-[#3E4D45] hover:bg-[#2D3930] text-white flex items-center justify-center transition-colors z-40"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg shadow-forest-900/20 bg-forest-800 hover:bg-forest-700 text-cream-50 flex items-center justify-center transition-colors z-40"
         aria-label={`Open cart (${cartCount} items)`}
       >
         <ShoppingCart className="w-6 h-6" />
