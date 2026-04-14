@@ -2,11 +2,12 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useServices, type Service } from "@/lib/swr"
-import { DollarSign, Plus, Trash2, Edit2, Star, ImageIcon } from "lucide-react"
+import { DollarSign, Plus, Trash2, Edit2, Star, ImageIcon, ExternalLink } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -83,6 +84,13 @@ export function ServicesManagement() {
               <SelectItem value="price-desc">Price (High → Low)</SelectItem>
             </SelectContent>
           </Select>
+
+          <Link href="/admin/services">
+            <Button variant="outline" className="gap-2 rounded-full text-muted-foreground hover:text-foreground">
+              <ExternalLink className="w-4 h-4" />
+              New UI
+            </Button>
+          </Link>
 
           <Button
             id="add-service-btn"
