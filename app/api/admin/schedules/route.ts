@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 
 // app/api/admin/schedules/route.ts
 // GET /api/admin/schedules?serviceId=xxx

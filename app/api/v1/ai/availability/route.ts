@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 
 // TODO: Review Drizzle query conversions — complex where/orderBy patterns need manual adjustment
 import { type NextRequest, NextResponse } from "next/server"

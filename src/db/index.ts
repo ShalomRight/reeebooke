@@ -4,8 +4,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as schema from "./schema";
-import { drizzle as drizzleD1 } from "drizzle-orm/d1";
-import { getRequestContext } from "@cloudflare/next-on-pages";
+import { drizzle as drizzleProxy } from "drizzle-orm/sqlite-proxy";
 import { eq, sql, lt } from "drizzle-orm";
 
 import {
@@ -18,56 +17,82 @@ import {
 } from "./schema";
 
 /**
- * Cloudflare Environment Bindings
- */
-interface CloudflareEnv {
-  reebooking_db: D1Database;
-}
-
-/**
  * Returns the Drizzle DB instance scoped to the current request.
- * 
- * LOCAL DEV WORKFLOW:
- * Option A — fast iteration (recommended for most dev work):
- *   npx next dev
- *   Uses better-sqlite3 fallback. HMR works. D1 binding not needed.
- *   SQLite file lives at .wrangler/state/v3/d1/reebooking_db/local.sqlite
  *
- * Option B — full Cloudflare simulation (use before deploying):
- *   npm run cf:dev
- *   Requires a build first. Uses real Wrangler D1 simulation.
- *   getCloudflareContext() works correctly in this mode.
+ * PRODUCTION (Vercel):
+ *   Requires these env vars on Vercel:
+ *     CLOUDFLARE_ACCOUNT_ID   — from `npx wrangler whoami`
+ *     CLOUDFLARE_DATABASE_ID  — the D1 database_id in wrangler.jsonc
+ *     CLOUDFLARE_D1_TOKEN     — Cloudflare API token (Account → D1 → Edit)
+ *   Queries are routed through the Cloudflare D1 HTTP REST API.
+ *
+ * LOCAL DEV:
+ *   Run `npx next dev` — uses better-sqlite3 against the local Wrangler D1 file.
+ *   SQLite file: .wrangler/state/v3/d1/reebooking_db/local.sqlite
+ *   Override with LOCAL_DB_PATH in .env.local.
  */
 export function getDb() {
-  if (process.env.NEXT_RUNTIME === "edge") {
-    // Production / Edge Simulation: Use D1 binding from Cloudflare context
-    const { env } = getRequestContext() as unknown as { env: CloudflareEnv };
-    
-    if (!env.reebooking_db) {
-      throw new Error("D1 binding 'reebooking_db' not found in Cloudflare environment.");
-    }
-    
-    return drizzleD1(env.reebooking_db, { schema });
+  const token = process.env.CLOUDFLARE_D1_TOKEN;
+
+  if (token) {
+    // Production: proxy every query through the Cloudflare D1 HTTP REST API.
+    const accountId = process.env.CLOUDFLARE_ACCOUNT_ID!;
+    const databaseId = process.env.CLOUDFLARE_DATABASE_ID!;
+
+    return drizzleProxy(
+      async (sql: string, params: unknown[], method: string) => {
+        const res = await fetch(
+          `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ sql, params }),
+          }
+        );
+
+        const data = (await res.json()) as {
+          success: boolean;
+          errors?: { message: string }[];
+          result: { results: Record<string, unknown>[] }[];
+        };
+
+        if (!data.success) {
+          throw new Error(
+            data.errors?.[0]?.message ?? "D1 HTTP query failed"
+          );
+        }
+
+        const rows = data.result[0].results ?? [];
+
+        if (method === "get") {
+          return { rows: rows.length > 0 ? Object.values(rows[0]) : [] };
+        }
+
+        return { rows: rows.map((r) => Object.values(r)) };
+      },
+      { schema }
+    );
   } else {
-    // Local development (Node runtime): Use better-sqlite3
-    // We use require() here to prevent the edge runtime from trying to bundle native modules
+    // Local development (Node runtime): Use better-sqlite3.
+    // require() prevents edge bundlers from trying to include native modules.
     const Database = require("better-sqlite3");
     const { drizzle } = require("drizzle-orm/better-sqlite3");
     const path = require("path");
 
-    // Default to the Wrangler local D1 state directory
-    // LOCAL_DB_PATH must be set in .env.local to point at the miniflare hashed
-    // sqlite file under .wrangler/state/v3/d1/miniflare-D1DatabaseObject/.
-    // Run: find .wrangler -name "*.sqlite" | grep -v metadata
-    // to find the correct path if this ever stops working after a wrangler update.
-    const dbPath = process.env.LOCAL_DB_PATH || 
-                 path.join(process.cwd(), ".wrangler/state/v3/d1/reebooking_db/local.sqlite");
+    const dbPath =
+      process.env.LOCAL_DB_PATH ||
+      path.join(
+        process.cwd(),
+        ".wrangler/state/v3/d1/reebooking_db/local.sqlite"
+      );
 
     const fs = require("fs");
     fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
     const sqlite = new Database(dbPath);
-    
     sqlite.pragma("journal_mode = WAL");
     sqlite.pragma("foreign_keys = ON");
 

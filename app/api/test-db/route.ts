@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 
 import { getDb } from "@/src/db"
 import { users, services } from "@/src/db/schema"
