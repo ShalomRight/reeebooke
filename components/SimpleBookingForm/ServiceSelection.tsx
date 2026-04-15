@@ -103,51 +103,54 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 	}
 
 	return (
-		<>
-			{/* ── Search input ─────────────────────────────────────── */}
-			<div className="relative mb-4">
-				<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-400" />
-				<input
-					type="text"
-					placeholder="Search services..."
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					className="w-full pl-9 pr-4 py-2.5 border border-warm-200 rounded-lg bg-white text-warm-900 placeholder:text-warm-400 focus:outline-none focus:border-terracotta-400 text-sm"
-				/>
+		<div className="flex flex-col h-full">
+			{/* ── Sticky Header: Search + Filters ───────────────────── */}
+			<div className="flex-shrink-0 pb-3 space-y-3">
+				{/* Search input */}
+				<div className="relative mb-4">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-400" />
+					<input
+						type="text"
+						placeholder="Search services..."
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+						className="w-full pl-9 pr-4 py-2.5 border border-warm-200 rounded-lg bg-white text-warm-900 placeholder:text-warm-400 focus:outline-none focus:border-terracotta-400 text-sm"
+					/>
+				</div>
+
+				{/* Category tabs */}
+				{categories.length > 1 && (
+					<div className="flex gap-2 flex-wrap mb-4">
+						{categories.map((cat) => {
+							const count = cat === ALL_TAB
+								? services.length
+								: services.filter((s) => s.category?.trim() === cat).length
+							const isActive = activeCategory === cat
+							return (
+								<button
+									key={cat}
+									onClick={() => setActiveCategory(cat)}
+									className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border ${
+										isActive
+											? "bg-terracotta-600 text-white border-terracotta-600"
+											: "bg-white text-warm-600 border-warm-200 hover:border-terracotta-400 hover:text-warm-800"
+									}`}
+								>
+									{cat}
+									<span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+										isActive ? "bg-white/20" : "bg-warm-100"
+									}`}>
+										{count}
+									</span>
+								</button>
+							)
+						})}
+					</div>
+				)}
 			</div>
 
-			{/* ── Category tabs ─────────────────────────────────────── */}
-			{categories.length > 1 && (
-				<div className="flex gap-2 flex-wrap mb-4">
-					{categories.map((cat) => {
-						const count = cat === ALL_TAB
-							? services.length
-							: services.filter((s) => s.category?.trim() === cat).length
-						const isActive = activeCategory === cat
-						return (
-							<button
-								key={cat}
-								onClick={() => setActiveCategory(cat)}
-								className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border ${
-								isActive
-									? "bg-terracotta-600 text-white border-terracotta-600"
-									: "bg-white text-warm-600 border-warm-200 hover:border-terracotta-400 hover:text-warm-800"
-							}`}
-							>
-								{cat}
-								<span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-								isActive ? "bg-white/20" : "bg-warm-100"
-							}`}>
-									{count}
-								</span>
-							</button>
-						)
-					})}
-				</div>
-			)}
-
-			{/* ── Service list ──────────────────────────────────────── */}
-			<div className="space-y-3">
+			{/* ── Scrollable Service list ─────────────────────────── */}
+			<div className="flex-1 overflow-y-auto pr-1 -mr-1 space-y-3">
 				{filtered.length === 0 && (
 					<p className="text-sm text-warm-600 text-center py-6">
 						{searchQuery ? "No services match your search." : "No services in this category."}
@@ -235,6 +238,6 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 					onOpenChange={setRatingDialogOpen}
 				/>
 			)}
-		</>
+		</div>
 	)
 }

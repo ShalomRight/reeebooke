@@ -197,13 +197,15 @@ function AmeliaBookingFormContent() {
             ) : services.length === 0 ? (
               <EmptyState message="No services available right now. Please check back later." />
             ) : (
-              <div className={`overflow-y-auto max-h-[55vh] pr-1 -mr-1 rounded-lg ${fieldErrors.service ? "ring-2 ring-red-400 ring-offset-2" : ""}`}>
-                <ServiceSelection
-                  services={services}
-                  selectedService={selectedService}
-                  setSelectedService={(id) => { setSelectedService(id); setStepError(null); clearFieldError("service") }}
-                  isLoading={false}
-                />
+              <div className={`${fieldErrors.service ? "ring-2 ring-red-400 ring-offset-2 rounded-lg" : ""}`}>
+                <div className="h-[55vh]">
+                  <ServiceSelection
+                    services={services}
+                    selectedService={selectedService}
+                    setSelectedService={(id) => { setSelectedService(id); setStepError(null); clearFieldError("service") }}
+                    isLoading={false}
+                  />
+                </div>
                 {fieldErrors.service && (
                   <p className="text-sm text-red-600 mt-2 flex items-center gap-1.5">
                     <AlertCircle className="w-4 h-4" />
