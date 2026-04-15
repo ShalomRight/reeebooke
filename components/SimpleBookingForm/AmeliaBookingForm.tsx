@@ -48,7 +48,7 @@ function buildAvailabilityMap(
 // ─── Step indicator ───────────────────────────────────────────────────────────
 function StepSidebar({ currentStep }: { currentStep: number }) {
   return (
-    <aside className="w-full md:w-56 bg-forest-800 text-cream-50 p-6 flex flex-row md:flex-col gap-4 md:gap-0 shrink-0 rounded-l-lg md:rounded-l-lg md:rounded-r-none">
+    <aside className="w-full md:w-56 bg-terracotta-800 text-warm-50 p-6 flex flex-row md:flex-col gap-4 md:gap-0 shrink-0 rounded-l-lg md:rounded-l-lg md:rounded-r-none">
       <h2 className="hidden md:block font-serif text-lg italic opacity-60 mb-8">
         Your Booking
       </h2>
@@ -62,17 +62,17 @@ function StepSidebar({ currentStep }: { currentStep: number }) {
               <div
                 className={`w-8 h-8 rounded flex items-center justify-center border transition-all duration-300 ${
                   isDone
-                    ? "bg-forest-500 border-forest-500 text-cream-50"
+                    ? "bg-terracotta-500 border-terracotta-500 text-warm-50"
                     : isActive
-                    ? "border-cream-200 bg-forest-700 text-cream-50"
-                    : "border-forest-600 text-forest-400"
+                    ? "border-warm-200 bg-terracotta-700 text-warm-50"
+                    : "border-terracotta-600 text-terracotta-400"
                 }`}
               >
                 {isDone ? <Check className="w-4 h-4" /> : <Icon className="w-3.5 h-3.5" />}
               </div>
               <span
                 className={`text-[11px] uppercase tracking-widest hidden md:block transition-colors duration-300 ${
-                  isActive ? "text-cream-50" : isDone ? "text-cream-50/60" : "text-forest-400"
+                  isActive ? "text-warm-50" : isDone ? "text-warm-50/60" : "text-terracotta-400"
                 }`}
               >
                 {step.label}
@@ -81,8 +81,8 @@ function StepSidebar({ currentStep }: { currentStep: number }) {
           )
         })}
       </div>
-      <p className="hidden md:block text-[10px] text-forest-400 mt-auto pt-8 leading-relaxed">
-        Need help?<br />support@reebooking.com
+      <p className="hidden md:block text-[10px] text-terracotta-400 mt-auto pt-8 leading-relaxed">
+        Need help?<br />support@abbyhairstudio.com
       </p>
     </aside>
   )
@@ -107,6 +107,7 @@ function AmeliaBookingFormContent() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [stepError, setStepError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<{ service?: string; date?: string; time?: string }>({})
   const [readyToAdd, setReadyToAdd] = useState(false)
 
   const selectedDateObj = selectedDate
@@ -148,20 +149,27 @@ function AmeliaBookingFormContent() {
     setStepError(null)
   }, [readyToAdd]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const canProceed = (): { ok: boolean; message?: string } => {
+  const validateStep = (): boolean => {
+    const errors: { service?: string; date?: string; time?: string } = {}
+    
     if (currentStep === 1) {
-      if (!selectedService) return { ok: false, message: "Please select a service to continue." }
+      if (!selectedService) errors.service = "Please select a service to continue"
     }
     if (currentStep === 2) {
-      if (!selectedDate) return { ok: false, message: "Please choose a date." }
-      if (!selectedTime) return { ok: false, message: "Please select an available time slot." }
+      if (!selectedDate) errors.date = "Please choose a date"
+      if (!selectedTime) errors.time = "Please select an available time slot"
     }
-    return { ok: true }
+    
+    setFieldErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  const clearFieldError = (field: keyof typeof fieldErrors) => {
+    setFieldErrors(prev => ({ ...prev, [field]: undefined }))
   }
 
   const handleNext = () => {
-    const { ok, message } = canProceed()
-    if (!ok) { setStepError(message || "Please complete this step."); return }
+    if (!validateStep()) return
     setStepError(null)
     if (currentStep === 4) { setReadyToAdd(true); return }
     setCurrentStep((s) => Math.min(s + 1, 4))
@@ -169,6 +177,7 @@ function AmeliaBookingFormContent() {
 
   const handleBack = () => {
     setStepError(null)
+    setFieldErrors({})
     setCurrentStep((s) => Math.max(s - 1, 1))
   }
 
@@ -188,13 +197,19 @@ function AmeliaBookingFormContent() {
             ) : services.length === 0 ? (
               <EmptyState message="No services available right now. Please check back later." />
             ) : (
-              <div className="overflow-y-auto max-h-[55vh] pr-1 -mr-1">
+              <div className={`overflow-y-auto max-h-[55vh] pr-1 -mr-1 rounded-lg ${fieldErrors.service ? "ring-2 ring-red-400 ring-offset-2" : ""}`}>
                 <ServiceSelection
                   services={services}
                   selectedService={selectedService}
-                  setSelectedService={(id) => { setSelectedService(id); setStepError(null) }}
+                  setSelectedService={(id) => { setSelectedService(id); setStepError(null); clearFieldError("service") }}
                   isLoading={false}
                 />
+                {fieldErrors.service && (
+                  <p className="text-sm text-red-600 mt-2 flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4" />
+                    {fieldErrors.service}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -211,23 +226,32 @@ function AmeliaBookingFormContent() {
             <div className="flex flex-col xl:flex-row gap-5">
               {/* Calendar */}
               <div className="flex-1 min-w-0">
-                <AvailabilityCalendar
-                  value={selectedDateObj}
-                  onChange={(d) => {
-                    setSelectedDate(d.getDate())
-                    setStepError(null)
-                  }}
-                  onMonthChange={handleMonthChange}
-                  availabilityMap={availabilityMap}
-                />
+                <div className={`rounded-lg ${fieldErrors.date ? "ring-2 ring-red-400 ring-offset-2" : ""}`}>
+                  <AvailabilityCalendar
+                    value={selectedDateObj}
+                    onChange={(d) => {
+                      setSelectedDate(d.getDate())
+                      setStepError(null)
+                      clearFieldError("date")
+                    }}
+                    onMonthChange={handleMonthChange}
+                    availabilityMap={availabilityMap}
+                  />
+                </div>
+                {fieldErrors.date && (
+                  <p className="text-sm text-red-600 mt-2 flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4" />
+                    {fieldErrors.date}
+                  </p>
+                )}
                 {/* Legend */}
-                <div className="flex gap-3 mt-3 flex-wrap text-[11px] text-muted-foreground">
+                <div className="flex gap-3 mt-3 flex-wrap text-[11px] text-warm-600">
                   {(["available", "filling-up", "almost-full", "full"] as const).map((lvl) => (
                     <span key={lvl} className="flex items-center gap-1.5 capitalize">
                       <span className={`w-2.5 h-2.5 rounded-full inline-block ${
-                        lvl === "available" ? "bg-emerald-500" :
-                        lvl === "filling-up" ? "bg-amber-400" :
-                        lvl === "almost-full" ? "bg-orange-500" : "bg-rose-400"
+                        lvl === "available" ? "bg-terracotta-500" :
+                        lvl === "filling-up" ? "bg-warm-400" :
+                        lvl === "almost-full" ? "bg-terracotta-600" : "bg-warm-300"
                       }`} />
                       {lvl.replace("-", " ")}
                     </span>
@@ -237,24 +261,30 @@ function AmeliaBookingFormContent() {
 
               {/* Time slots panel */}
               <div className="w-full xl:w-60 shrink-0">
-                <div className="rounded-xl border border-border bg-muted/30 p-4 h-full min-h-[200px] xl:max-h-[380px] xl:overflow-y-auto">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                <div className={`rounded-xl border ${fieldErrors.time ? "border-red-400 bg-red-50" : "border-warm-200 bg-warm-100"} p-4 h-full min-h-[200px] xl:max-h-[380px] xl:overflow-y-auto`}>
+                  <p className="text-xs font-semibold text-warm-600 uppercase tracking-wide mb-3">
                     {selectedDateObj
                       ? selectedDateObj.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })
                       : "Select a date"}
                   </p>
                   {!selectedDateObj ? (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-warm-600">
                       Click a date on the calendar to see available time slots.
                     </p>
                   ) : (
                     <TimeSelection
                       timeSlots={timeSlots}
                       selectedTime={selectedTime}
-                      setSelectedTime={(t) => { setSelectedTime(t); setStepError(null) }}
+                      setSelectedTime={(t) => { setSelectedTime(t); setStepError(null); clearFieldError("time") }}
                       isLoading={isLoadingTimeSlots}
                       disabled={false}
                     />
+                  )}
+                  {fieldErrors.time && (
+                    <p className="text-sm text-red-600 mt-2 flex items-center gap-1.5">
+                      <AlertCircle className="w-4 h-4" />
+                      {fieldErrors.time}
+                    </p>
                   )}
                 </div>
               </div>
@@ -280,7 +310,7 @@ function AmeliaBookingFormContent() {
           <div className="animate-in fade-in-0 duration-200 space-y-5">
             <StepHeader title="Review & Confirm" subtitle="Everything look right?" />
 
-            <div className="rounded-xl border border-border overflow-hidden">
+            <div className="rounded-xl border border-warm-200 overflow-hidden">
               <SummaryRow
                 label="Service"
                 value={selectedServiceData?.name ?? "—"}
@@ -305,19 +335,19 @@ function AmeliaBookingFormContent() {
                   label="Photos"
                   value={
                     <div className="flex items-center gap-1.5">
-                      <ImageIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                      <ImageIcon className="w-3.5 h-3.5 text-warm-600" />
                       <span>{photos.length} photo{photos.length > 1 ? "s" : ""} attached</span>
                     </div>
                   }
                 />
               )}
-              <div className="flex justify-between items-center px-4 py-4 bg-muted/40">
+              <div className="flex justify-between items-center px-4 py-4 bg-warm-100">
                 <span className="font-bold text-sm">Total</span>
-                <span className="text-xl font-bold text-primary">${totalPrice.toLocaleString()}</span>
+                <span className="text-xl font-bold text-terracotta-600">${totalPrice.toLocaleString()}</span>
               </div>
             </div>
 
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-warm-600">
               By adding to cart you agree to our booking terms. Payment is collected at checkout.
             </p>
           </div>
@@ -328,15 +358,21 @@ function AmeliaBookingFormContent() {
     }
   }
 
-  const { ok: canGoNext } = canProceed()
+  // Button enabled state - check if current step has required fields filled
+  const canGoNext = (() => {
+    if (currentStep === 1) return !!selectedService
+    if (currentStep === 2) return !!selectedDate && !!selectedTime
+    if (currentStep === 3) return true // Photo upload is optional
+    return true
+  })()
 
   return (
-    <div className="max-w-5xl mx-auto my-8 sm:my-12 glass-card rounded-lg overflow-hidden flex flex-col md:flex-row min-h-[580px]">
+    <div className="max-w-5xl mx-auto my-8 sm:my-12 bg-white shadow-2xl rounded-lg overflow-hidden flex flex-col md:flex-row min-h-[580px]">
       {/* Sidebar */}
       <StepSidebar currentStep={currentStep} />
 
       {/* Main */}
-      <div className="flex-1 flex flex-col p-5 sm:p-8 overflow-hidden bg-cream-50/50">
+      <div className="flex-1 flex flex-col p-5 sm:p-8 overflow-hidden bg-warm-50">
         <div className="flex-1 overflow-y-auto min-h-0">
           {renderStep()}
 
@@ -350,9 +386,9 @@ function AmeliaBookingFormContent() {
         </div>
 
         {/* Footer actions */}
-        <div className="flex items-center justify-between pt-5 mt-5 border-t border-forest-900/10 gap-3">
+        <div className="flex items-center justify-between pt-5 mt-5 border-t border-warm-900/10 gap-3">
           {currentStep > 1 ? (
-            <Button variant="ghost" onClick={handleBack} className="gap-2 text-forest-600 hover:text-forest-800 hover:bg-forest-50">
+            <Button variant="ghost" onClick={handleBack} className="gap-2 text-terracotta-600 hover:text-terracotta-800 hover:bg-terracotta-50">
               <ArrowLeft className="w-4 h-4" /> Back
             </Button>
           ) : (
@@ -366,8 +402,8 @@ function AmeliaBookingFormContent() {
                 <div
                   key={s.num}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    s.num === currentStep ? "w-6 bg-forest-700" :
-                    s.num < currentStep ? "w-3 bg-forest-400" : "w-3 bg-forest-200"
+                    s.num === currentStep ? "w-6 bg-terracotta-700" :
+                    s.num < currentStep ? "w-3 bg-terracotta-400" : "w-3 bg-terracotta-200"
                   }`}
                 />
               ))}
@@ -377,14 +413,14 @@ function AmeliaBookingFormContent() {
               <Button
                 onClick={handleNext}
                 disabled={!canGoNext}
-                className="gap-2 bg-forest-800 hover:bg-forest-700 text-cream-50 rounded px-7"
+                className="gap-2 bg-terracotta-800 hover:bg-terracotta-700 text-warm-50 rounded px-7"
               >
                 Next <ArrowRight className="w-4 h-4" />
               </Button>
             ) : (
               <Button
                 onClick={handleNext}
-                className="gap-2 bg-forest-600 hover:bg-forest-500 text-cream-50 rounded px-7"
+                className="gap-2 bg-terracotta-600 hover:bg-terracotta-500 text-warm-50 rounded px-7"
               >
                 <ShoppingCart className="w-4 h-4" /> Add to Cart
               </Button>
@@ -396,13 +432,13 @@ function AmeliaBookingFormContent() {
       {/* Cart drawer */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="fixed inset-0 bg-forest-900/30 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
-          <div className="relative w-full max-w-sm glass-card h-full flex flex-col animate-in slide-in-from-right">
-            <div className="flex items-center justify-between p-4 border-b border-forest-900/10">
-              <h2 className="font-bold flex items-center gap-2 text-forest-900">
-                <ShoppingCart className="w-5 h-5 text-forest-600" /> Cart ({cartCount})
+          <div className="fixed inset-0 bg-warm-900/30 backdrop-blur-sm" onClick={() => setIsCartOpen(false)} />
+          <div className="relative w-full max-w-sm bg-white shadow-2xl h-full flex flex-col animate-in slide-in-from-right">
+            <div className="flex items-center justify-between p-4 border-b border-warm-200">
+              <h2 className="font-bold flex items-center gap-2 text-warm-900">
+                <ShoppingCart className="w-5 h-5 text-terracotta-600" /> Cart ({cartCount})
               </h2>
-              <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(false)} className="text-forest-900 hover:bg-forest-50">
+              <Button variant="ghost" size="icon" onClick={() => setIsCartOpen(false)} className="text-warm-900 hover:bg-warm-100">
                 <X className="w-5 h-5" />
               </Button>
             </div>
@@ -416,7 +452,7 @@ function AmeliaBookingFormContent() {
       {/* Floating cart button */}
       <button
         onClick={() => setIsCartOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg shadow-forest-900/20 bg-forest-800 hover:bg-forest-700 text-cream-50 flex items-center justify-center transition-colors z-40"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg shadow-warm-900/20 bg-terracotta-800 hover:bg-terracotta-700 text-warm-50 flex items-center justify-center transition-colors z-40"
         aria-label={`Open cart (${cartCount} items)`}
       >
         <ShoppingCart className="w-6 h-6" />
@@ -434,8 +470,8 @@ function AmeliaBookingFormContent() {
 function StepHeader({ title, subtitle }: { title: string; subtitle?: string | null }) {
   return (
     <div className="mb-1">
-      <h2 className="text-xl font-bold text-foreground">{title}</h2>
-      {subtitle && <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>}
+      <h2 className="text-xl font-bold text-warm-900">{title}</h2>
+      {subtitle && <p className="text-sm text-warm-600 mt-0.5">{subtitle}</p>}
     </div>
   )
 }
@@ -450,18 +486,18 @@ function SummaryRow({
   valueClass?: string
 }) {
   return (
-    <div className="flex justify-between items-start gap-4 px-4 py-3 border-b border-border last:border-0">
-      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground shrink-0 pt-0.5">
+    <div className="flex justify-between items-start gap-4 px-4 py-3 border-b border-warm-200 last:border-0">
+      <span className="text-xs font-semibold uppercase tracking-wide text-warm-600 shrink-0 pt-0.5">
         {label}
       </span>
-      <span className={`text-sm text-right ${valueClass ?? ""}`}>{value}</span>
+      <span className={`text-sm text-warm-900 text-right ${valueClass ?? ""}`}>{value}</span>
     </div>
   )
 }
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+    <div className="flex flex-col items-center justify-center py-12 text-center text-warm-600">
       <AlertCircle className="w-8 h-8 mb-3 opacity-30" />
       <p className="text-sm max-w-xs">{message}</p>
     </div>
@@ -472,7 +508,7 @@ function ServiceSkeleton() {
   return (
     <div className="space-y-3">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex items-center gap-3 p-4 rounded-lg border border-border">
+        <div key={i} className="flex items-center gap-3 p-4 rounded-lg border border-warm-200 bg-white">
           <Skeleton className="w-10 h-10 rounded-lg" />
           <div className="flex-1 space-y-2">
             <Skeleton className="h-4 w-2/3" />
@@ -490,7 +526,7 @@ export function AmeliaBookingForm() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-5xl mx-auto my-12 rounded-2xl bg-slate-100 animate-pulse h-[600px]" />
+        <div className="max-w-5xl mx-auto my-12 rounded-2xl bg-warm-100 animate-pulse h-[600px]" />
       }
     >
       <AmeliaBookingFormContent />

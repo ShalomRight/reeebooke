@@ -4,7 +4,7 @@ import { RatingDetailsDialog } from "@/components/ratings/RatingDetailsDialog"
 import { RatingDisplay } from "@/components/ratings/RatingDisplay"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useFavorites } from "@/hooks/use-favorites"
-import { Scissors, Droplet, Sparkles, Wind, Leaf, Heart } from "lucide-react"
+import { Scissors, Droplet, Sparkles, Wind, Leaf, Heart, Search } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useMemo, useState } from "react"
 
@@ -41,6 +41,7 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 	const { isFavorite, addFavorite, removeFavorite } = useFavorites()
 	const { data: session } = useSession()
 	const [activeCategory, setActiveCategory] = useState<string>(ALL_TAB)
+	const [searchQuery, setSearchQuery] = useState("")
 	const [ratingDialogOpen, setRatingDialogOpen] = useState(false)
 	const [selectedServiceForRating, setSelectedServiceForRating] = useState<Service | null>(null)
 
@@ -52,9 +53,20 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 	}, [services])
 
 	const filtered = useMemo(() => {
-		if (activeCategory === ALL_TAB || categories.length === 0) return services
-		return services.filter((s) => s.category?.trim() === activeCategory)
-	}, [services, activeCategory, categories])
+		let result = activeCategory === ALL_TAB || categories.length === 0 
+			? services 
+			: services.filter((s) => s.category?.trim() === activeCategory)
+		
+		if (searchQuery.trim()) {
+			const q = searchQuery.toLowerCase()
+			result = result.filter(s => 
+				s.name.toLowerCase().includes(q) || 
+				s.description?.toLowerCase().includes(q)
+			)
+		}
+		
+		return result
+	}, [services, activeCategory, categories, searchQuery])
 
 	const handleRatingClick = (service: Service, e: React.MouseEvent) => {
 		e.stopPropagation()
@@ -77,7 +89,7 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 		return (
 			<div className="space-y-3">
 				{[1, 2, 3, 4].map((i) => (
-					<div key={i} className="w-full p-4 rounded-lg border border-border bg-card flex items-center gap-3">
+					<div key={i} className="w-full p-4 rounded-lg border border-warm-200 bg-white flex items-center gap-3">
 						<Skeleton className="w-10 h-10 rounded-lg" />
 						<div className="flex-1 space-y-2">
 							<Skeleton className="h-5 w-2/3" />
@@ -92,6 +104,18 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 
 	return (
 		<>
+			{/* ── Search input ─────────────────────────────────────── */}
+			<div className="relative mb-4">
+				<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-400" />
+				<input
+					type="text"
+					placeholder="Search services..."
+					value={searchQuery}
+					onChange={(e) => setSearchQuery(e.target.value)}
+					className="w-full pl-9 pr-4 py-2.5 border border-warm-200 rounded-lg bg-white text-warm-900 placeholder:text-warm-400 focus:outline-none focus:border-terracotta-400 text-sm"
+				/>
+			</div>
+
 			{/* ── Category tabs ─────────────────────────────────────── */}
 			{categories.length > 1 && (
 				<div className="flex gap-2 flex-wrap mb-4">
@@ -105,15 +129,15 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 								key={cat}
 								onClick={() => setActiveCategory(cat)}
 								className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border ${
-									isActive
-										? "bg-primary text-primary-foreground border-primary"
-										: "bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-card-foreground"
-								}`}
+								isActive
+									? "bg-terracotta-600 text-white border-terracotta-600"
+									: "bg-white text-warm-600 border-warm-200 hover:border-terracotta-400 hover:text-warm-800"
+							}`}
 							>
 								{cat}
 								<span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
-									isActive ? "bg-primary-foreground/20" : "bg-muted"
-								}`}>
+								isActive ? "bg-white/20" : "bg-warm-100"
+							}`}>
 									{count}
 								</span>
 							</button>
@@ -125,8 +149,8 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 			{/* ── Service list ──────────────────────────────────────── */}
 			<div className="space-y-3">
 				{filtered.length === 0 && (
-					<p className="text-sm text-muted-foreground text-center py-6">
-						No services in this category.
+					<p className="text-sm text-warm-600 text-center py-6">
+						{searchQuery ? "No services match your search." : "No services in this category."}
 					</p>
 				)}
 				{filtered.map((service) => {
@@ -137,22 +161,22 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 						<div key={service.id} className="relative">
 							<button
 								onClick={() => setSelectedService(service.id)}
-								className={`w-full p-4 bg-card rounded-lg border transition-colors bg-gradient-to-r from-primary/5 to-muted/5 text-left ${
+								className={`w-full p-4 bg-white rounded-lg border transition-colors text-left ${
 									isSelected
-										? "border-primary bg-primary/10"
-										: "border-border hover:border-primary/60"
+										? "border-terracotta-600 bg-terracotta-50"
+										: "border-warm-200 hover:border-terracotta-400"
 								}`}
 							>
 								<div className="flex items-center gap-3">
-									<div className={`p-2 rounded-lg flex-shrink-0 ${isSelected ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"}`}>
+									<div className={`p-2 rounded-lg flex-shrink-0 ${isSelected ? "bg-terracotta-600 text-white" : "bg-terracotta-100 text-terracotta-600"}`}>
 										<Icon className="w-6 h-6" />
 									</div>
 									<div className="flex-1 min-w-0 pr-8">
-										<h3 className="font-playfair text-card-foreground text-lg leading-snug truncate">
+										<h3 className="font-serif text-warm-900 text-lg leading-snug truncate">
 											{service.name}
 										</h3>
 										{service.description && (
-											<p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+											<p className="text-xs text-warm-600 mt-0.5 line-clamp-1">
 												{service.description}
 											</p>
 										)}
@@ -172,7 +196,7 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 											</div>
 										)}
 									</div>
-									<span className="font-source font-bold text-accent text-lg flex-shrink-0">
+									<span className="font-sans font-bold text-terracotta-600 text-lg flex-shrink-0">
 										${service.price.toLocaleString()}
 									</span>
 								</div>
@@ -187,11 +211,11 @@ export function ServiceSelection({ services, selectedService, setSelectedService
 										if (e.key === "Enter" || e.key === " ") handleFavoriteClick(service.id, e as any)
 									}}
 									aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
-									className="absolute top-3 right-12 p-1 rounded focus:outline-none focus:ring-2 focus:ring-primary z-10"
+									className="absolute top-3 right-12 p-1 rounded focus:outline-none focus:ring-2 focus:ring-terracotta-400 z-10"
 								>
 									<Heart
 										className={`w-5 h-5 transition-all duration-200 ${
-											favorited ? "fill-red-500 text-red-500 scale-110" : "text-muted-foreground hover:text-red-400"
+											favorited ? "fill-red-500 text-red-500 scale-110" : "text-warm-400 hover:text-red-400"
 										}`}
 									/>
 								</button>

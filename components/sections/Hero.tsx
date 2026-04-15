@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, LayoutGroup } from "framer-motion"
+import { motion, LayoutGroup, useReducedMotion } from "framer-motion"
 import { Container } from "../layout/Container"
 import Link from "next/link"
 import { TextRotate } from "@/components/ui/text-rotate"
@@ -30,10 +30,12 @@ const heroImages = [
 ]
 
 export function Hero() {
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <section className="relative min-h-[90vh] overflow-hidden flex flex-col items-center justify-center bg-warm-50">
-      {/* Floating Background Images */}
-      <Floating sensitivity={-0.5} className="h-full">
+      {/* Floating Background Images - hidden for reduced motion users */}
+      <Floating sensitivity={prefersReducedMotion ? 0 : -0.5} className={`h-full ${prefersReducedMotion ? "opacity-30" : ""}`}>
         <FloatingElement depth={0.5} className="top-[12%] left-[3%] md:top-[20%] md:left-[5%]">
           <motion.img
             src={heroImages[0].url}
@@ -115,7 +117,7 @@ export function Hero() {
                 className="flex whitespace-pre"
                 transition={{ type: "spring", damping: 30, stiffness: 400 }}
               >
-                <span className="italic">botanical</span>{" "}
+                <span className="italic">authentic</span>{" "}
               </motion.span>
               <TextRotate
                 texts={[

@@ -8,7 +8,7 @@ import Link from "next/link"
 const services = [
   {
     title: "Natural Hair Care",
-    description: "Expert care for your natural texture. From wash & go to protective styling, we enhance your curls with botanical treatments.",
+    description: "Expert care for your natural texture. From wash & go to protective styling, we enhance your curls with premium treatments.",
     icon: Droplets,
     price: "From $90",
     image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=400&fit=crop",
@@ -60,13 +60,16 @@ export function ServicesPreview() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className="group glass-card rounded-lg overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-500"
+                className="group bg-white rounded-lg border border-warm-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-500"
               >
                 {/* Image */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <img
                     src={service.image}
                     alt={service.title}
+                    loading="lazy"
+                    width="600"
+                    height="400"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-warm-900/20 to-transparent" />

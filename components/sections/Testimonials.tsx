@@ -5,16 +5,16 @@ import { Container } from "../layout/Container"
 
 const quotes = [
   {
-    text: "The most serene and grounded experience I've ever had at a salon. The team works quietly with such immense skill.",
-    author: "Elena M.",
+    text: "Finally found a stylist who understands my natural hair. My silk press lasts for weeks and my curls are healthier than ever.",
+    author: "Keisha B.",
   },
   {
-    text: "They restored the health of my hair using only natural processing. I leave feeling completely refreshed and beautiful.",
-    author: "Sarah J.",
+    text: "Been coming here for my locs for 3 years now. The retwists are always neat, and they actually listen to what I want.",
+    author: "Monica R.",
   },
   {
-    text: "A true sanctuary in the middle of the city. Their attention to detail and calming atmosphere makes every appointment special.",
-    author: "Chloe T.",
+    text: "Took my daughter here for her first protective style. The staff was patient, professional, and made her feel comfortable.",
+    author: "Darnell J.",
   }
 ]
 
@@ -39,7 +39,7 @@ export function Testimonials() {
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true, margin: "-50px" }}
                transition={{ duration: 0.6, delay: idx * 0.1, ease: "easeOut" }}
-               className="glass-card p-8 md:p-10 rounded-lg flex flex-col h-full"
+               className="bg-warm-50 border border-warm-100 p-8 md:p-10 rounded-lg flex flex-col h-full"
              >
                 <div className="text-4xl text-terracotta-300 font-serif leading-none mb-4">"</div>
                 <p className="text-warm-700 text-sm leading-relaxed flex-1">

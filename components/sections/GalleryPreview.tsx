@@ -60,6 +60,9 @@ export function GalleryPreview() {
                  <img
                    src={img.src}
                    alt={img.alt}
+                   loading="lazy"
+                   width={img.wide ? 800 : 400}
+                   height={img.wide ? 450 : 400}
                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                  />
                  <div className="absolute inset-0 bg-warm-900/0 group-hover:bg-warm-900/20 transition-colors duration-500" />
