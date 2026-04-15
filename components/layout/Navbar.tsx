@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X } from "lucide-react"
 import { Container } from "./Container"
+import { Logo } from "@/components/ui/logo"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -46,12 +47,7 @@ export function Navbar() {
         <Container>
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <Link
-              href="/"
-              className="font-serif text-xl md:text-2xl font-medium tracking-tight text-foreground"
-            >
-              <span className="italic">Botanical</span>
-            </Link>
+            <Logo href="/" />
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-1">
