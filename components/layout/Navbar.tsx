@@ -39,7 +39,7 @@ export function Navbar() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "glass shadow-lg shadow-forest-900/5"
+            ? "glass shadow-lg shadow-warm-900/5"
             : "bg-transparent"
         }`}
       >
@@ -63,15 +63,15 @@ export function Navbar() {
                     href={link.href}
                     className={`relative px-4 py-2 text-[11px] uppercase tracking-widest font-medium transition-colors duration-300 ${
                       isActive
-                        ? "text-forest-700"
-                        : "text-forest-900/60 hover:text-forest-900"
+                        ? "text-terracotta-700"
+                        : "text-warm-900/60 hover:text-warm-900"
                     }`}
                   >
                     {link.label}
                     {isActive && (
                       <motion.span
                         layoutId="navIndicator"
-                        className="absolute bottom-0 left-4 right-4 h-px bg-forest-700"
+                        className="absolute bottom-0 left-4 right-4 h-px bg-terracotta-700"
                         transition={{ duration: 0.3, ease: "easeOut" }}
                       />
                     )}
@@ -81,7 +81,7 @@ export function Navbar() {
 
               <Link
                 href="/booking"
-                className="ml-4 px-5 py-2.5 text-[11px] uppercase tracking-widest font-medium bg-forest-800 text-cream-50 rounded hover:bg-forest-700 transition-colors duration-300"
+                className="ml-4 px-5 py-2.5 text-[11px] uppercase tracking-widest font-medium bg-terracotta-800 text-white rounded hover:bg-terracotta-700 transition-colors duration-300"
               >
                 Book
               </Link>
@@ -89,7 +89,7 @@ export function Navbar() {
 
             {/* Mobile Toggle */}
             <button
-              className="md:hidden p-2 text-forest-900"
+              className="md:hidden p-2 text-warm-900"
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label="Open Menu"
             >
@@ -112,7 +112,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 z-50 bg-forest-900/20 backdrop-blur-sm"
+              className="fixed inset-0 z-50 bg-warm-900/20 backdrop-blur-sm"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -124,13 +124,13 @@ export function Navbar() {
               transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               className="fixed top-0 right-0 bottom-0 w-[280px] z-50 glass-card flex flex-col"
             >
-              <div className="flex items-center justify-between p-4 border-b border-forest-900/10">
-                <span className="font-serif text-lg italic text-forest-900">
+              <div className="flex items-center justify-between p-4 border-b border-warm-200">
+                <span className="font-serif text-lg italic text-warm-900">
                   Menu
                 </span>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 text-forest-900 hover:bg-forest-900/5 rounded transition-colors"
+                  className="p-2 text-warm-900 hover:bg-warm-100 rounded transition-colors"
                   aria-label="Close Menu"
                 >
                   <X className="w-5 h-5" />
@@ -152,8 +152,8 @@ export function Navbar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={`block px-4 py-3 text-sm tracking-wide transition-colors rounded ${
                           isActive
-                            ? "bg-forest-100 text-forest-800 font-medium"
-                            : "text-forest-900/70 hover:bg-forest-50 hover:text-forest-900"
+                            ? "bg-terracotta-100 text-terracotta-800 font-medium"
+                            : "text-warm-900/70 hover:bg-warm-50 hover:text-warm-900"
                         }`}
                       >
                         {link.label}
@@ -163,7 +163,7 @@ export function Navbar() {
                 })}
               </nav>
 
-              <div className="p-4 border-t border-forest-900/10">
+              <div className="p-4 border-t border-warm-200">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -172,7 +172,7 @@ export function Navbar() {
                   <Link
                     href="/booking"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block w-full px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium bg-forest-800 text-cream-50 rounded hover:bg-forest-700 transition-colors"
+                    className="block w-full px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium bg-terracotta-800 text-white rounded hover:bg-terracotta-700 transition-colors"
                   >
                     Book Appointment
                   </Link>

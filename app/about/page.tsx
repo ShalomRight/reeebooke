@@ -8,7 +8,7 @@ import { AboutSection } from "@/components/sections/AboutSection"
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-transparent flex flex-col">
+    <main className="min-h-screen bg-warm-50 flex flex-col">
       <Navbar />
       <div className="flex-1 py-12 md:py-20">
          {/* Reusing About Section to stub the page */}

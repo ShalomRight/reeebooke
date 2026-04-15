@@ -16,7 +16,7 @@ export function DashboardLayout({ children, navItems, activeTab, onTabChange }: 
   return (
     <SidebarProvider>
       <DashboardSidebar navItems={navItems} activeTab={activeTab} onTabChange={onTabChange} />
-      <SidebarInset className="flex-1 flex flex-col min-h-screen bg-background relative overflow-hidden">
+      <SidebarInset className="flex-1 flex flex-col min-h-screen bg-warm-50 relative overflow-hidden">
         <Header showSidebarTrigger={true} />
         <main className="flex-1 w-full p-4 sm:p-6 lg:p-8">
           {children}

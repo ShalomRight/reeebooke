@@ -37,34 +37,34 @@ export function PopularServices() {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle className="flex items-center gap-2">
-					<TrendingUp className="w-5 h-5" />
+				<CardTitle className="flex items-center gap-2 text-warm-800">
+					<TrendingUp className="w-5 h-5 text-terracotta-600" />
 					Popular Services
 				</CardTitle>
-				<CardDescription>Top 5 most booked services</CardDescription>
+				<CardDescription className="text-warm-600">Top 5 most booked services</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<div className="space-y-4">
 					{topServices.length === 0 ? (
-						<p className="text-sm text-muted-foreground text-center py-4">No booking data available</p>
+						<p className="text-sm text-warm-500 text-center py-4">No booking data available</p>
 					) : (
 						topServices.map((service, index) => (
-							<div key={service.name} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+							<div key={service.name} className="flex items-center justify-between p-3 rounded-lg bg-warm-100">
 								<div className="flex items-center gap-3">
 									<Badge variant="outline" className="w-8 h-8 flex items-center justify-center rounded-full">
 										{index + 1}
 									</Badge>
 									<div>
-										<p className="font-medium">{service.name}</p>
-										<p className="text-sm text-muted-foreground">{service.count} bookings</p>
+										<p className="font-medium text-warm-900">{service.name}</p>
+										<p className="text-sm text-warm-500">{service.count} bookings</p>
 									</div>
 								</div>
 								<div className="text-right">
-									<div className="flex items-center gap-1 font-semibold">
-										<DollarSign className="w-4 h-4" />
+									<div className="flex items-center gap-1 font-semibold text-warm-900">
+										<DollarSign className="w-4 h-4 text-terracotta-600" />
 										{service.revenue.toLocaleString()}
 									</div>
-									<p className="text-xs text-muted-foreground">total revenue</p>
+									<p className="text-xs text-warm-500">total revenue</p>
 								</div>
 							</div>
 						))

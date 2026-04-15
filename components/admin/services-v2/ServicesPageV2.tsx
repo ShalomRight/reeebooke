@@ -114,7 +114,7 @@ export function ServicesPageV2() {
           </div>
 
           <Link href="/admin/services/new">
-            <Button className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full">
+            <Button className="gap-2 bg-terracotta-600 hover:bg-terracotta-700 text-white rounded-full">
               <Plus className="w-4 h-4" /> New Service
             </Button>
           </Link>
@@ -178,12 +178,12 @@ export function ServicesPageV2() {
           {/* Add new card */}
           <Link
             href="/admin/services/new"
-            className="flex flex-col items-center justify-center min-h-[220px] rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 transition-all group"
+            className="flex flex-col items-center justify-center min-h-[220px] rounded-xl border-2 border-dashed border-warm-200 hover:border-terracotta-400 hover:bg-terracotta-50/40 transition-all group"
           >
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors mb-3">
-              <Plus className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 rounded-full bg-terracotta-100 flex items-center justify-center group-hover:bg-terracotta-200 transition-colors mb-3">
+              <Plus className="w-6 h-6 text-terracotta-600" />
             </div>
-            <span className="text-sm font-medium text-blue-600">New Service</span>
+            <span className="text-sm font-medium text-terracotta-600">New Service</span>
           </Link>
 
           {filtered.length === 0 && search && (
@@ -280,7 +280,7 @@ function ServiceCardV2({ service, onDelete }: { service: Service; onDelete: () =
             <Button
               variant="outline"
               size="sm"
-              className="w-full gap-1.5 text-xs hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"
+              className="w-full gap-1.5 text-xs hover:bg-terracotta-50 hover:border-terracotta-300 hover:text-terracotta-700"
             >
               <Edit2 className="w-3 h-3" /> Edit Service
             </Button>

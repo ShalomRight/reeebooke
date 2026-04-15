@@ -42,7 +42,7 @@ export default function Header({ showSidebarTrigger = false }: { showSidebarTrig
 	}
 
 	return (
-		<header className="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-card/95">
+		<header className="bg-warm-100 border-b border-warm-200 sticky top-0 z-50 backdrop-blur-sm">
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex items-center justify-between h-16">
 					<div className="flex items-center gap-2">
@@ -60,17 +60,17 @@ export default function Header({ showSidebarTrigger = false }: { showSidebarTrig
 							</Button>
 						</Link>
 						
-						<div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
-							<div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-							<span className="text-xs font-medium text-primary">{getRoleLabel(userRole)}</span>
+						<div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-terracotta-100 rounded-full border border-terracotta-200">
+							<div className="w-2 h-2 bg-terracotta-600 rounded-full animate-pulse" />
+							<span className="text-xs font-medium text-terracotta-800">{getRoleLabel(userRole)}</span>
 						</div>
 
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-primary transition-colors">
-									<Avatar className="h-10 w-10 ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
+								<Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-terracotta-100 transition-colors">
+									<Avatar className="h-10 w-10 ring-2 ring-terracotta-300 hover:ring-terracotta-500 transition-all">
 										<AvatarImage src={userImage || "/placeholder.svg"} alt={userName} />
-										<AvatarFallback className="bg-primary/10 text-primary font-semibold">
+										<AvatarFallback className="bg-terracotta-100 text-terracotta-800 font-semibold">
 											{userName.charAt(0).toUpperCase()}
 										</AvatarFallback>
 									</Avatar>
@@ -81,7 +81,7 @@ export default function Header({ showSidebarTrigger = false }: { showSidebarTrig
 									<div className="flex items-center gap-3">
 										<Avatar className="h-12 w-12">
 											<AvatarImage src={userImage || "/placeholder.svg"} alt={userName} />
-											<AvatarFallback className="bg-primary/10 text-primary font-semibold text-lg">
+											<AvatarFallback className="bg-terracotta-100 text-terracotta-800 font-semibold text-lg">
 												{userName.charAt(0).toUpperCase()}
 											</AvatarFallback>
 										</Avatar>
@@ -89,8 +89,8 @@ export default function Header({ showSidebarTrigger = false }: { showSidebarTrig
 											<p className="text-sm font-semibold truncate">{userName}</p>
 											<p className="text-xs text-muted-foreground truncate">{userEmail}</p>
 											<div className="flex items-center gap-1.5 mt-1">
-												<div className="w-1.5 h-1.5 bg-primary rounded-full" />
-												<p className="text-xs text-primary font-medium">{getRoleLabel(userRole)}</p>
+												<div className="w-1.5 h-1.5 bg-terracotta-600 rounded-full" />
+												<p className="text-xs text-terracotta-700 font-medium">{getRoleLabel(userRole)}</p>
 											</div>
 										</div>
 									</div>

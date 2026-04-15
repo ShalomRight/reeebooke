@@ -1,132 +1,106 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { motion } from "framer-motion"
+import { Container } from "@/components/layout/Container"
 import {
 	Calendar,
 	CreditCard,
-	Edit,
-	Gift,
-	Lock,
-	Phone,
-	Search,
-	Shield,
-	ShoppingCart,
+	Leaf,
+	Clock,
+	Droplets,
 	Sparkles,
+	ShoppingCart,
 	Star,
-	Ticket,
-	UserPlus,
-	Zap,
 } from "lucide-react"
 
 const features = [
 	{
-		title: "Easy Booking System",
-		description: "Select service, date, and time with an intuitive calendar interface",
+		title: "Easy Online Booking",
+		description: "Select your service, choose a date and time with our intuitive calendar interface",
 		icon: Calendar,
 	},
 	{
-		title: "Shopping Cart",
-		description: "Add multiple services to cart, edit items, and manage bookings easily",
+		title: "Service Cart",
+		description: "Add multiple services to your cart and book them all in one session",
 		icon: ShoppingCart,
 	},
 	{
-		title: "Photo Upload",
-		description: "Upload inspiration photos for your nail art designs",
-		icon: Sparkles,
+		title: "Botanical Products",
+		description: "Premium natural and organic hair care products for healthy hair",
+		icon: Leaf,
 	},
 	{
 		title: "Real-time Availability",
-		description: "See available time slots and booking counts in real-time",
-		icon: Zap,
+		description: "See available time slots and stylist schedules updated instantly",
+		icon: Clock,
 	},
 	{
-		title: "Edit Cart Items",
-		description: "Update service, date, time, or photos for any cart item",
-		icon: Edit,
-	},
-	{
-		title: "WhatsApp Integration",
-		description: "Receive booking confirmations via WhatsApp automatically",
-		icon: Phone,
-	},
-	{
-		title: "Role-Based Access",
-		description: "Different dashboards for Admin, Staff, and Clients",
-		icon: Shield,
-	},
-	{
-		title: "Stripe Payment Integration",
-		description: "Secure card payments with Stripe Checkout, automatic booking confirmation, and webhook support",
-		icon: CreditCard,
-	},
-	{
-		title: "Discount Codes",
-		description: "Apply promo codes at checkout to save on your bookings",
-		icon: Ticket,
-	},
-	{
-		title: "Referral Program",
-		description: "Share your unique referral code and earn points when friends complete their first payment",
-		icon: Gift,
-	},
-	{
-		title: "Loyalty Rewards",
-		description: "Earn points with every booking and unlock tiered rewards (Bronze, Silver, Gold, Platinum)",
-		icon: UserPlus,
-	},
-	{
-		title: "Global Search",
-		description: "Powerful search across bookings, services, users, and more with keyboard shortcuts (⌘K)",
-		icon: Search,
-	},
-	{
-		title: "Service Ratings & Reviews",
-		description: "Rate and review completed services. View all reviews with star ratings. Admin approval system for quality control",
+		title: "Expert Stylists",
+		description: "Certified professionals specializing in natural hair and locs",
 		icon: Star,
 	},
 	{
-		title: "Booking Calendar View",
-		description: "Visual calendar showing all bookings with 6 time slots per day. Filter by today, tomorrow, or all. Click to view details",
-		icon: Calendar,
+		title: "Deep Hydration",
+		description: "Steam treatments and deep conditioning for optimal hair health",
+		icon: Droplets,
 	},
 	{
-		title: "Secure Payment Processing",
-		description: "PCI-compliant payment processing with automatic receipts, refund support, and payment history tracking",
-		icon: Lock,
+		title: "Transformation Gallery",
+		description: "Browse before & after photos from our satisfied clients",
+		icon: Sparkles,
+	},
+	{
+		title: "Secure Payments",
+		description: "Book with confidence using our secure payment processing",
+		icon: CreditCard,
 	},
 ]
 
 export function FeaturesSection() {
 	return (
-		<section id="features" className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30 scroll-mt-20">
-			<div className="max-w-7xl mx-auto">
-				<div className="text-center mb-12">
-					<h2 className="text-3xl md:text-4xl font-bold text-card-foreground mb-4">Key Features</h2>
-					<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-						Everything you need for a modern booking system
+		<section id="features" className="py-20 bg-warm-50">
+			<Container>
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					viewport={{ once: true }}
+					transition={{ duration: 0.6 }}
+					className="text-center mb-16"
+				>
+					<p className="text-[11px] uppercase tracking-widest text-terracotta-600 mb-4">
+						Why Choose Us
 					</p>
-				</div>
+					<h2 className="font-serif text-3xl md:text-4xl text-warm-900 mb-4">
+						The <span className="italic">Abby</span> Experience
+					</h2>
+					<p className="text-sm text-warm-600 max-w-xl mx-auto">
+						Everything you need for a premium salon experience,
+						from booking to beautiful results.
+					</p>
+				</motion.div>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 					{features.map((feature, idx) => {
 						const Icon = feature.icon
 						return (
-							<Card key={idx}>
-								<CardHeader>
-									<div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-										<Icon className="w-6 h-6 text-primary" />
-									</div>
-									<CardTitle className="text-lg">{feature.title}</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<CardDescription>{feature.description}</CardDescription>
-								</CardContent>
-							</Card>
+							<motion.div
+								key={idx}
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								viewport={{ once: true }}
+								transition={{ duration: 0.5, delay: idx * 0.05 }}
+								className="glass-card rounded-lg p-6 hover:shadow-lg transition-all duration-300"
+							>
+								<div className="w-10 h-10 rounded bg-terracotta-100 flex items-center justify-center mb-4">
+									<Icon className="w-5 h-5 text-terracotta-700" />
+								</div>
+								<h3 className="font-medium text-warm-900 mb-2">{feature.title}</h3>
+								<p className="text-sm text-warm-600 leading-relaxed">{feature.description}</p>
+							</motion.div>
 						)
 					})}
 				</div>
-			</div>
+			</Container>
 		</section>
 	)
 }
-

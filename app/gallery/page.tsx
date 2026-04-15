@@ -89,30 +89,30 @@ function GalleryItem({
       className={`relative overflow-hidden rounded cursor-pointer group ${aspectClasses[image.aspect]}`}
     >
       {/* Placeholder with gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-forest-100 via-forest-50 to-cream-100">
+      <div className="absolute inset-0 bg-gradient-to-br from-terracotta-100 via-terracotta-50 to-warm-100">
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-          <div className="w-16 h-16 rounded-full bg-forest-800/5 flex items-center justify-center mb-3">
-            <span className="font-serif text-2xl italic text-forest-400">
+          <div className="w-16 h-16 rounded-full bg-terracotta-800/5 flex items-center justify-center mb-3">
+            <span className="font-serif text-2xl italic text-terracotta-400">
               {image.id}
             </span>
           </div>
-          <p className="text-[10px] uppercase tracking-widest text-forest-500/60">
+          <p className="text-[10px] uppercase tracking-widest text-terracotta-500/60">
             {image.category}
           </p>
         </div>
       </div>
 
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-forest-900/0 group-hover:bg-forest-900/40 transition-all duration-500 flex items-center justify-center">
+      <div className="absolute inset-0 bg-warm-900/0 group-hover:bg-warm-900/40 transition-all duration-500 flex items-center justify-center">
         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">
           <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-            <ZoomIn className="w-5 h-5 text-forest-800" />
+            <ZoomIn className="w-5 h-5 text-terracotta-800" />
           </div>
         </div>
       </div>
 
       {/* Info bar */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-forest-900/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-warm-900/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-500">
         <p className="text-white font-serif text-sm">{image.title}</p>
         <p className="text-white/60 text-[10px] uppercase tracking-wider mt-1">
           {image.category}
@@ -142,7 +142,7 @@ function Lightbox({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-forest-900/95 flex items-center justify-center"
+        className="fixed inset-0 z-50 bg-warm-900/95 flex items-center justify-center"
         onClick={onClose}
       >
         {/* Close button */}
@@ -183,14 +183,14 @@ function Lightbox({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="max-w-5xl max-h-[80vh] w-full mx-4 aspect-video bg-gradient-to-br from-forest-100 to-forest-200 rounded-lg flex items-center justify-center"
+          className="max-w-5xl max-h-[80vh] w-full mx-4 aspect-video bg-gradient-to-br from-terracotta-100 to-terracotta-200 rounded-lg flex items-center justify-center"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="text-center">
-            <span className="font-serif text-6xl italic text-forest-400">
+            <span className="font-serif text-6xl italic text-terracotta-400">
               {currentImage.id}
             </span>
-            <p className="text-forest-600 mt-4 font-serif">{currentImage.title}</p>
+            <p className="text-terracotta-600 mt-4 font-serif">{currentImage.title}</p>
           </div>
         </motion.div>
 
@@ -241,20 +241,20 @@ export default function GalleryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="min-h-screen bg-warm-50 flex flex-col">
       <Navbar />
 
       {/* Header */}
       <section className="pt-12 md:pt-20 pb-8">
         <Container>
           <div ref={headerRef} className="max-w-2xl">
-            <p className="text-[11px] uppercase tracking-widest text-forest-500 mb-4">
+            <p className="text-[11px] uppercase tracking-widest text-terracotta-600 mb-4">
               Our Work
             </p>
-            <h1 className="font-serif text-4xl md:text-6xl font-medium text-forest-900 tracking-tight mb-6">
-              Client <span className="italic text-forest-600">Gallery</span>
+            <h1 className="font-serif text-4xl md:text-6xl font-medium text-warm-900 tracking-tight mb-6">
+              Client <span className="italic text-terracotta-600">Gallery</span>
             </h1>
-            <p className="text-sm text-forest-900/60 leading-relaxed max-w-lg">
+            <p className="text-sm text-warm-600 leading-relaxed max-w-lg">
               Explore our portfolio of transformations. Each image represents
               the artistry and care we bring to every client who sits in our chair.
             </p>
@@ -263,7 +263,7 @@ export default function GalleryPage() {
       </section>
 
       {/* Filter Bar */}
-      <section className="sticky top-16 md:top-20 z-30 bg-background/80 backdrop-blur-md border-y border-forest-900/5 py-4">
+      <section className="sticky top-16 md:top-20 z-30 bg-background/80 backdrop-blur-md border-y border-warm-200 py-4">
         <Container>
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide pb-1">
             {categories.map((cat) => (
@@ -272,8 +272,8 @@ export default function GalleryPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 text-[11px] uppercase tracking-wider whitespace-nowrap rounded transition-all duration-300 ${
                   activeCategory === cat
-                    ? "bg-forest-800 text-cream-50"
-                    : "text-forest-600 hover:bg-forest-50"
+                    ? "bg-terracotta-800 text-white"
+                    : "text-terracotta-600 hover:bg-terracotta-50"
                 }`}
               >
                 {cat}
@@ -300,15 +300,15 @@ export default function GalleryPage() {
           {/* Empty state */}
           {filteredImages.length === 0 && (
             <div className="text-center py-20">
-              <p className="text-sm text-forest-900/40">
+              <p className="text-sm text-warm-500">
                 No images in this category yet.
               </p>
             </div>
           )}
 
           {/* Results count */}
-          <div className="mt-12 pt-8 border-t border-forest-900/5">
-            <p className="text-[11px] uppercase tracking-widest text-forest-500 text-center">
+          <div className="mt-12 pt-8 border-t border-warm-200">
+            <p className="text-[11px] uppercase tracking-widest text-terracotta-500 text-center">
               Showing {filteredImages.length} of {galleryImages.length} images
             </p>
           </div>
@@ -319,16 +319,16 @@ export default function GalleryPage() {
       <section className="py-20">
         <Container>
           <div className="glass-card rounded-lg p-8 md:p-12 text-center">
-            <h2 className="font-serif text-2xl md:text-3xl text-forest-900 mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-warm-900 mb-4">
               Be our next <span className="italic">transformation</span>
             </h2>
-            <p className="text-sm text-forest-900/60 mb-8 max-w-md mx-auto">
+            <p className="text-sm text-warm-600 mb-8 max-w-md mx-auto">
               Ready to add your story to our gallery? Book your appointment and
               let us create something beautiful together.
             </p>
             <a
               href="/booking"
-              className="inline-flex items-center gap-2 bg-forest-800 hover:bg-forest-700 text-cream-50 text-[11px] uppercase tracking-widest px-8 py-4 rounded transition-colors"
+              className="inline-flex items-center gap-2 bg-terracotta-800 hover:bg-terracotta-700 text-white text-[11px] uppercase tracking-widest px-8 py-4 rounded transition-colors"
             >
               Book Now
               <ChevronRight className="w-4 h-4" />

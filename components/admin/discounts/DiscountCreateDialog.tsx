@@ -47,7 +47,7 @@ export function DiscountCreateDialog({ onSubmit }: DiscountCreateDialogProps) {
 	return (
 		<Sheet open={isOpen} onOpenChange={setIsOpen}>
 			<SheetTrigger asChild>
-				<Button className="rounded-full bg-blue-600 hover:bg-blue-700 text-white">
+				<Button className="rounded-full bg-terracotta-600 hover:bg-terracotta-700 text-white">
 					<Plus className="w-4 h-4 mr-2" />
 					Create Code
 				</Button>

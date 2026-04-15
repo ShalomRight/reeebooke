@@ -144,7 +144,7 @@ dependencies:
     specifier: ^0.45.2
     version: 0.45.2(@cloudflare/workers-types@4.20260413.1)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.8.0)
   embla-carousel-react:
-    specifier: ^8.3.0
+    specifier: ^8.6.0
     version: 8.6.0(react@19.2.4)
   framer-motion:
     specifier: ^12.38.0
@@ -161,6 +161,9 @@ dependencies:
   lucide-react:
     specifier: ^0.553.0
     version: 0.553.0(react@19.2.4)
+  motion:
+    specifier: ^12.38.0
+    version: 12.38.0(react-dom@19.2.4)(react@19.2.4)
   nanoid:
     specifier: ^5.0.7
     version: 5.1.7
@@ -8469,6 +8472,26 @@ packages:
 
   /motion-utils@12.36.0:
     resolution: {integrity: sha512-eHWisygbiwVvf6PZ1vhaHCLamvkSbPIeAYxWUuL3a2PD/TROgE7FvfHWTIH4vMl798QLfMw15nRqIaRDXTlYRg==}
+    dev: false
+
+  /motion@12.38.0(react-dom@19.2.4)(react@19.2.4):
+    resolution: {integrity: sha512-uYfXzeHlgThchzwz5Te47dlv5JOUC7OB4rjJ/7XTUgtBZD8CchMN8qEJ4ZVsUmTyYA44zjV0fBwsiktRuFnn+w==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      framer-motion: 12.38.0(react-dom@19.2.4)(react@19.2.4)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      tslib: 2.8.1
     dev: false
 
   /mri@1.2.0:

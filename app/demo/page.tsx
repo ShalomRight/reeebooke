@@ -1,28 +1,19 @@
-import { BookingFormSection } from "@/components/landing/BookingFormSection"
-import { FeaturesSection } from "@/components/landing/FeaturesSection"
-import { Footer } from "@/components/landing/Footer"
+import { Navbar } from "@/components/layout/Navbar"
+import { Footer } from "@/components/layout/Footer"
 import { HeroSection } from "@/components/landing/HeroSection"
-import { HowItWorksSection } from "@/components/landing/HowItWorksSection"
-import { HowToTestSection } from "@/components/landing/HowToTestSection"
+import { ServicesGallerySection } from "@/components/landing/ServicesGallerySection"
+import { FeaturesSection } from "@/components/landing/FeaturesSection"
 import { StatsSection } from "@/components/landing/StatsSection"
-import { TestCredentialsSection } from "@/components/landing/TestCredentialsSection"
-import { WhyChooseSection } from "@/components/landing/WhyChooseSection"
-import LayoutAdmin from "@/components/layout/landing"
 
 export default function DemoLandingPage() {
 	return (
-		<LayoutAdmin>
-			<div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-				<HeroSection />
-				<TestCredentialsSection />
-				<HowItWorksSection />
-				<BookingFormSection />
-				<WhyChooseSection />
-				<FeaturesSection />
-				<StatsSection />
-				<HowToTestSection />
-				<Footer />
-			</div>
-		</LayoutAdmin>
+		<main className="min-h-screen bg-warm-50">
+			<Navbar />
+			<HeroSection />
+			<ServicesGallerySection />
+			<FeaturesSection />
+			<StatsSection />
+			<Footer />
+		</main>
 	)
 }

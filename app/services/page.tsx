@@ -37,10 +37,10 @@ const categoryIcons: Record<string, React.ReactNode> = {
 function ServiceImage({ service, index }: { service: Service; index: number }) {
   // Generate a consistent placeholder color based on service name
   const colors = [
-    "bg-forest-100",
-    "bg-forest-200",
-    "bg-cream-200",
-    "bg-forest-50",
+    "bg-terracotta-100",
+    "bg-terracotta-200",
+    "bg-warm-200",
+    "bg-terracotta-50",
   ]
   const bgColor = colors[index % colors.length]
 
@@ -50,15 +50,15 @@ function ServiceImage({ service, index }: { service: Service; index: number }) {
     >
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center p-4">
-          <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-forest-800/10 flex items-center justify-center">
-            <ImageIcon className="w-5 h-5 text-forest-600" />
+          <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-terracotta-800/10 flex items-center justify-center">
+            <ImageIcon className="w-5 h-5 text-terracotta-600" />
           </div>
-          <p className="text-[10px] uppercase tracking-widest text-forest-500/60 text-center leading-tight">
+          <p className="text-[10px] uppercase tracking-widest text-terracotta-500/60 text-center leading-tight">
             {service.imagePrompt.slice(0, 40)}...
           </p>
         </div>
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-forest-900/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-t from-warm-900/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-500" />
     </div>
   )
 }
@@ -107,28 +107,28 @@ function ServiceCard({
 
         <div className="p-5">
           <div className="flex items-start justify-between gap-3 mb-3">
-            <h3 className="font-serif text-lg font-medium text-forest-900 leading-tight group-hover:text-forest-700 transition-colors">
+            <h3 className="font-serif text-lg font-medium text-warm-900 leading-tight group-hover:text-terracotta-700 transition-colors">
               {service.name}
             </h3>
             {service.isUpgrade && (
               <Badge
                 variant="outline"
-                className="shrink-0 text-[9px] uppercase tracking-wider border-forest-300 text-forest-600 bg-forest-50"
+                className="shrink-0 text-[9px] uppercase tracking-wider border-terracotta-300 text-terracotta-600 bg-terracotta-50"
               >
                 Add-on
               </Badge>
             )}
           </div>
 
-          <p className="text-xs text-forest-900/60 leading-relaxed mb-4 line-clamp-2">
+          <p className="text-xs text-warm-600 leading-relaxed mb-4 line-clamp-2">
             {service.description}
           </p>
 
-          <div className="flex items-center justify-between pt-3 border-t border-forest-900/5">
-            <span className="font-serif text-base font-medium text-forest-700">
+          <div className="flex items-center justify-between pt-3 border-t border-warm-200">
+            <span className="font-serif text-base font-medium text-terracotta-700">
               {service.priceDisplay}
             </span>
-            <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-forest-600 hover:text-forest-800 transition-colors group/btn">
+            <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-terracotta-600 hover:text-terracotta-800 transition-colors group/btn">
               Book
               <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
             </button>
@@ -198,20 +198,20 @@ export default function ServicesPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="min-h-screen bg-warm-50 flex flex-col">
       <Navbar />
 
       {/* Hero Section */}
       <section className="pt-12 md:pt-20 pb-8">
         <Container>
           <div ref={headerRef} className="max-w-2xl">
-            <p className="text-[11px] uppercase tracking-widest text-forest-500 mb-4">
+            <p className="text-[11px] uppercase tracking-widest text-terracotta-600 mb-4">
               What We Offer
             </p>
-            <h1 className="font-serif text-4xl md:text-6xl font-medium text-forest-900 tracking-tight mb-6">
-              Our <span className="italic text-forest-600">Services</span>
+            <h1 className="font-serif text-4xl md:text-6xl font-medium text-warm-900 tracking-tight mb-6">
+              Our <span className="italic text-terracotta-600">Services</span>
             </h1>
-            <p className="text-sm text-forest-900/60 leading-relaxed max-w-lg">
+            <p className="text-sm text-warm-600 leading-relaxed max-w-lg">
               Discover our curated selection of professional hair care services.
               From natural hair treatments to loc maintenance and color
               transformations, we bring artistry to every appointment.
@@ -221,7 +221,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Filter & Sort Bar */}
-      <section className="sticky top-16 md:top-20 z-30 bg-background/80 backdrop-blur-md border-y border-forest-900/5 py-4">
+      <section className="sticky top-16 md:top-20 z-30 bg-warm-50/95 backdrop-blur-md border-y border-warm-200 py-4">
         <Container>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             {/* Category Filter */}
@@ -232,8 +232,8 @@ export default function ServicesPage() {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-3 py-1.5 text-[11px] uppercase tracking-wider whitespace-nowrap rounded transition-all duration-300 ${
                     activeCategory === cat
-                      ? "bg-forest-800 text-cream-50"
-                      : "text-forest-600 hover:bg-forest-50"
+                      ? "bg-terracotta-800 text-white"
+                      : "text-terracotta-600 hover:bg-terracotta-50"
                   }`}
                 >
                   {cat === "all" ? "All Services" : cat}
@@ -245,7 +245,7 @@ export default function ServicesPage() {
             <div className="relative">
               <button
                 onClick={() => setShowSortMenu(!showSortMenu)}
-                className="flex items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-wider text-forest-600 hover:text-forest-800 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-[11px] uppercase tracking-wider text-terracotta-600 hover:text-terracotta-800 transition-colors"
               >
                 <ArrowUpDown className="w-3.5 h-3.5" />
                 {sortOptions.find((o) => o.value === sortBy)?.label}
@@ -272,8 +272,8 @@ export default function ServicesPage() {
                       }}
                       className={`w-full px-4 py-2 text-left text-xs transition-colors ${
                         sortBy === option.value
-                          ? "bg-forest-100 text-forest-800"
-                          : "text-forest-600 hover:bg-forest-50"
+                          ? "bg-terracotta-100 text-terracotta-800"
+                          : "text-terracotta-600 hover:bg-terracotta-50"
                       }`}
                     >
                       {option.label}
@@ -292,20 +292,20 @@ export default function ServicesPage() {
           {filteredServices.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredServices.map((service, index) => (
-                <ServiceCard key={service.name} service={service} index={index} />
+                <ServiceCard key={`${service.name}-${index}`} service={service} index={index} />
               ))}
             </div>
           ) : (
             <div className="text-center py-20">
-              <p className="text-sm text-forest-900/40">
+              <p className="text-sm text-warm-500">
                 No services found in this category.
               </p>
             </div>
           )}
 
           {/* Results count */}
-          <div className="mt-12 pt-8 border-t border-forest-900/5">
-            <p className="text-[11px] uppercase tracking-widest text-forest-500 text-center">
+          <div className="mt-12 pt-8 border-t border-warm-200">
+            <p className="text-[11px] uppercase tracking-widest text-terracotta-500 text-center">
               Showing {filteredServices.length} of {ACCOUNTS_SERVICES.length}{" "}
               services
             </p>
@@ -317,14 +317,14 @@ export default function ServicesPage() {
       <section className="py-20">
         <Container>
           <div className="glass-card rounded-lg p-8 md:p-12 text-center">
-            <h2 className="font-serif text-2xl md:text-3xl text-forest-900 mb-4">
+            <h2 className="font-serif text-2xl md:text-3xl text-warm-900 mb-4">
               Ready to <span className="italic">transform</span> your look?
             </h2>
-            <p className="text-sm text-forest-900/60 mb-8 max-w-md mx-auto">
+            <p className="text-sm text-warm-600 mb-8 max-w-md mx-auto">
               Book your appointment today and experience the artistry of
-              botanical hair care.
+              premium hair care.
             </p>
-            <Button className="bg-forest-800 hover:bg-forest-700 text-cream-50 text-[11px] uppercase tracking-widest px-8 py-5 rounded">
+            <Button className="bg-terracotta-800 hover:bg-terracotta-700 text-white text-[11px] uppercase tracking-widest px-8 py-5 rounded">
               Book Appointment
             </Button>
           </div>

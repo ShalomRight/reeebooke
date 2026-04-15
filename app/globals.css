@@ -3,62 +3,73 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Forest Green Color System */
-  --forest-900: #1E261F;
-  --forest-800: #2E3A2F;
-  --forest-700: #3E4D45;
-  --forest-600: #4A5D52;
-  --forest-500: #5B7065;
-  --forest-400: #7A8F80;
-  --forest-300: #9BA99C;
-  --forest-200: #BCC7BD;
-  --forest-100: #DDE4DE;
-  --forest-50: #F0F4F0;
+  /* Warm Terracotta - Caribbean Earth Tones */
+  --terracotta-900: #5C2A1A;
+  --terracotta-800: #8B3A1F;
+  --terracotta-700: #A84A2A;
+  --terracotta-600: #B85C38;
+  --terracotta-500: #C67B5C;
+  --terracotta-400: #D4825F;
+  --terracotta-300: #E8A88D;
+  --terracotta-200: #F0C4B0;
+  --terracotta-100: #F8E4DB;
+  --terracotta-50: #FDF5F1;
 
-  /* Cream/Creamy neutrals */
-  --cream-50: #FDFCFB;
-  --cream-100: #F7F5F0;
-  --cream-200: #EDE9E2;
-  --cream-300: #E0DBD2;
+  /* Warm Neutrals - Caribbean Sand & Clay */
+  --warm-900: #2A2523;
+  --warm-800: #3D3632;
+  --warm-700: #4A423D;
+  --warm-600: #6B5F58;
+  --warm-500: #8A7D75;
+  --warm-400: #9A8F88;
+  --warm-300: #B8AFA8;
+  --warm-200: #E5E0DC;
+  --warm-100: #F5F3F1;
+  --warm-50: #FAF9F8;
 
-  /* Glass & Surface */
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(46, 58, 47, 0.08);
-  --glass-shadow: rgba(0, 0, 0, 0.05);
+  /* Accents */
+  --clay: #C67B5C;
+  --sand: #D4A574;
+  --cream: #FDF8F3;
+
+  /* Surface & Glass */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(139, 58, 31, 0.08);
+  --glass-shadow: rgba(42, 37, 35, 0.04);
 
   /* Design Tokens */
-  --background: var(--cream-50);
-  --foreground: var(--forest-900);
-  --card: var(--glass-bg);
-  --card-foreground: var(--forest-900);
-  --popover: var(--glass-bg);
-  --popover-foreground: var(--forest-900);
-  --primary: var(--forest-800);
-  --primary-foreground: var(--cream-50);
-  --secondary: var(--forest-100);
-  --secondary-foreground: var(--forest-900);
-  --muted: var(--forest-50);
-  --muted-foreground: var(--forest-500);
-  --accent: var(--forest-700);
-  --accent-foreground: var(--cream-50);
-  --destructive: #B91C1C;
-  --destructive-foreground: var(--cream-50);
-  --border: var(--glass-border);
-  --input: var(--forest-200);
-  --ring: var(--forest-700);
-  --chart-1: var(--forest-800);
-  --chart-2: var(--forest-600);
-  --chart-3: var(--forest-500);
-  --chart-4: var(--forest-400);
-  --chart-5: var(--forest-300);
-  --sidebar: var(--cream-100);
-  --sidebar-foreground: var(--forest-900);
-  --sidebar-primary: var(--forest-800);
-  --sidebar-primary-foreground: var(--cream-50);
-  --sidebar-accent: var(--forest-100);
-  --sidebar-accent-foreground: var(--forest-900);
-  --sidebar-border: var(--forest-200);
-  --sidebar-ring: var(--forest-700);
+  --background: var(--warm-50);
+  --foreground: var(--warm-900);
+  --card: var(--warm-50);
+  --card-foreground: var(--warm-900);
+  --popover: var(--warm-50);
+  --popover-foreground: var(--warm-900);
+  --primary: var(--terracotta-800);
+  --primary-foreground: #FFFFFF;
+  --secondary: var(--terracotta-100);
+  --secondary-foreground: var(--warm-800);
+  --muted: var(--warm-100);
+  --muted-foreground: var(--warm-600);
+  --accent: var(--clay);
+  --accent-foreground: #FFFFFF;
+  --destructive: #C53030;
+  --destructive-foreground: #FFFFFF;
+  --border: var(--warm-200);
+  --input: var(--warm-200);
+  --ring: var(--terracotta-600);
+  --chart-1: var(--terracotta-800);
+  --chart-2: var(--terracotta-600);
+  --chart-3: var(--terracotta-500);
+  --chart-4: var(--sand);
+  --chart-5: var(--warm-400);
+  --sidebar: var(--warm-100);
+  --sidebar-foreground: var(--warm-900);
+  --sidebar-primary: var(--terracotta-800);
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: var(--terracotta-100);
+  --sidebar-accent-foreground: var(--warm-800);
+  --sidebar-border: var(--warm-200);
+  --sidebar-ring: var(--terracotta-600);
 
   /* Typography */
   --font-sans: Inter, system-ui, sans-serif;
@@ -105,30 +116,31 @@
 }
 
 .dark {
-  --background: var(--forest-900);
-  --foreground: var(--cream-50);
-  --card: rgba(46, 58, 47, 0.8);
-  --card-foreground: var(--cream-50);
-  --popover: rgba(46, 58, 47, 0.9);
-  --popover-foreground: var(--cream-50);
-  --primary: var(--forest-500);
-  --primary-foreground: var(--forest-900);
-  --secondary: var(--forest-800);
-  --secondary-foreground: var(--cream-50);
-  --muted: var(--forest-800);
-  --muted-foreground: var(--forest-300);
-  --accent: var(--forest-600);
-  --accent-foreground: var(--cream-50);
+  --background: var(--warm-900);
+  --foreground: var(--warm-50);
+  --card: rgba(42, 37, 35, 0.8);
+  --card-foreground: var(--warm-50);
+  --popover: rgba(42, 37, 35, 0.9);
+  --popover-foreground: var(--warm-50);
+  --primary: var(--terracotta-500);
+  --primary-foreground: var(--warm-900);
+  --secondary: var(--warm-800);
+  --secondary-foreground: var(--warm-50);
+  --muted: var(--warm-800);
+  --muted-foreground: var(--warm-300);
+  --accent: var(--terracotta-600);
+  --accent-foreground: var(--warm-50);
   --destructive: #EF4444;
-  --destructive-foreground: var(--cream-50);
+  --destructive-foreground: var(--warm-50);
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.1);
-  --ring: var(--forest-500);
-  --glass-bg: rgba(46, 58, 47, 0.64);
+  --ring: var(--terracotta-500);
+  --glass-bg: rgba(42, 37, 35, 0.64);
   --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
+  /* Base theme colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -161,6 +173,35 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Terracotta scale */
+  --color-terracotta-50: var(--terracotta-50);
+  --color-terracotta-100: var(--terracotta-100);
+  --color-terracotta-200: var(--terracotta-200);
+  --color-terracotta-300: var(--terracotta-300);
+  --color-terracotta-400: var(--terracotta-400);
+  --color-terracotta-500: var(--terracotta-500);
+  --color-terracotta-600: var(--terracotta-600);
+  --color-terracotta-700: var(--terracotta-700);
+  --color-terracotta-800: var(--terracotta-800);
+  --color-terracotta-900: var(--terracotta-900);
+
+  /* Warm neutral scale */
+  --color-warm-50: var(--warm-50);
+  --color-warm-100: var(--warm-100);
+  --color-warm-200: var(--warm-200);
+  --color-warm-300: var(--warm-300);
+  --color-warm-400: var(--warm-400);
+  --color-warm-500: var(--warm-500);
+  --color-warm-600: var(--warm-600);
+  --color-warm-700: var(--warm-700);
+  --color-warm-800: var(--warm-800);
+  --color-warm-900: var(--warm-900);
+
+  /* Accents */
+  --color-clay: var(--clay);
+  --color-sand: var(--sand);
+  --color-cream: var(--cream);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -210,21 +251,21 @@
   }
 
   .glass-dark {
-    background: rgba(46, 58, 47, 0.64);
+    background: rgba(61, 54, 50, 0.72);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .glass-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.72) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 249, 248, 0.9) 100%);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     box-shadow:
-      0 1px 2px 0 rgba(30, 38, 31, 0.05),
-      0 12px 24px -6px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.3);
+      0 1px 2px 0 rgba(42, 37, 35, 0.04),
+      0 8px 16px -4px rgba(42, 37, 35, 0.08),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.4);
   }
 
   /* Gradient Border Shell - Premium Edge Treatment */

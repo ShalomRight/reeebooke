@@ -20,11 +20,14 @@ const quotes = [
 
 export function Testimonials() {
   return (
-    <section className="py-24 md:py-32 bg-white">
+    <section className="py-20 md:py-28 bg-white">
       <Container>
         <div className="text-center mb-16">
-          <h2 className="font-playfair text-3xl md:text-4xl text-[#1A2421] mb-4">
-             Client <span className="italic text-[#5B7065]">Notes</span>
+          <p className="text-[11px] uppercase tracking-widest text-terracotta-600 mb-4">
+            Testimonials
+          </p>
+          <h2 className="font-serif text-3xl md:text-4xl text-warm-900 mb-4">
+             Client <span className="italic text-terracotta-600">Notes</span>
           </h2>
         </div>
 
@@ -36,13 +39,13 @@ export function Testimonials() {
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true, margin: "-50px" }}
                transition={{ duration: 0.6, delay: idx * 0.1, ease: "easeOut" }}
-               className="bg-[#FDFCFB] p-8 md:p-10 rounded-3xl border border-[#E2E0D9]/50 flex flex-col h-full"
+               className="glass-card p-8 md:p-10 rounded-lg flex flex-col h-full"
              >
-                <div className="text-4xl text-[#C8B9A6] font-playfair leading-none mb-4">"</div>
-                <p className="font-source text-[#1A2421]/80 text-lg leading-relaxed flex-1">
+                <div className="text-4xl text-terracotta-300 font-serif leading-none mb-4">"</div>
+                <p className="text-warm-700 text-sm leading-relaxed flex-1">
                    {quote.text}
                 </p>
-                <p className="mt-8 font-playfair font-semibold text-[#5B7065] tracking-wider">— {quote.author}</p>
+                <p className="mt-8 font-serif font-semibold text-terracotta-600 tracking-wider text-sm">— {quote.author}</p>
              </motion.div>
            ))}
         </div>

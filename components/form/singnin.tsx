@@ -60,7 +60,7 @@ export default function SigninForm() {
 				type="button"
 				variant="outline"
 				onClick={handleGoogleSignIn}
-				className="w-full mb-4 flex items-center justify-center gap-2 bg-transparent hover:bg-primary"
+				className="w-full mb-4 flex items-center justify-center gap-2 bg-white border-warm-300 hover:bg-warm-50 hover:border-terracotta-400"
 			>
 				<svg className="w-5 h-5" viewBox="0 0 24 24">
 					<path
@@ -85,19 +85,19 @@ export default function SigninForm() {
 
 			<div className="relative mb-4">
 				<div className="absolute inset-0 flex items-center">
-					<div className="w-full border-t border-muted" />
+					<div className="w-full border-t border-warm-300" />
 				</div>
 				<div className="relative flex justify-center text-xs uppercase">
-					<span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
+					<span className="bg-white px-2 text-warm-500">Or continue with email</span>
 				</div>
 			</div>
 
 			<div className="relative my-4">
 				<div className="absolute inset-0 flex items-center">
-					<div className="w-full border-t border-muted" />
+					<div className="w-full border-t border-warm-300" />
 				</div>
 				<div className="relative flex justify-center text-xs uppercase">
-					<span className="bg-card px-2 text-muted-foreground">Or enter manually</span>
+					<span className="bg-white px-2 text-warm-500">Or enter manually</span>
 				</div>
 			</div>
 
@@ -107,22 +107,22 @@ export default function SigninForm() {
 					{ id: "password", label: "Password", type: "password", placeholder: "••••••••" },
 				].map(({ id, label, type, placeholder }) => (
 					<div key={id} className="space-y-2">
-						<Label htmlFor={id}>{label}</Label>
-						<Input id={id} type={type} placeholder={placeholder} {...register(id as keyof FormData)} />
+						<Label htmlFor={id} className="text-warm-800">{label}</Label>
+						<Input id={id} type={type} placeholder={placeholder} className="bg-white border-warm-300 text-warm-900 placeholder:text-warm-400" {...register(id as keyof FormData)} />
 						{errors[id as keyof FormData] && (
-							<p className="text-sm text-destructive">{errors[id as keyof FormData]?.message}</p>
+							<p className="text-sm text-red-600">{errors[id as keyof FormData]?.message}</p>
 						)}
 					</div>
 				))}
 				<div className="flex items-center justify-between">
 					<Link
 						href="/auth/forgot-password"
-						className="text-sm text-muted-foreground hover:text-primary"
+						className="text-sm text-warm-500 hover:text-terracotta-600"
 					>
 						Forgot password?
 					</Link>
 				</div>
-				<Button type="submit" className="w-full" disabled={isSubmitting}>
+				<Button type="submit" className="w-full bg-terracotta-600 hover:bg-terracotta-700 text-white" disabled={isSubmitting}>
 					{isSubmitting ? "Signing in..." : "Sign In"}
 				</Button>
 			</form>

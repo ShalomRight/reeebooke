@@ -26,7 +26,7 @@ export function DashboardSidebar({
   onTabChange: (key: string) => void
 }) {
   return (
-    <Sidebar className="mt-16 border-r border-border bg-sidebar">
+    <Sidebar className="border-r border-warm-200 bg-warm-100">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent className="p-4 space-y-1">
@@ -45,7 +45,7 @@ export function DashboardSidebar({
                     <SidebarMenuButton
                       isActive={isActive}
                       onClick={() => onTabChange(item.key)}
-                      className={`gap-3 ${isActive ? 'bg-primary/10 text-primary font-semibold' : 'hover:bg-muted text-muted-foreground hover:text-foreground'}`}
+                      className={`gap-3 ${isActive ? 'bg-terracotta-100 text-terracotta-800 font-semibold' : 'hover:bg-warm-200 text-warm-600 hover:text-warm-900'}`}
                     >
                       {IconElement}
                       <span>{item.label}</span>

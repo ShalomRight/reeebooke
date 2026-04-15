@@ -52,16 +52,16 @@ export function RevenueChart() {
 		};
 	});
 
-	// Use shadcn default/neutral colors
-	const revenueColor = "#6366f1"; // shadcn primary-600
-	const bookingsColor = "#fbbf24"; // shadcn amber-400 for variety
-	const gridColor = "#e5e7eb"; // shadcn gray-200
+	// Use warm terracotta color palette
+	const revenueColor = "#c17a5c"; // terracotta-600
+	const bookingsColor = "#e8a87c"; // terracotta-400
+	const gridColor = "#e8e2da"; // warm-200
 
 	return (
 		<Card className="col-span-2">
 			<CardHeader>
-				<CardTitle>Revenue Overview</CardTitle>
-				<CardDescription>
+				<CardTitle className="text-warm-800">Revenue Overview</CardTitle>
+				<CardDescription className="text-warm-600">
 					Monthly revenue and booking trends for the last 6 months
 				</CardDescription>
 			</CardHeader>
@@ -80,14 +80,14 @@ export function RevenueChart() {
 							/>
 							<XAxis
 								dataKey="month"
-								tick={{ fontSize: 14, fill: "#64748b", fontFamily: "inherit" }}
+								tick={{ fontSize: 14, fill: "#7d7369", fontFamily: "inherit" }}
 								axisLine={false}
 								tickLine={false}
 								padding={{ left: 8, right: 8 }}
 							/>
 							<YAxis
 								yAxisId="left"
-								tick={{ fontSize: 13, fill: "#94a3b8", fontFamily: "inherit" }}
+								tick={{ fontSize: 13, fill: "#9a9085", fontFamily: "inherit" }}
 								axisLine={false}
 								tickLine={false}
 								width={60}
@@ -110,7 +110,7 @@ export function RevenueChart() {
 							<YAxis
 								yAxisId="right"
 								orientation="right"
-								tick={{ fontSize: 13, fill: bookingsColor, fontFamily: "inherit" }}
+								tick={{ fontSize: 13, fill: "#7d7369", fontFamily: "inherit" }}
 								axisLine={false}
 								tickLine={false}
 								width={40}

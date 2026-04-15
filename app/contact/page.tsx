@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-transparent flex flex-col">
+    <main className="min-h-screen bg-warm-50 flex flex-col">
       <Navbar />
       <div className="flex-1 py-24 md:py-32">
         <Container>
@@ -17,15 +17,15 @@ export default function ContactPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="max-w-2xl mx-auto text-center"
           >
-            <h1 className="font-playfair text-5xl md:text-7xl text-[#2D3A31] mb-6">
-              Get in <span className="italic text-[#8C9A84]">Touch</span>
+            <h1 className="font-serif text-5xl md:text-7xl text-warm-900 mb-6">
+              Get in <span className="italic text-terracotta-600">Touch</span>
             </h1>
-            <p className="font-source text-lg text-[#2D3A31]/70">
+            <p className="text-lg text-warm-600">
               Reach out to us for general inquiries.
             </p>
           </motion.div>
           
-          <div className="mt-20 text-center font-playfair italic text-[#2D3A31]/40 text-xl border border-[#E6E2DA] p-24 rounded-3xl bg-white shadow-sm">
+          <div className="mt-20 text-center font-serif italic text-warm-400 text-xl border border-warm-200 p-24 rounded-3xl bg-white shadow-sm">
              [ Contact Form Placeholder ]
           </div>
         </Container>
