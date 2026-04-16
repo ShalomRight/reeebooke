@@ -36,6 +36,20 @@
       "when": 1776038832940,
       "tag": "0004_workable_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1776340907575,
+      "tag": "0005_zippy_whirlwind",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1776343168024,
+      "tag": "0006_slimy_tomas",
+      "breakpoints": true
     }
   ]
 }

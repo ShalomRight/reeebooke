@@ -57,14 +57,14 @@ export default function NotFound() {
 						You might be looking for:
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
-						<Link href="/" className="text-sm text-primary hover:underline" style={{ fontFamily: "var(--font-dm-sans)" }}>
+						<Link href="/booking" className="text-sm text-primary hover:underline" style={{ fontFamily: "var(--font-dm-sans)" }}>
 							Book Appointment
+						</Link>
+						<Link href="/services" className="text-sm text-primary hover:underline" style={{ fontFamily: "var(--font-dm-sans)" }}>
+							Our Services
 						</Link>
 						<Link href="/cart" className="text-sm text-primary hover:underline" style={{ fontFamily: "var(--font-dm-sans)" }}>
 							View Cart
-						</Link>
-						<Link href="/docs" className="text-sm text-primary hover:underline" style={{ fontFamily: "var(--font-dm-sans)" }}>
-							Documentation
 						</Link>
 					</div>
 				</div>

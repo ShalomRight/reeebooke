@@ -407,6 +407,65 @@ export const schedulePeriods = sqliteTable(
   ]
 );
 
+// ─── Messaging ───────────────────────────────────────────────────────────────
+
+export const messages = sqliteTable(
+  "messages",
+  {
+    id:                 text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    // Sender identity
+    email:              text("email").notNull(),
+    name:               text("name"),
+    userId:             text("user_id"),                              // null for guests
+    // Classification
+    source:             text("source").notNull(),                     // 'contact_form' | 'authenticated_user'
+    intent:             text("intent").notNull().default("general"),  // 'general' | 'booking_inquiry' | 'service_question' | 'cancellation_request'
+    // Content
+    subject:            text("subject"),
+    body:               text("body").notNull(),
+    // Booking context (populated when intent = 'booking_inquiry')
+    requestedServiceId: text("requested_service_id"),                 // → services.id
+    requestedDate:      text("requested_date"),                       // YYYY-MM-DD
+    requestedTimeRange: text("requested_time_range"),                 // 'morning' | 'afternoon' | free text
+    // Threading (for replies)
+    parentId:           text("parent_id"),                            // null = conversation starter; set = reply to parent message
+    isFromAdmin:        integer("is_from_admin").notNull().default(0), // 0 = user/guest message, 1 = admin reply
+    // Admin workflow
+    status:             text("status").notNull().default("unread"),   // 'unread' | 'read' | 'replied' | 'archived'
+    tags:               text("tags").notNull().default("[]"),         // JSON string[]
+    // Timestamps
+    createdAt:          timestamp("created_at"),
+    updatedAt:          text("updated_at").notNull().default(sql`(datetime('now'))`),
+  },
+  (t) => [
+    // Single-column indexes (fast equality filters)
+    index("messages_user_id_idx").on(t.userId),
+    index("messages_email_idx").on(t.email),
+    index("messages_status_idx").on(t.status),
+    index("messages_intent_idx").on(t.intent),
+    index("messages_source_idx").on(t.source),
+    index("messages_requested_service_id_idx").on(t.requestedServiceId),
+    // Composite indexes (cover admin inbox sort + filter in one scan)
+    index("messages_status_created_at_idx").on(t.status, t.createdAt),
+    index("messages_intent_status_idx").on(t.intent, t.status),
+    // Threading index
+    index("messages_parent_id_idx").on(t.parentId),
+  ]
+);
+
+export const messageNotes = sqliteTable(
+  "message_notes",
+  {
+    id:        text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    messageId: text("message_id").notNull(),
+    content:   text("content").notNull(),
+    createdAt: timestamp("created_at"),
+  },
+  (t) => [
+    index("message_notes_message_id_idx").on(t.messageId),
+  ]
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Relations — used by Drizzle's relational query API (db.query.*)
 // These do NOT add columns or constraints; they just teach Drizzle how
@@ -427,6 +486,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   promotionSubscribers: many(promotionSubscribers),
   pointsRedemptions:    many(pointsRedemptions),
   discountUsages:       many(discountUsages),
+  messages:             many(messages),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -443,6 +503,7 @@ export const servicesRelations = relations(services, ({ many }) => ({
   favorites: many(favorites),
   ratings:   many(ratings),
   schedules: many(schedules, { relationName: "serviceSchedules" }),
+  inquiries: many(messages),
 }));
 
 export const schedulesServicesRelations = relations(schedules, ({ one }) => ({
@@ -511,6 +572,19 @@ export const schedulePeriodsRelations = relations(schedulePeriods, ({ one }) => 
   schedule: one(schedules, { fields: [schedulePeriods.scheduleId], references: [schedules.id] }),
 }));
 
+export const messagesRelations = relations(messages, ({ one, many }) => ({
+  user:             one(users, { fields: [messages.userId], references: [users.id] }),
+  requestedService: one(services, { fields: [messages.requestedServiceId], references: [services.id] }),
+  notes:            many(messageNotes),
+  // Threading relations
+  parent:           one(messages, { fields: [messages.parentId], references: [messages.id], relationName: "replies" }),
+  replies:          many(messages, { relationName: "replies" }),
+}));
+
+export const messageNotesRelations = relations(messageNotes, ({ one }) => ({
+  message: one(messages, { fields: [messageNotes.messageId], references: [messages.id] }),
+}));
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Type exports — inferred from schema for use in your application
 // ─────────────────────────────────────────────────────────────────────────────
@@ -539,3 +613,7 @@ export type Schedule             = typeof schedules.$inferSelect;
 export type NewSchedule          = typeof schedules.$inferInsert;
 export type SchedulePeriod       = typeof schedulePeriods.$inferSelect;
 export type NewSchedulePeriod    = typeof schedulePeriods.$inferInsert;
+export type Message              = typeof messages.$inferSelect;
+export type NewMessage           = typeof messages.$inferInsert;
+export type MessageNote          = typeof messageNotes.$inferSelect;
+export type NewMessageNote       = typeof messageNotes.$inferInsert;

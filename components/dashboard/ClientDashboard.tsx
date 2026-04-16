@@ -14,12 +14,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUserBookings } from "@/lib/swr"
-import { Award, BarChart3, Calendar, Clock, DollarSign, Download, Heart, Sparkles, TrendingUp } from "lucide-react"
+import { Award, BarChart3, Calendar, Clock, DollarSign, Download, Heart, Inbox, MessageSquare, Send, Sparkles, TrendingUp } from "lucide-react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 import { DashboardLayout } from "../layout/dashboard/DashboardLayout"
+import MessageCompose from "@/components/messaging/MessageCompose"
+import { UserInbox } from "@/components/messaging/UserInbox"
 import { AIRecommendations } from "./AIRecommendations"
 import { BookingStats } from "./BookingStats"
 import { ClientAnalytics } from "./ClientAnalytics"
@@ -93,6 +95,7 @@ export function ClientDashboard() {
 	const navItems = [
 		{ key: "overview", label: "Overview", icon: Calendar },
 		{ key: "calendar", label: "Calendar", icon: Calendar },
+		{ key: "messages", label: "Messages", icon: MessageSquare },
 		{ key: "analytics", label: "Analytics", icon: TrendingUp }
 	]
 
@@ -356,6 +359,37 @@ export function ClientDashboard() {
 					{activeTab === "calendar" && (
 						<div className="space-y-6">
 							<AdminBookingCalendarWrapper mode="client" currentUserId={userId} />
+						</div>
+					)}
+
+					{activeTab === "messages" && (
+					<div className="max-w-4xl mx-auto">
+						<Tabs defaultValue="inbox" className="w-full">
+							<TabsList className="mb-6">
+								<TabsTrigger value="inbox" className="gap-2">
+									<Inbox className="w-4 h-4" />
+									Inbox
+								</TabsTrigger>
+								<TabsTrigger value="compose" className="gap-2">
+									<Send className="w-4 h-4" />
+									New Message
+								</TabsTrigger>
+							</TabsList>
+
+							<TabsContent value="inbox">
+								{userId ? <UserInbox userId={userId} /> : <div>Please sign in to view messages</div>}
+							</TabsContent>
+
+							<TabsContent value="compose">
+								<div className="mb-6">
+									<h2 className="text-2xl font-bold text-[var(--warm-800)] mb-2">New Message</h2>
+									<p className="text-[var(--warm-500)]">
+										Send inquiries, booking requests, or service questions directly to our team.
+									</p>
+								</div>
+								<MessageCompose />
+							</TabsContent>
+							</Tabs>
 						</div>
 					)}
 

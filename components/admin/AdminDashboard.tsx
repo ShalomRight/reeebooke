@@ -1,7 +1,7 @@
 "use client"
 
 import currentUserClient from "@/lib/currentUserClient"
-import { BarChart3, Calendar, Clock, Settings, Star, Ticket, TrendingUp, UserPlus, Users } from "lucide-react"
+import { BarChart3, Calendar, Clock, Inbox, MessageSquare, Settings, Star, Ticket, TrendingUp, UserPlus, Users } from "lucide-react"
 import { useState } from "react"
 import { DashboardLayout } from "../layout/dashboard/DashboardLayout"
 
@@ -9,6 +9,7 @@ import { BookingsManagement } from "./BookingsManagement"
 import { ComprehensiveAnalytics } from "./ComprehensiveAnalytics"
 import { CustomerAnalytics } from "./CustomerAnalytics"
 import { DiscountManagement } from "./DiscountManagement"
+import { MessagesManagement } from "./MessagesManagement"
 import { PopularServices } from "./PopularServices"
 import { RatingsManagement } from "./RatingsManagement"
 import { RecentActivity } from "./RecentActivity"
@@ -38,6 +39,12 @@ const SIDEBAR_NAV = [
 		key: "bookings",
 		label: "Bookings",
 		icon: <BarChart3 className="w-4 h-4" />,
+		forSuperAdmin: false,
+	},
+	{
+		key: "messages",
+		label: "Messages",
+		icon: <Inbox className="w-4 h-4" />,
 		forSuperAdmin: false,
 	},
 	{
@@ -115,6 +122,7 @@ export function AdminDashboard({ initialTab = "overview" }: { initialTab?: strin
 				)}
 				{activeTab === "analytics" && <ComprehensiveAnalytics />}
 				{activeTab === "bookings" && <BookingsManagement />}
+				{activeTab === "messages" && <MessagesManagement />}
 				{activeTab === "calendar" && <AdminBookingCalendarWrapper mode="admin" />}
 				{activeTab === "services" && <ServicesPageV2 />}
 				{activeTab === "schedules" && <ScheduleManagement />}

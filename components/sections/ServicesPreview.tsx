@@ -85,7 +85,7 @@ export function ServicesPreview() {
                   </p>
                   <div className="flex items-center justify-between pt-4 border-t border-warm-200">
                     <span className="text-sm font-medium text-warm-800">{service.price}</span>
-                    <Link href="/services" className="w-8 h-8 rounded bg-terracotta-100 flex items-center justify-center text-terracotta-700 hover:bg-terracotta-800 hover:text-white transition-colors">
+                    <Link href="/booking" className="w-8 h-8 rounded bg-terracotta-100 flex items-center justify-center text-terracotta-700 hover:bg-terracotta-800 hover:text-white transition-colors">
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>

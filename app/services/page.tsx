@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef, useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { Container } from "@/components/layout/Container"
 import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
@@ -67,9 +68,11 @@ function ServiceImage({ service, index }: { service: Service; index: number }) {
 function ServiceCard({
   service,
   index,
+  onBook,
 }: {
   service: Service
   index: number
+  onBook: () => void
 }) {
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -128,7 +131,10 @@ function ServiceCard({
             <span className="font-serif text-base font-medium text-terracotta-700">
               {service.priceDisplay}
             </span>
-            <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-terracotta-600 hover:text-terracotta-800 transition-colors group/btn">
+            <button 
+              onClick={onBook}
+              className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-terracotta-600 hover:text-terracotta-800 transition-colors group/btn"
+            >
               Book
               <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
             </button>
@@ -140,10 +146,15 @@ function ServiceCard({
 }
 
 export default function ServicesPage() {
+  const router = useRouter()
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("all")
   const [sortBy, setSortBy] = useState<SortOption>("default")
   const [showSortMenu, setShowSortMenu] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
+
+  const handleBook = () => {
+    router.push("/booking")
+  }
 
   useEffect(() => {
     if (!headerRef.current) return
@@ -292,7 +303,7 @@ export default function ServicesPage() {
           {filteredServices.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredServices.map((service, index) => (
-                <ServiceCard key={`${service.name}-${index}`} service={service} index={index} />
+                <ServiceCard key={`${service.name}-${index}`} service={service} index={index} onBook={handleBook} />
               ))}
             </div>
           ) : (

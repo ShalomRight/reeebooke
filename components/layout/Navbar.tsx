@@ -76,8 +76,14 @@ export function Navbar() {
               })}
 
               <Link
+                href="/signup"
+                className="ml-4 px-5 py-2.5 text-[11px] uppercase tracking-widest font-medium border border-terracotta-800 text-terracotta-800 rounded hover:bg-terracotta-50 transition-colors duration-300"
+              >
+                Join Us
+              </Link>
+              <Link
                 href="/booking"
-                className="ml-4 px-5 py-2.5 text-[11px] uppercase tracking-widest font-medium bg-terracotta-800 text-white rounded hover:bg-terracotta-700 transition-colors duration-300"
+                className="ml-3 px-5 py-2.5 text-[11px] uppercase tracking-widest font-medium bg-terracotta-800 text-white rounded hover:bg-terracotta-700 transition-colors duration-300"
               >
                 Book
               </Link>
@@ -159,11 +165,24 @@ export function Navbar() {
                 })}
               </nav>
 
-              <div className="p-4 border-t border-warm-200">
+              <div className="p-4 border-t border-warm-200 flex flex-col gap-3">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
+                >
+                  <Link
+                    href="/signup"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full px-4 py-3 text-center text-[11px] uppercase tracking-widest font-medium border border-terracotta-800 text-terracotta-800 rounded hover:bg-terracotta-50 transition-colors"
+                  >
+                    Join Us
+                  </Link>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
                 >
                   <Link
                     href="/booking"
