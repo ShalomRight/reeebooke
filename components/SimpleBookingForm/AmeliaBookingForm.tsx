@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, Suspense } from "react"
+import { useState, useCallback, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -108,7 +108,6 @@ function AmeliaBookingFormContent() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [stepError, setStepError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<{ service?: string; date?: string; time?: string }>({})
-  const [readyToAdd, setReadyToAdd] = useState(false)
 
   const selectedDateObj = selectedDate
     ? new Date(currentYear, currentMonth - 1, selectedDate)
@@ -127,27 +126,6 @@ function AmeliaBookingFormContent() {
     [setSelectedDate, setSelectedTime, setCurrentMonth, setCurrentYear],
   )
 
-  // Auto-add to cart when readyToAdd flag is set
-  useEffect(() => {
-    if (!readyToAdd || !selectedService || !selectedDate || !selectedTime) return
-    addToCart({
-      id: `${selectedService}-${selectedDate}-${selectedTime}-${Date.now()}`,
-      serviceId: selectedService,
-      serviceName: selectedServiceData?.name || "",
-      price: totalPrice,
-      date: `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
-      time: selectedTime,
-      photos,
-    })
-    toast.success("Added to Cart", { description: `${selectedServiceData?.name} added successfully` })
-    setReadyToAdd(false)
-    setCurrentStep(1)
-    setSelectedService("")
-    setSelectedDate(null)
-    setSelectedTime("")
-    setPhotos([])
-    setStepError(null)
-  }, [readyToAdd]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const validateStep = (): boolean => {
     const errors: { service?: string; date?: string; time?: string } = {}
@@ -168,10 +146,35 @@ function AmeliaBookingFormContent() {
     setFieldErrors(prev => ({ ...prev, [field]: undefined }))
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validateStep()) return
     setStepError(null)
-    if (currentStep === 4) { setReadyToAdd(true); return }
+    if (currentStep === 4) {
+      const result = await addToCart({
+        id: `${selectedService}-${selectedDate}-${selectedTime}-${Date.now()}`,
+        serviceId: selectedService,
+        serviceName: selectedServiceData?.name || "",
+        price: totalPrice,
+        date: `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
+        time: selectedTime,
+        photos,
+      })
+      if (result === 'added') {
+        toast.success("Added to Cart", { description: `${selectedServiceData?.name} added successfully` })
+      } else if (result === 'duplicate') {
+        toast.info("Already in your cart", { description: `${selectedServiceData?.name} is already booked` })
+      } else {
+        toast.error("Failed to add", { description: "Something went wrong. Please try again." })
+        return
+      }
+      setCurrentStep(1)
+      setSelectedService("")
+      setSelectedDate(null)
+      setSelectedTime("")
+      setPhotos([])
+      setStepError(null)
+      return
+    }
     setCurrentStep((s) => Math.min(s + 1, 4))
   }
 

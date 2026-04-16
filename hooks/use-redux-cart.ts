@@ -154,8 +154,17 @@ export function useCart() {
 	}, [cart, status])
 
 	const addToCart = useCallback(
-		async (item: CartItem) => {
+		async (item: CartItem): Promise<'added' | 'duplicate' | 'error'> => {
 			if (session?.user?.email) {
+				// Short-circuit: if item already in Redux state, skip the API call entirely
+				const existingInRedux = cart.find(
+					(cartItem) =>
+						cartItem.serviceId === item.serviceId &&
+						normalizeDate(cartItem.date) === normalizeDate(item.date) &&
+						cartItem.time === item.time,
+				)
+				if (existingInRedux) return 'duplicate'
+
 				try {
 					const response = await fetch("/api/v1/cart", {
 						method: "POST",
@@ -179,8 +188,9 @@ export function useCart() {
 								photos: [],
 							}),
 						)
+						return 'added'
 					} else if (response.status === 409) {
-						// Item already in cart - reload cart from database to get the latest state
+						// Item already in cart - sync Redux from DB so UI stays accurate
 						const cartResponse = await fetch("/api/v1/cart")
 						if (cartResponse.ok) {
 							const dbCart = await cartResponse.json() as any
@@ -195,10 +205,13 @@ export function useCart() {
 							}))
 							dispatch(initializeCart(formattedCart))
 						}
+						return 'duplicate'
 					}
+					return 'error'
 				} catch (error) {
 					// Fallback to local cart if API fails
 					dispatch(addToCartAction(item))
+					return 'error'
 				}
 			} else {
 				// For guest users, check for duplicates in local cart before adding
@@ -209,13 +222,12 @@ export function useCart() {
 						cartItem.time === item.time,
 				)
 				if (!existingItem) {
-					// Calculate the new cart state before dispatching
 					const updatedCart = [...cart, item]
 					dispatch(addToCartAction(item))
-					// Explicitly save to localStorage immediately for guest users
-					// This ensures persistence even if Redux persist has issues
 					saveGuestCart(updatedCart)
+					return 'added'
 				}
+				return 'duplicate'
 			}
 		},
 		[session?.user?.email, dispatch, cart],

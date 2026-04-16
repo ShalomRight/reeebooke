@@ -1,7 +1,7 @@
 import { getAuthOptions } from "@/lib/auth"
 import { getDb } from "@/src/db"
 import { users, carts, services } from "@/src/db/schema"
-import { eq, and, ne, inArray } from "drizzle-orm"
+import { eq, and, ne, inArray, gt } from "drizzle-orm"
 import { getServerSession } from "next-auth/next"
 import { type NextRequest, NextResponse } from "next/server"
 
@@ -22,8 +22,9 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ error: "User not found" }, { status: 404 })
 		}
 
+		const now = new Date().toISOString()
 		const cartItems = await db.query.carts.findMany({
-			where: eq(carts.userId, user.id),
+			where: and(eq(carts.userId, user.id), gt(carts.expiresAt, now)),
 			with: { service: true },
 			orderBy: (carts: any, { desc }: any) => [desc(carts.createdAt)],
 		})
@@ -84,13 +85,15 @@ export async function POST(req: NextRequest) {
 
 		const normalizedDate = new Date(date).toISOString().split('T')[0]
 
-		// Check if item already exists in cart
+		const nowCheck = new Date().toISOString()
+		// Check if item already exists in cart (non-expired only)
 		const duplicateExists = await db.query.carts.findFirst({
 			where: and(
 				eq(carts.userId, user.id),
 				eq(carts.serviceId, serviceId),
 				eq(carts.date, normalizedDate),
 				eq(carts.time, time),
+				gt(carts.expiresAt, nowCheck),
 			),
 		})
 
