@@ -130,7 +130,7 @@ function mutateAllGalleryKeys() {
 }
 
 export function GalleryManager() {
-  const { data, isLoading, error } = useGallery()
+  const { data, isLoading, error, mutate } = useGallery()
   const [activeSection, setActiveSection] = useState<string>(ALL_SECTIONS)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [uploadSection, setUploadSection] = useState<GallerySection | undefined>()
