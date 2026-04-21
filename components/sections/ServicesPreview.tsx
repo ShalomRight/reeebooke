@@ -4,32 +4,40 @@ import { motion } from "framer-motion"
 import { Container } from "../layout/Container"
 import { ArrowRight, Leaf, Sparkles, Droplets } from "lucide-react"
 import Link from "next/link"
+import { useGallerySection } from "@/lib/swr/hooks/gallery"
+import { getSectionImages, SERVICES_FALLBACKS } from "@/lib/gallery"
 
-const services = [
+const servicesMeta = [
   {
     title: "Natural Hair Care",
     description: "Expert care for your natural texture. From wash & go to protective styling, we enhance your curls with premium treatments.",
     icon: Droplets,
     price: "From $90",
-    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=400&fit=crop",
   },
   {
     title: "Locs & Retwist",
     description: "Professional loc maintenance and styling. Starter locs, retwists, and creative loc styles that express your personality.",
     icon: Leaf,
     price: "From $85",
-    image: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&h=400&fit=crop",
   },
   {
     title: "Color & Chemical",
     description: "Vibrant color transformations and smoothing treatments. Balayage, highlights, and keratin treatments using premium products.",
     icon: Sparkles,
     price: "From $120",
-    image: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=600&h=400&fit=crop",
-  }
+  },
 ]
 
 export function ServicesPreview() {
+  const { data } = useGallerySection("services")
+  const serviceImages = getSectionImages("services", data?.images, SERVICES_FALLBACKS)
+
+  const services = servicesMeta.map((s, i) => ({
+    ...s,
+    image: serviceImages[i]?.url ?? SERVICES_FALLBACKS[i]?.url,
+    imageAlt: serviceImages[i]?.alt ?? s.title,
+  }))
+
   return (
     <section className="py-20 md:py-28 bg-warm-50">
       <Container>
@@ -66,7 +74,7 @@ export function ServicesPreview() {
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <img
                     src={service.image}
-                    alt={service.title}
+                    alt={service.imageAlt}
                     loading="lazy"
                     width="600"
                     height="400"

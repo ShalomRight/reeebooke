@@ -6,14 +6,17 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { motion } from "framer-motion"
 
-// Using a different hero image for variety - silk press image
-const signupImage = "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=800&h=1200&fit=crop"
+import { useGallerySection } from "@/lib/swr/hooks/gallery"
+import { getSingleSectionImage, SIGNUP_FALLBACK } from "@/lib/gallery"
 
 function SignupFormWrapper() {
 	return <SignupForm />
 }
 
 export default function SignUpPage() {
+	const { data } = useGallerySection("signup")
+  const signupImageInfo = getSingleSectionImage(data?.images, SIGNUP_FALLBACK.url, SIGNUP_FALLBACK.alt)
+
 	return (
 		<div className="min-h-screen bg-warm-50">
 			{/* Split Layout - Image left, Form right */}
@@ -27,8 +30,8 @@ export default function SignUpPage() {
 				>
 					<div className="absolute inset-0">
 						<img
-							src={signupImage}
-							alt="Silk press hair styling"
+							src={signupImageInfo.url}
+							alt={signupImageInfo.alt}
 							className="w-full h-full object-cover"
 						/>
 						{/* Overlay gradient */}
@@ -48,14 +51,14 @@ export default function SignUpPage() {
 							<CardHeader className="text-center space-y-4">
 								<div className="space-y-2">
 									<p className="text-[11px] uppercase tracking-widest text-terracotta-600">
-										Abby Hair Studio
+										Abi's Hair Creation
 									</p>
 									<CardTitle className="font-serif text-3xl text-warm-900">
 										Create <span className="italic">Account</span>
 									</CardTitle>
 								</div>
 								<CardDescription className="text-warm-600">
-									Sign up for your Abby Hair Studio account
+									Sign up for your Abi's Hair Creation account
 								</CardDescription>
 							</CardHeader>
 							<CardContent>

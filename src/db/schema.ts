@@ -466,6 +466,39 @@ export const messageNotes = sqliteTable(
   ]
 );
 
+// ─── Gallery Images ────────────────────────────────────────────────────────────
+// Website images managed via Admin/Super Admin Gallery Manager
+
+export const gallerySections = [
+  "hero",
+  "gallery_preview",
+  "gallery_full",
+  "about",
+  "services",
+  "contact",
+  "signin",
+  "signup",
+] as const;
+
+export type GallerySection = (typeof gallerySections)[number];
+
+export const galleryImages = sqliteTable(
+  "gallery_images",
+  {
+    id:        text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    section:   text("section").notNull(), // hero, gallery_preview, gallery_full, about, services, contact, signin, signup
+    slotIndex: integer("slot_index").notNull().default(0), // position within section
+    url:       text("url").notNull(), // Cloudinary URL
+    alt:       text("alt").notNull().default(""), // accessibility text
+    createdAt: timestamp("created_at"),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("gallery_images_section_idx").on(t.section),
+    index("gallery_images_section_slot_idx").on(t.section, t.slotIndex),
+  ]
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Relations — used by Drizzle's relational query API (db.query.*)
 // These do NOT add columns or constraints; they just teach Drizzle how
@@ -617,3 +650,5 @@ export type Message              = typeof messages.$inferSelect;
 export type NewMessage           = typeof messages.$inferInsert;
 export type MessageNote          = typeof messageNotes.$inferSelect;
 export type NewMessageNote       = typeof messageNotes.$inferInsert;
+export type GalleryImage         = typeof galleryImages.$inferSelect;
+export type NewGalleryImage      = typeof galleryImages.$inferInsert;

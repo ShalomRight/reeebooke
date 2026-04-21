@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import currentUserClient from "@/lib/currentUserClient"
 import {
   BarChart3, Calendar, Clock, Settings,
-  Star, Ticket, TrendingUp, UserPlus, Users,
+  Star, Ticket, TrendingUp, UserPlus, Users, ImageIcon,
 } from "lucide-react"
 
 const NAV_ITEMS = [
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { key: "bookings",   label: "Bookings",   icon: <BarChart3 className="w-4 h-4" />,  forSuperAdmin: false },
   { key: "calendar",   label: "Calendar",   icon: <Calendar className="w-4 h-4" />,   forSuperAdmin: false },
   { key: "services",   label: "Services",   icon: <Settings className="w-4 h-4" />,   forSuperAdmin: false },
+  { key: "gallery",    label: "Gallery",    icon: <ImageIcon className="w-4 h-4" />,  forSuperAdmin: false },
   { key: "discounts",  label: "Discounts",  icon: <Ticket className="w-4 h-4" />,     forSuperAdmin: false },
   { key: "ratings",    label: "Ratings",    icon: <Star className="w-4 h-4" />,       forSuperAdmin: false },
   { key: "referrals",  label: "Referrals",  icon: <UserPlus className="w-4 h-4" />,   forSuperAdmin: false },

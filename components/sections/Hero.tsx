@@ -5,41 +5,24 @@ import { Container } from "../layout/Container"
 import Link from "next/link"
 import { TextRotate } from "@/components/ui/text-rotate"
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
-
-const heroImages = [
-  {
-    url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop",
-    title: "Hair Styling",
-  },
-  {
-    url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=400&fit=crop",
-    title: "Natural Hair",
-  },
-  {
-    url: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=400&h=350&fit=crop",
-    title: "Locs Style",
-  },
-  {
-    url: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=400&h=300&fit=crop",
-    title: "Color Treatment",
-  },
-  {
-    url: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=450&fit=crop",
-    title: "Silk Press",
-  },
-]
+import { useGallerySection } from "@/lib/swr/hooks/gallery"
+import { getSectionImages, HERO_FALLBACKS } from "@/lib/gallery"
 
 export function Hero() {
   const prefersReducedMotion = useReducedMotion()
+  const { data } = useGallerySection("hero")
+
+  // Use D1 images if available, fall back to Unsplash originals slot-by-slot
+  const heroImages = getSectionImages("hero", data?.images, HERO_FALLBACKS)
 
   return (
     <section className="relative min-h-[90vh] overflow-hidden flex flex-col items-center justify-center bg-warm-50">
-      {/* Floating Background Images - hidden for reduced motion users */}
+      {/* Floating Background Images */}
       <Floating sensitivity={prefersReducedMotion ? 0 : -0.5} className={`h-full ${prefersReducedMotion ? "opacity-30" : ""}`}>
         <FloatingElement depth={0.5} className="top-[12%] left-[3%] md:top-[20%] md:left-[5%]">
           <motion.img
-            src={heroImages[0].url}
-            alt={heroImages[0].title}
+            src={heroImages[0]?.url}
+            alt={heroImages[0]?.alt}
             className="w-24 h-16 sm:w-32 sm:h-24 md:w-36 md:h-28 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform -rotate-3 shadow-xl rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -49,8 +32,8 @@ export function Hero() {
 
         <FloatingElement depth={1} className="top-[5%] left-[8%] md:top-[10%] md:left-[12%]">
           <motion.img
-            src={heroImages[1].url}
-            alt={heroImages[1].title}
+            src={heroImages[1]?.url}
+            alt={heroImages[1]?.alt}
             className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform -rotate-12 shadow-xl rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -60,8 +43,8 @@ export function Hero() {
 
         <FloatingElement depth={4} className="top-[75%] left-[5%] md:top-[70%] md:left-[8%]">
           <motion.img
-            src={heroImages[2].url}
-            alt={heroImages[2].title}
+            src={heroImages[2]?.url}
+            alt={heroImages[2]?.alt}
             className="w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 object-cover -rotate-6 hover:scale-105 duration-500 cursor-pointer transition-transform shadow-xl rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -71,8 +54,8 @@ export function Hero() {
 
         <FloatingElement depth={2} className="top-[8%] left-[82%] md:top-[5%] md:left-[78%]">
           <motion.img
-            src={heroImages[3].url}
-            alt={heroImages[3].title}
+            src={heroImages[3]?.url}
+            alt={heroImages[3]?.alt}
             className="w-32 h-28 sm:w-40 sm:h-36 md:w-48 md:h-44 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform shadow-xl rotate-6 rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -82,8 +65,8 @@ export function Hero() {
 
         <FloatingElement depth={1} className="top-[72%] left-[78%] md:top-[65%] md:left-[75%]">
           <motion.img
-            src={heroImages[4].url}
-            alt={heroImages[4].title}
+            src={heroImages[4]?.url}
+            alt={heroImages[4]?.alt}
             className="w-40 h-48 sm:w-52 sm:h-64 md:w-60 md:h-72 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform shadow-xl rotate-12 rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -100,7 +83,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
         >
-          Abby Hair Studio
+          Abi's Hair Creation
         </motion.p>
 
         <motion.h1
@@ -120,16 +103,7 @@ export function Hero() {
                 <span className="italic">authentic</span>{" "}
               </motion.span>
               <TextRotate
-                texts={[
-                  "beauty",
-                  "luxury",
-                  "transformation",
-                  "pampering",
-                  "style",
-                  "care",
-                  "confidence",
-                  "elegance",
-                ]}
+                texts={["beauty", "luxury", "transformation", "pampering", "style", "care", "confidence", "elegance"]}
                 mainClassName="overflow-hidden text-terracotta-600"
                 staggerDuration={0.03}
                 staggerFrom="last"

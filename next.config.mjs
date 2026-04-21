@@ -4,7 +4,14 @@ const nextConfig = {
 		ignoreBuildErrors: false,
 	},
 	images: {
-		unoptimized: true,
+		unoptimized: false,
+		remotePatterns: [
+			{
+				protocol: 'https',
+				hostname: 'res.cloudinary.com',
+				pathname: '/**',
+			},
+		],
 	},
 }
 

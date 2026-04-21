@@ -2,9 +2,13 @@
 
 import { motion } from "framer-motion"
 import { Container } from "../layout/Container"
-import Image from "next/image"
+import { useGallerySection } from "@/lib/swr/hooks/gallery"
+import { getSingleSectionImage, ABOUT_FALLBACK } from "@/lib/gallery"
 
 export function AboutSection() {
+  const { data } = useGallerySection("about")
+  const image = getSingleSectionImage(data?.images, ABOUT_FALLBACK.url, ABOUT_FALLBACK.alt)
+
   return (
     <section className="py-20 md:py-28 bg-warm-50 overflow-hidden">
       <Container>
@@ -19,8 +23,8 @@ export function AboutSection() {
           >
             <div className="relative w-full aspect-4/5 rounded-t-full rounded-b-3xl overflow-hidden shadow-xl shadow-warm-900/10">
               <img
-                src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=1000&fit=crop"
-                alt="Salon Interior"
+                src={image.url}
+                alt={image.alt}
                 loading="lazy"
                 width="800"
                 height="1000"
@@ -46,14 +50,14 @@ export function AboutSection() {
               About Us
             </p>
             <h2 className="font-serif text-3xl md:text-5xl text-warm-900 leading-tight">
-               Our <span className="italic text-terracotta-600">Philosophy</span>
+               Meet <span className="italic text-terracotta-600">Abi</span>
             </h2>
             <div className="space-y-4 text-warm-600 leading-relaxed">
                <p>
-                 Abby Hair Studio has been Brooklyn's trusted destination for natural hair care since 2018. Our stylists specialize in protective styles, loc maintenance, and healthy hair transformations that work with your unique texture.
+                 Abi's Hair Creation is the realization of Abi's profound passion for natural hair. Hailing from Guyana, Abi brings over 10 years of international experience specializing in a diverse range of hair types and textures. Her deep expertise in natural hair care and protective styling has made her a sought-after stylist for those looking to embrace their natural beauty.
                </p>
                <p>
-                 We use premium products and proven techniques to keep your hair strong and beautiful. Whether you're getting your first set of locs or maintaining your signature style, we take the time to do it right.
+                 Beyond the salon chair, Abi has poured her extensive knowledge and experience into developing her own exclusive line of natural hair products. These products are meticulously designed to nourish, protect, and celebrate your hair's unique texture, ensuring your hair stays vibrant and healthy long after your visit.
                </p>
             </div>
           </motion.div>

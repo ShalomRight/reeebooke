@@ -1,9 +1,9 @@
 import {Logo} from "@/components/ui/logo"
-import { BarChart3, CheckCircle, Database, Gauge, Shield, Star, Zap, Calendar } from "lucide-react"
+import { BarChart3, CheckCircle, Database, Gauge, Shield, Star, Zap } from "lucide-react"
 import Image from "next/image"
 
-export default function ReebookingPreviewCard({
-	title = "Full Stack Appointment Booking scheduling system Application",
+export default function AbbyHairStudioPreviewCard({
+	title = "Abi's Hair Creation - Premium Hair Care",
 	landingImage = "/images/1.png",
 	cardBg = "/images/bg/3.jpg",
 	features = [
@@ -90,7 +90,7 @@ export default function ReebookingPreviewCard({
 					<div className="col-span-7 px-6 py-2 flex flex-col justify-between">
 						<div className="space-y-2">
 							<div className="space-y-2">
-								<Logo size="sm" />
+								<Logo variant="compact" />
 								<h4 className="text-md font-bold text-slate-50">
 									{title}
 								</h4>
@@ -150,15 +150,15 @@ export default function ReebookingPreviewCard({
 				{/* Background glow */}
 				<div className="absolute inset-0  bg-primary -z-10" />
 
-				<div className="bg-primary flex items-center justify-center w-10 h-10 shadow-md relative overflow-hidden rounded-2xl">
+				<div className="bg-primary flex items-center justify-center w-10 h-10 shadow-md relative overflow-hidden rounded-2xl p-1.5">
 					{/* Subtle gradient overlay */}
 					<div className="absolute inset-0 bg-gradient-to-br from-white/25 to-transparent opacity-80 rounded-md" />
 
-					<Calendar className="relative w-5 h-5 text-white" />
+					<img src="/Abby/Abby Logo.svg" alt="Abby Hair Studio" className="relative w-full h-full object-contain" />
 				</div>
 
 				<div className="text-xs font-semibold select-none leading-none text-center">
-					Reebooking
+					Abby Hair Studio
 				</div>
 			</div>
 		</div>

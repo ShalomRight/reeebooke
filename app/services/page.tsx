@@ -5,13 +5,13 @@ import { useRouter } from "next/navigation"
 import { Container } from "@/components/layout/Container"
 import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
-import { ACCOUNTS_SERVICES, type Service } from "@/lib/constants/services"
+import { useServices, type Service } from "@/lib/swr/hooks/services"
+import { Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   ArrowUpDown,
   ChevronDown,
-  ImageIcon,
   Droplets,
   Leaf,
   Sparkles,
@@ -26,17 +26,19 @@ if (typeof window !== "undefined") {
 }
 
 type SortOption = "default" | "price-low" | "price-high" | "name"
-type FilterCategory = "all" | "Natural Hair" | "Locs" | "Color & Chemical"
+type FilterCategory = "all" | string
 
 const categoryIcons: Record<string, React.ReactNode> = {
   "Natural Hair": <Droplets className="w-4 h-4" />,
-  Locs: <Leaf className="w-4 h-4" />,
+  "Locs": <Leaf className="w-4 h-4" />,
   "Color & Chemical": <Sparkles className="w-4 h-4" />,
 }
 
-// Image placeholder component
+// Image component - shows actual image with fallback
 function ServiceImage({ service, index }: { service: Service; index: number }) {
-  // Generate a consistent placeholder color based on service name
+  const [error, setError] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+
   const colors = [
     "bg-terracotta-100",
     "bg-terracotta-200",
@@ -45,19 +47,35 @@ function ServiceImage({ service, index }: { service: Service; index: number }) {
   ]
   const bgColor = colors[index % colors.length]
 
+  // If service has a mediaUrl and no error, show the actual image
+  if (service.mediaUrl && !error) {
+    return (
+      <div className="relative aspect-[4/3] overflow-hidden group/image bg-warm-100">
+        {/* Loading skeleton */}
+        {!loaded && (
+          <div className={`absolute inset-0 ${bgColor} animate-pulse`} />
+        )}
+        <img
+          src={service.mediaUrl}
+          alt={service.name}
+          onError={() => setError(true)}
+          onLoad={() => setLoaded(true)}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-warm-900/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-500" />
+      </div>
+    )
+  }
+
+  // Show Abby branded placeholder
   return (
-    <div
-      className={`relative aspect-[4/3] ${bgColor} overflow-hidden group/image`}
-    >
+    <div className={`relative aspect-[4/3] ${bgColor} overflow-hidden group/image`}>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-center p-4">
-          <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-terracotta-800/10 flex items-center justify-center">
-            <ImageIcon className="w-5 h-5 text-terracotta-600" />
-          </div>
-          <p className="text-[10px] uppercase tracking-widest text-terracotta-500/60 text-center leading-tight">
-            {service.imagePrompt.slice(0, 40)}...
-          </p>
-        </div>
+        <img
+          src="/abby-placeholder.svg"
+          alt="Abi's Hair Creation"
+          className="w-full h-full object-cover opacity-90"
+        />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-warm-900/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-500" />
     </div>
@@ -72,7 +90,7 @@ function ServiceCard({
 }: {
   service: Service
   index: number
-  onBook: () => void
+  onBook: (serviceId: string) => void
 }) {
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -113,14 +131,6 @@ function ServiceCard({
             <h3 className="font-serif text-lg font-medium text-warm-900 leading-tight group-hover:text-terracotta-700 transition-colors">
               {service.name}
             </h3>
-            {service.isUpgrade && (
-              <Badge
-                variant="outline"
-                className="shrink-0 text-[9px] uppercase tracking-wider border-terracotta-300 text-terracotta-600 bg-terracotta-50"
-              >
-                Add-on
-              </Badge>
-            )}
           </div>
 
           <p className="text-xs text-warm-600 leading-relaxed mb-4 line-clamp-2">
@@ -129,10 +139,10 @@ function ServiceCard({
 
           <div className="flex items-center justify-between pt-3 border-t border-warm-200">
             <span className="font-serif text-base font-medium text-terracotta-700">
-              {service.priceDisplay}
+              ${service.price.toLocaleString()}
             </span>
             <button 
-              onClick={onBook}
+              onClick={() => onBook(service.id)}
               className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-terracotta-600 hover:text-terracotta-800 transition-colors group/btn"
             >
               Book
@@ -152,8 +162,12 @@ export default function ServicesPage() {
   const [showSortMenu, setShowSortMenu] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
 
-  const handleBook = () => {
-    router.push("/booking")
+  // Fetch services from API
+  const { data: servicesData, error, isLoading } = useServices({ limit: 1000 })
+  const services = servicesData?.services || []
+
+  const handleBook = (serviceId: string) => {
+    router.push(`/booking?service=${serviceId}`)
   }
 
   useEffect(() => {
@@ -171,35 +185,34 @@ export default function ServicesPage() {
     )
   }, [])
 
+  // Get unique categories from API services
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(services.map(s => s.category).filter(Boolean)))
+    return ["all", ...cats] as FilterCategory[]
+  }, [services])
+
   // Filter and sort services
   const filteredServices = useMemo(() => {
-    let services = [...ACCOUNTS_SERVICES]
+    let result = [...services]
 
     if (activeCategory !== "all") {
-      services = services.filter((s) => s.category === activeCategory)
+      result = result.filter((s) => s.category === activeCategory)
     }
 
     switch (sortBy) {
       case "price-low":
-        services.sort((a, b) => a.priceMin - b.priceMin)
+        result.sort((a, b) => a.price - b.price)
         break
       case "price-high":
-        services.sort((a, b) => b.priceMin - a.priceMin)
+        result.sort((a, b) => b.price - a.price)
         break
       case "name":
-        services.sort((a, b) => a.name.localeCompare(b.name))
+        result.sort((a, b) => a.name.localeCompare(b.name))
         break
     }
 
-    return services
-  }, [activeCategory, sortBy])
-
-  const categories: FilterCategory[] = [
-    "all",
-    "Natural Hair",
-    "Locs",
-    "Color & Chemical",
-  ]
+    return result
+  }, [services, activeCategory, sortBy])
 
   const sortOptions: { value: SortOption; label: string }[] = [
     { value: "default", label: "Featured" },
@@ -300,10 +313,20 @@ export default function ServicesPage() {
       {/* Services Grid */}
       <section className="flex-1 py-12">
         <Container>
-          {filteredServices.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-terracotta-600" />
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-sm text-red-500">
+                Failed to load services. Please try again.
+              </p>
+            </div>
+          ) : filteredServices.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredServices.map((service, index) => (
-                <ServiceCard key={`${service.name}-${index}`} service={service} index={index} onBook={handleBook} />
+                <ServiceCard key={service.id} service={service} index={index} onBook={handleBook} />
               ))}
             </div>
           ) : (
@@ -317,7 +340,7 @@ export default function ServicesPage() {
           {/* Results count */}
           <div className="mt-12 pt-8 border-t border-warm-200">
             <p className="text-[11px] uppercase tracking-widest text-terracotta-500 text-center">
-              Showing {filteredServices.length} of {ACCOUNTS_SERVICES.length}{" "}
+              Showing {filteredServices.length} of {services.length}{" "}
               services
             </p>
           </div>

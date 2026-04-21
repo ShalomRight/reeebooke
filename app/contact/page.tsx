@@ -7,10 +7,13 @@ import { motion } from "framer-motion"
 import ContactForm from "@/components/messaging/ContactForm"
 import { Mail, Phone } from "lucide-react"
 
-// Using one of the hero images
-const contactImage = "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&h=1200&fit=crop"
+import { useGallerySection } from "@/lib/swr/hooks/gallery"
+import { getSingleSectionImage, CONTACT_FALLBACK } from "@/lib/gallery"
 
 export default function ContactPage() {
+  const { data } = useGallerySection("contact")
+  const contactImageInfo = getSingleSectionImage(data?.images, CONTACT_FALLBACK.url, CONTACT_FALLBACK.alt)
+
   return (
     <main className="min-h-screen bg-warm-50 flex flex-col">
       <Navbar />
@@ -26,8 +29,8 @@ export default function ContactPage() {
           >
             <div className="absolute inset-0">
               <img
-                src={contactImage}
-                alt="Natural hair care"
+                src={contactImageInfo.url}
+                alt={contactImageInfo.alt}
                 className="w-full h-full object-cover"
               />
               {/* Overlay gradient */}
@@ -56,13 +59,13 @@ export default function ContactPage() {
 
                 {/* Contact info */}
                 <div className="flex flex-wrap items-center gap-4 text-sm text-warm-500">
-                  <a href="mailto:hello@abbyhairstudio.com" className="flex items-center gap-2 hover:text-terracotta-600 transition-colors">
+                  <a href="mailto:hello@abbyshaircreation.com" className="flex items-center gap-2 hover:text-terracotta-600 transition-colors">
                     <Mail className="w-4 h-4" />
-                    hello@abbyhairstudio.com
+                    hello@abbyshaircreation.com
                   </a>
-                  <a href="tel:+15551234567" className="flex items-center gap-2 hover:text-terracotta-600 transition-colors">
+                  <a href="tel:7844912850" className="flex items-center gap-2 hover:text-terracotta-600 transition-colors">
                     <Phone className="w-4 h-4" />
-                    +1 (555) 123-4567
+                    784-491-2850
                   </a>
                 </div>
               </motion.div>

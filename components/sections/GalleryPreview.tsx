@@ -3,31 +3,16 @@
 import { motion } from "framer-motion"
 import { Container } from "../layout/Container"
 import Link from "next/link"
-
-const galleryImages = [
-  {
-    src: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=600&fit=crop",
-    alt: "Natural Hair Styling",
-    wide: true,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=400&h=400&fit=crop",
-    alt: "Silk Press Style",
-    wide: false,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1620331311520-246422fd82f9?w=400&h=400&fit=crop",
-    alt: "Color Treatment",
-    wide: false,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=600&fit=crop",
-    alt: "Salon Atmosphere",
-    wide: true,
-  },
-]
+import { useGallerySection } from "@/lib/swr/hooks/gallery"
+import { getSectionImages, GALLERY_PREVIEW_FALLBACKS } from "@/lib/gallery"
 
 export function GalleryPreview() {
+  const { data } = useGallerySection("gallery_preview")
+
+  // D1 images with slot-based fallback; assign wide layout to slots 0 and 3
+  const galleryImages = getSectionImages("gallery_preview", data?.images, GALLERY_PREVIEW_FALLBACKS)
+    .map((img, i) => ({ ...img, wide: i === 0 || i === 3 }))
+
   return (
     <section className="py-20 md:py-28 bg-warm-50">
       <Container>
@@ -47,7 +32,7 @@ export function GalleryPreview() {
 
          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {galleryImages.map((img, idx) => (
-               <motion.div 
+               <motion.div
                  key={idx}
                  initial={{ opacity: 0, scale: 0.95 }}
                  whileInView={{ opacity: 1, scale: 1 }}
@@ -58,7 +43,7 @@ export function GalleryPreview() {
                  }`}
                >
                  <img
-                   src={img.src}
+                   src={img.url}
                    alt={img.alt}
                    loading="lazy"
                    width={img.wide ? 800 : 400}

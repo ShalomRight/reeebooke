@@ -27,7 +27,7 @@ import {
  *   Queries are routed through the Cloudflare D1 HTTP REST API.
  *
  * LOCAL DEV:
- *   Run `npx next dev` — uses better-sqlite3 against the local Wrangler D1 file.
+ *   Run `pnpm next dev` — uses better-sqlite3 against the local Wrangler D1 file.
  *   SQLite file: .wrangler/state/v3/d1/reebooking_db/local.sqlite
  *   Override with LOCAL_DB_PATH in .env.local.
  */

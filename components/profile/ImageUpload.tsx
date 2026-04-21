@@ -43,7 +43,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 	const [nextCursor, setNextCursor] = useState<string | null>(null)
 	const [prevCursors, setPrevCursors] = useState<(string | null)[]>([null])
 
-	const uploadPreset = "jobtree"
+	const uploadPreset = "abby_upload"
 
 	const fetchImages = useCallback(async (cursor: string | null = null, isPrev = false) => {
 		setIsFetching(true)
@@ -131,7 +131,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 			<CldUploadWidget
 				onSuccess={handleImageUpload}
 				uploadPreset={uploadPreset}
-				options={{ maxFiles: 1, folder: "jobtree" }}
+				options={{ maxFiles: 1, folder: "ABBY" }}
 			>
 				{({ open }) => (
 					<div

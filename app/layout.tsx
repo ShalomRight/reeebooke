@@ -32,8 +32,16 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-	title: "Reebooking - Botanical Salon Interface",
-	description: "Book your appointment with ease",
+	title: "Abi's Hair Creation - Premium Hair Care",
+	description: "Book your appointment with Abi's Hair Creation. Professional hair care services including natural hair, locs, color, and chemical treatments.",
+	icons: {
+		icon: [
+			{ url: "/Abby/Abby Logo.svg", type: "image/svg+xml" },
+		],
+		apple: [
+			{ url: "/Abby/Abby Logo.svg", type: "image/svg+xml" },
+		],
+	},
 }
 
 export default function RootLayout({

@@ -5,9 +5,11 @@ import Link from "next/link"
 import { LayoutGroup } from "framer-motion"
 import { TextRotate } from "@/components/ui/text-rotate"
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
+import { useGallerySection } from "@/lib/swr/hooks/gallery"
+import { getSectionImages } from "@/lib/gallery"
 
-// Salon-themed floating images
-const heroImages = [
+// Default fallback images
+const defaultHeroImages = [
   {
     url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop",
     title: "Hair Styling",
@@ -31,14 +33,19 @@ const heroImages = [
 ]
 
 export function HeroSection() {
+  const { data } = useGallerySection("hero")
+  const heroImages = data?.images
+    ? getSectionImages("hero", data.images)
+    : defaultHeroImages.map((img, i) => ({ url: img.url, alt: img.title }))
+
   return (
     <section className="relative min-h-[90vh] overflow-hidden flex flex-col items-center justify-center bg-warm-50">
       {/* Floating Background Images */}
       <Floating sensitivity={-0.5} className="h-full">
         <FloatingElement depth={0.5} className="top-[12%] left-[3%] md:top-[20%] md:left-[5%]">
           <motion.img
-            src={heroImages[0].url}
-            alt={heroImages[0].title}
+            src={heroImages[0]?.url || defaultHeroImages[0].url}
+            alt={heroImages[0]?.alt || defaultHeroImages[0].title}
             className="w-24 h-16 sm:w-32 sm:h-24 md:w-36 md:h-28 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform -rotate-3 shadow-xl rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -48,8 +55,8 @@ export function HeroSection() {
 
         <FloatingElement depth={1} className="top-[5%] left-[8%] md:top-[10%] md:left-[12%]">
           <motion.img
-            src={heroImages[1].url}
-            alt={heroImages[1].title}
+            src={heroImages[1]?.url || defaultHeroImages[1].url}
+            alt={heroImages[1]?.alt || defaultHeroImages[1].title}
             className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform -rotate-12 shadow-xl rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -59,8 +66,8 @@ export function HeroSection() {
 
         <FloatingElement depth={4} className="top-[75%] left-[5%] md:top-[70%] md:left-[8%]">
           <motion.img
-            src={heroImages[2].url}
-            alt={heroImages[2].title}
+            src={heroImages[2]?.url || defaultHeroImages[2].url}
+            alt={heroImages[2]?.alt || defaultHeroImages[2].title}
             className="w-36 h-36 sm:w-44 sm:h-44 md:w-52 md:h-52 object-cover -rotate-6 hover:scale-105 duration-500 cursor-pointer transition-transform shadow-xl rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -70,8 +77,8 @@ export function HeroSection() {
 
         <FloatingElement depth={2} className="top-[8%] left-[82%] md:top-[5%] md:left-[78%]">
           <motion.img
-            src={heroImages[3].url}
-            alt={heroImages[3].title}
+            src={heroImages[3]?.url || defaultHeroImages[3].url}
+            alt={heroImages[3]?.alt || defaultHeroImages[3].title}
             className="w-32 h-28 sm:w-40 sm:h-36 md:w-48 md:h-44 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform shadow-xl rotate-6 rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -81,8 +88,8 @@ export function HeroSection() {
 
         <FloatingElement depth={1} className="top-[72%] left-[78%] md:top-[65%] md:left-[75%]">
           <motion.img
-            src={heroImages[4].url}
-            alt={heroImages[4].title}
+            src={heroImages[4]?.url || defaultHeroImages[4].url}
+            alt={heroImages[4]?.alt || defaultHeroImages[4].title}
             className="w-40 h-48 sm:w-52 sm:h-64 md:w-60 md:h-72 object-cover hover:scale-105 duration-500 cursor-pointer transition-transform shadow-xl rotate-12 rounded-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -99,7 +106,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
         >
-          Abby Hair Studio
+          Abi's Hair Creation
         </motion.p>
 
         <motion.h1

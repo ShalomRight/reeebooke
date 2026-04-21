@@ -9,7 +9,7 @@ export function Footer() {
           
           <div className="md:col-span-1 space-y-4">
             <Link href="/" className="font-serif text-3xl font-bold text-warm-900">
-              Abby Hair Studio
+              Abi's Hair Creation
             </Link>
             <p className="text-sm text-warm-600 leading-relaxed max-w-xs">
               A serene oasis for wellness, beauty, and mindful care. Take a deep breath and let us handle the rest.
@@ -23,16 +23,17 @@ export function Footer() {
               <li><Link href="/services" className="hover:text-terracotta-600 transition-colors">Services</Link></li>
               <li><Link href="/gallery" className="hover:text-terracotta-600 transition-colors">Gallery</Link></li>
               <li><Link href="/about" className="hover:text-terracotta-600 transition-colors">About Us</Link></li>
+              <li><Link href="/find-us" className="hover:text-terracotta-600 transition-colors">Find Us</Link></li>
             </ul>
           </div>
 
           <div className="space-y-4 mt-2">
             <h4 className="font-serif font-semibold text-lg text-warm-900">Visit Us</h4>
             <ul className="space-y-3 text-sm text-warm-600">
-              <li>123 Wellness Ave, Suite 100</li>
-              <li>Los Angeles, CA 90028</li>
-              <li>hello@botanicalsalon.com</li>
-              <li>(555) 123-4567</li>
+              <li>Upper Bay Street</li>
+              <li>Kingstown, VC</li>
+              <li>St Vincent and the Grenadines</li>
+              <li>784-491-2850</li>
             </ul>
           </div>
 
@@ -48,7 +49,7 @@ export function Footer() {
         </div>
         
         <div className="mt-16 pt-8 border-t border-warm-200 flex flex-col md:flex-row items-center justify-between text-sm text-warm-500 space-y-4 md:space-y-0">
-           <p>© {new Date().getFullYear()} Abby Hair Studio. All rights reserved.</p>
+           <p>© {new Date().getFullYear()} Abi's Hair Creation. All rights reserved.</p>
            <div className="flex gap-6">
               <Link href="#" className="hover:text-terracotta-600 transition-colors">Privacy Policy</Link>
               <Link href="#" className="hover:text-terracotta-600 transition-colors">Terms of Service</Link>

@@ -68,8 +68,8 @@ export default function Header({ showSidebarTrigger = false }: { showSidebarTrig
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-terracotta-100 transition-colors">
-									<Avatar className="h-10 w-10 ring-2 ring-terracotta-300 hover:ring-terracotta-500 transition-all">
-										<AvatarImage src={userImage || "/placeholder.svg"} alt={userName} />
+									<Avatar className="h-10 w-10 ring-2 ring-terracotta-300 hover:ring-terracotta-500 transition-all overflow-hidden">
+										<AvatarImage src={userImage || "/Abby/Abby Logo.svg"} alt={userName} className="object-contain p-1" />
 										<AvatarFallback className="bg-terracotta-100 text-terracotta-800 font-semibold">
 											{userName.charAt(0).toUpperCase()}
 										</AvatarFallback>
@@ -79,8 +79,8 @@ export default function Header({ showSidebarTrigger = false }: { showSidebarTrig
 							<DropdownMenuContent align="end" className="w-64">
 								<DropdownMenuLabel className="p-4">
 									<div className="flex items-center gap-3">
-										<Avatar className="h-12 w-12">
-											<AvatarImage src={userImage || "/placeholder.svg"} alt={userName} />
+										<Avatar className="h-12 w-12 overflow-hidden">
+											<AvatarImage src={userImage || "/Abby/Abby Logo.svg"} alt={userName} className="object-contain p-1" />
 											<AvatarFallback className="bg-terracotta-100 text-terracotta-800 font-semibold text-lg">
 												{userName.charAt(0).toUpperCase()}
 											</AvatarFallback>
