@@ -1,11 +1,13 @@
 import OpenAI from "openai"
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null
 
 export async function generateServiceRecommendations(bookingHistory: any[]) {
   try {
+    if (!openai) throw new Error("OpenAI API key missing")
+
     const serviceNames = bookingHistory.map((b) => b.service.name).join(", ")
     const bookingFrequency = bookingHistory.length
 
@@ -41,6 +43,8 @@ Format as JSON array with objects containing: service, reason, frequency`,
 
 export async function generateBookingSummary(booking: any) {
   try {
+    if (!openai) throw new Error("OpenAI API key missing")
+
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 256,
@@ -71,6 +75,8 @@ Keep it under 50 words and make it warm and professional.`,
 
 export async function generateSmartAvailability(existingBookings: any[]) {
   try {
+    if (!openai) throw new Error("OpenAI API key missing")
+
     const bookedTimes = existingBookings.map((b) => b.time).join(", ")
 
     const completion = await openai.chat.completions.create({
