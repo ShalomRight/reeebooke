@@ -34,9 +34,8 @@ const defaultHeroImages = [
 
 export function HeroSection() {
   const { data } = useGallerySection("hero")
-  const heroImages = data?.images
-    ? getSectionImages("hero", data.images)
-    : defaultHeroImages.map((img, i) => ({ url: img.url, alt: img.title }))
+  const fallbackImages = defaultHeroImages.map((img) => ({ url: img.url, alt: img.title }))
+  const heroImages = getSectionImages("hero", data?.images, fallbackImages)
 
   return (
     <section className="relative min-h-[90vh] overflow-hidden flex flex-col items-center justify-center bg-warm-50">
